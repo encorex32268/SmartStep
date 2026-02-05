@@ -1,4 +1,4 @@
-package com.lihan.smartstep.ui.design_system
+package com.lihan.smartstep.core.presentation.design_system
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector

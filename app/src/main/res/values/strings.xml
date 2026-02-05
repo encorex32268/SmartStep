@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SmartStep</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="height">Height</string>
+    <string name="used_to_calculate_distance">Used to calculate distance</string>
+    <string name="cm">cm</string>
+    <string name="ft_in">ft/in</string>
+    <string name="gender">Gender</string>
 </resources>
