@@ -3,6 +3,7 @@ package com.lihan.smartstep.profile.presentation
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +61,8 @@ fun DropdownMenu(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             color = BackgroundSecondary,
-            border = BorderStroke(1.dp, StrokeMain)
+            border = BorderStroke(1.dp, StrokeMain),
+            onClick = onDropdownClick
         ) {
             Row(
                 modifier = Modifier
@@ -110,6 +112,11 @@ fun DropdownMenu(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                onItemSelect(item)
+                            }
+                        )
                         .padding(
                             vertical = 1.dp,
                             horizontal = 6.dp

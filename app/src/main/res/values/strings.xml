@@ -7,4 +7,6 @@
     <string name="cm">cm</string>
     <string name="ft_in">ft/in</string>
     <string name="gender">Gender</string>
+    <string name="not_run_in_the_background">The app will fully close and will\nnot run in the background.</string>
+    <string name="total_steps">/%1$s Steps</string>
 </resources>
