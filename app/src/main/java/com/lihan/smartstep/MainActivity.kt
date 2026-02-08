@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.lihan.smartstep.onboarding.presentation.ProfileScreenRoot
+import com.lihan.smartstep.onboarding.presentation.ProfileViewModel
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,9 +24,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartStepTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    val viewModel = ProfileViewModel()
+                    ProfileScreenRoot(
+                        viewModel = viewModel,
+                        modifier = Modifier.fillMaxSize().padding(innerPadding)
                     )
                 }
             }

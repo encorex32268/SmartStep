@@ -6,7 +6,23 @@
     <string name="used_to_calculate_distance">Used to calculate distance</string>
     <string name="cm">cm</string>
     <string name="ft_in">ft/in</string>
+    <string name="kg">kg</string>
+    <string name="lbs">lbs</string>
     <string name="gender">Gender</string>
     <string name="not_run_in_the_background">The app will fully close and will\nnot run in the background.</string>
     <string name="total_steps">/%1$s Steps</string>
+    <string name="my_profile">My profile</string>
+    <string name="skip">Skip</string>
+    <string name="my_profile_tips">This information helps calculate your activity more accurately.</string>
+
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="height_cm">%1$s cm</string>
+    <string name="height_ft_in">%1$s ft/in</string>
+    <string name="weight">Weight</string>
+    <string name="weight_kg">%1$s kg</string>
+    <string name="weight_lbs">%1$s lbs</string>
+    <string name="start">Start</string>
+
+
 </resources>
