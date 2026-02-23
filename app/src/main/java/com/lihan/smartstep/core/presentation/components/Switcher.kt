@@ -19,8 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lihan.smartstep.core.presentation.components.model.UnitType
+import com.lihan.smartstep.core.presentation.components.model.UnitType.Companion.toStringResId
 import com.lihan.smartstep.core.presentation.design_system.CheckMark
 import com.lihan.smartstep.ui.theme.ButtonSecondary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -28,12 +31,19 @@ import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyMediumMedium
 
+/**
+ * 1.cm , ft/in , kg , libs 多國語言
+ * 2.isSelected 判斷是否選取？ or 判斷現在選的？
+ *
+ *
+ */
+
 @Composable
 fun Switcher(
-    selectedOption: String,
-    firstOption: String,
-    secondOption: String,
-    onClick: (String) -> Unit,
+    selectedOption: UnitType,
+    firstOption: UnitType,
+    secondOption: UnitType,
+    onClick: (UnitType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -52,7 +62,7 @@ fun Switcher(
                 .clickable{
                 onClick(firstOption)
             },
-            text = firstOption,
+            text = stringResource(firstOption.toStringResId()),
             isSelected = selectedOption == firstOption,
             shape = RoundedCornerShape(
                 topStart = 100.dp,
@@ -66,7 +76,7 @@ fun Switcher(
                 .clickable{
                 onClick(secondOption)
             },
-            text = secondOption,
+            text = stringResource(secondOption.toStringResId()),
             isSelected = selectedOption == secondOption,
             shape = RoundedCornerShape(
                 topEnd = 100.dp,
@@ -120,9 +130,9 @@ private fun SwitcherItem(
 private fun SwitcherPreview() {
     SmartStepTheme {
         Switcher(
-            selectedOption = "cm",
-            firstOption = "cm",
-            secondOption = "ft/in",
+            selectedOption = UnitType.FtIn,
+            firstOption = UnitType.Cm,
+            secondOption = UnitType.FtIn,
             onClick = {}
         )
     }

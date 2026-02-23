@@ -5,13 +5,14 @@ package com.lihan.smartstep.onboarding.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,10 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.ModalListPicker
+import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
-import com.lihan.smartstep.onboarding.presentation.model.HeightUnit
-import com.lihan.smartstep.onboarding.presentation.model.WeightUnit
 import com.lihan.smartstep.profile.presentation.GenderDropdownMenu
 import com.lihan.smartstep.profile.presentation.InfoRow
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -62,24 +62,29 @@ private fun ProfileScreen(
     Column(
         modifier = modifier
     ) {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = stringResource(R.string.my_profile),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-            },
-            actions = {
-                SmartStepTextButton(
-                    text = stringResource(R.string.skip),
-                    onClick = {
-                        //TODO: Skip
-                    }
-                )
-            }
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ){
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = stringResource(R.string.my_profile),
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary,
+                textAlign = TextAlign.Center
+            )
+            SmartStepTextButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                text = stringResource(R.string.skip),
+                onClick = {
+                    onAction(ProfileAction.OnSkipClick)
+                }
+            )
+        }
+
         Spacer(Modifier.height(32.dp))
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,10 +126,10 @@ private fun ProfileScreen(
 
             InfoRow(
                 title = stringResource(R.string.height),
-                value = if (state.heightUnit == HeightUnit.CM){
-                    stringResource(R.string.height_cm,state.height)
-                }else{
-                    stringResource(R.string.height_ft_in,state.height)
+                value = when(state.selectHeightUnitType){
+                    UnitType.Cm -> stringResource(R.string.height_cm,state.height)
+                    UnitType.FtIn ->  stringResource(R.string.height_ft_in,state.heightFtIn.first,state.heightFtIn.second)
+                    else ->  stringResource(R.string.height_cm,state.height)
                 },
                 onRowClick = {
                     onAction(ProfileAction.OnHeightModalShow)
@@ -133,10 +138,10 @@ private fun ProfileScreen(
 
             InfoRow(
                 title = stringResource(R.string.weight),
-                value = if (state.weightUnit == WeightUnit.KG){
-                    stringResource(R.string.weight_kg,state.weight)
-                }else{
-                    stringResource(R.string.weight_lbs,state.weight)
+                value = when(state.selectWeightUnitType){
+                    UnitType.Kg -> stringResource(R.string.weight_kg,state.weight)
+                    UnitType.Lbs -> stringResource(R.string.weight_lbs,state.weightLbs)
+                    else ->  stringResource(R.string.weight_kg,state.weight)
                 },
                 onRowClick = {
                     onAction(ProfileAction.OnWeightModalShow)
@@ -151,7 +156,9 @@ private fun ProfileScreen(
                 .fillMaxWidth()
                 .padding(16.dp),
             text = stringResource(R.string.start),
-            onClick = {}
+            onClick = {
+                onAction(ProfileAction.OnStartClick)
+            }
         )
     }
 
@@ -168,13 +175,37 @@ private fun ProfileScreen(
             onCancelClick = {
                 onAction(ProfileAction.OnHeightModalDismiss)
             },
-            firstText = stringResource(R.string.cm),
-            secondText = stringResource(R.string.ft_in),
-            items = state.heightItems,
-            value = state.height.toString(),
-            selectUnit = when(state.heightUnit){
-                HeightUnit.CM -> stringResource(R.string.cm)
-                HeightUnit.FI_IN -> stringResource(R.string.ft_in)
+            firstOption = UnitType.Cm,
+            secondOption = UnitType.FtIn,
+            items = if (state.selectHeightUnitType == UnitType.Cm){
+                state.heightItems
+            }else {
+                state.heightFtItems
+            },
+            secondItems = if (state.selectHeightUnitType == UnitType.Cm){
+                emptyList()
+            }else {
+                state.heightInchItems
+            },
+            value = if (state.selectHeightUnitType == UnitType.Cm){
+                state.heightModalValue.toString()
+            }else {
+                state.heightModalValueFtIn.first.toString()
+            },
+            secondValue = if (state.selectHeightUnitType == UnitType.Cm){
+                ""
+            }else {
+                state.heightModalValueFtIn.second.toString()
+            },
+            selectedOption = state.selectHeightUnitType,
+            onUnitTypeClick = {
+                onAction(ProfileAction.OnHeightUnitTypeClick(it))
+            },
+            onFirstItemChange = {
+                onAction(ProfileAction.OnHeightModalFirstValueChange(it))
+            },
+            onSecondItemChange = {
+                onAction(ProfileAction.OnHeightModalSecondValueChange(it))
             }
         )
     }
@@ -192,13 +223,23 @@ private fun ProfileScreen(
             onCancelClick = {
                 onAction(ProfileAction.OnWeightModalDismiss)
             },
-            firstText = stringResource(R.string.kg),
-            secondText = stringResource(R.string.lbs),
+            firstOption = UnitType.Kg,
+            secondOption = UnitType.Lbs,
             items = state.weightItems,
-            value = state.height.toString(),
-            selectUnit = when(state.weightUnit){
-                WeightUnit.KG -> stringResource(R.string.kg)
-                WeightUnit.LBS -> stringResource(R.string.lbs)
+            value = if (state.selectWeightUnitType == UnitType.Kg){
+                state.weightModalValue.toString()
+            }else{
+                state.weightModalValueLbs.toString()
+            },
+            selectedOption = state.selectWeightUnitType,
+            onUnitTypeClick = {
+                onAction(ProfileAction.OnWeightUnitTypeClick(it))
+            },
+            onFirstItemChange = {
+                onAction(ProfileAction.OnWeightModalFirstValueChange(it))
+            },
+            onSecondItemChange = {
+
             }
         )
     }
@@ -206,16 +247,18 @@ private fun ProfileScreen(
 }
 
 @Preview(
-    showBackground = true
+    showBackground = true,
+    showSystemUi = true
 )
 @Composable
 private fun ProfileScreenPreview() {
     SmartStepTheme {
         ProfileScreen(
+            modifier = Modifier.safeDrawingPadding(),
             state = ProfileState(
-                isShowHeightModal = false,
-                heightUnit = HeightUnit.FI_IN,
-                isShowWeightModal = true
+                isShowHeightModal = true,
+                isShowWeightModal = false,
+                isExpandGender = false
             ),
             onAction = {}
         )
