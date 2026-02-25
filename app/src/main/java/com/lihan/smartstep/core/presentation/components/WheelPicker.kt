@@ -1,6 +1,7 @@
 package com.lihan.smartstep.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -36,17 +38,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.ui.theme.BackgroundTertiary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
 fun WheelPicker(
     items: List<String>,
     onValueChanged: (String) -> Unit,
-    itemContent: @Composable (Int,Int,String) -> Unit,
+    itemContent: @Composable (centerIndex: Int,index: Int,value: String) -> Unit,
     modifier: Modifier = Modifier,
-    listState: LazyListState = rememberLazyListState()
+    initIndex: Int = 0,
+    listState: LazyListState = rememberLazyListState(initialFirstVisibleItemIndex = initIndex),
 ) {
     val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
+
     val fixedItemHeightPx = with(density) { 44.dp.toPx() }
 
     var itemHeight by remember {
@@ -55,8 +61,7 @@ fun WheelPicker(
 
 
     val flingBehavior = rememberSnapFlingBehavior(
-        lazyListState = listState,
-        snapPosition = SnapPosition.Center
+        lazyListState = listState
     )
     val centerIndex by remember(items){
         derivedStateOf {
@@ -96,7 +101,7 @@ fun WheelPicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(max = 176.dp),
+            .height(176.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -109,7 +114,7 @@ fun WheelPicker(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 176.dp),
+                .height(176.dp),
             state = listState,
             flingBehavior = flingBehavior,
             contentPadding = PaddingValues(
@@ -117,11 +122,22 @@ fun WheelPicker(
             ),
             content = {
                 itemsIndexed(items) { index, itemString ->
-                    Box {
+                    Box(
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = null,
+                            onClick = {
+                                scope.launch {
+                                    listState.animateScrollToItem(index)
+                                }
+                            }
+                        )
+                    ){
                         itemContent(
                             centerIndex,
                             index,
-                            itemString)
+                            itemString
+                        )
                     }
                 }
             }

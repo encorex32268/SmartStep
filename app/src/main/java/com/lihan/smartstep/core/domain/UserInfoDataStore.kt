@@ -15,4 +15,7 @@ interface UserInfoDataStore {
 
     suspend fun updateIsSetting(isSet: Boolean)
     fun getIsSetting(): Flow<Boolean>
+
+    suspend fun updateTotalStep(value: Long)
+    fun getTotalStep(): Flow<Long>
 }

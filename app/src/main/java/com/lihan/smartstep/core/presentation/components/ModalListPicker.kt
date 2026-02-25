@@ -140,17 +140,7 @@ fun ModalListPicker(
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
                                     Text(
-                                        modifier = Modifier
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = null,
-                                                onClick = {
-                                                    scope.launch {
-                                                        listState.animateScrollToItem(index)
-                                                    }
-                                                }
-                                            )
-                                            .padding(vertical = 10.dp),
+                                        modifier = Modifier.padding(vertical = 10.dp),
                                         text = itemString,
                                         style = MaterialTheme.typography.titleMedium,
                                         color = if (centerIndex  != index){
@@ -189,15 +179,6 @@ fun ModalListPicker(
                                     Text(
                                         modifier = Modifier
                                             .height(44.dp)
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = null,
-                                                onClick = {
-                                                    scope.launch {
-                                                        secondListState.animateScrollToItem(index)
-                                                    }
-                                                }
-                                            )
                                             .padding(vertical = 10.dp),
                                         text = itemString,
                                         style = MaterialTheme.typography.titleMedium,
@@ -232,15 +213,6 @@ fun ModalListPicker(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(44.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = null,
-                                            onClick = {
-                                                scope.launch {
-                                                    listState.animateScrollToItem(index)
-                                                }
-                                            }
-                                        )
                                         .padding(vertical = 10.dp),
                                     text = itemString,
                                     style = MaterialTheme.typography.titleMedium,

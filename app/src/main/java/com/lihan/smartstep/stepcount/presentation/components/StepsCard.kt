@@ -44,7 +44,8 @@ fun StepsCard(
     Surface(
         modifier = modifier,
         color = ButtonPrimary,
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(24.dp),
+        shadowElevation = 4.dp
     ) {
         Column(
             modifier = Modifier

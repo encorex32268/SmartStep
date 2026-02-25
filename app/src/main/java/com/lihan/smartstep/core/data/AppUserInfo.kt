@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.onboarding.presentation.model.Gender
@@ -20,6 +21,7 @@ class AppUserInfo(
         private val HEIGHT_INT = intPreferencesKey("height")
         private val WEIGHT_INT = intPreferencesKey("weight")
         private val IS_SET_BOOLEAN = booleanPreferencesKey("profile_setting")
+        private val TOTAL_STEP = longPreferencesKey("total_step")
     }
 
     val Context.datStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
@@ -84,6 +86,20 @@ class AppUserInfo(
     override fun getIsSetting(): Flow<Boolean> {
         return context.datStore.data.map { preferences ->
             preferences[IS_SET_BOOLEAN]?:false
+        }
+    }
+
+    override suspend fun updateTotalStep(value: Long) {
+        context.datStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[TOTAL_STEP] = value
+            }
+        }
+    }
+
+    override fun getTotalStep(): Flow<Long> {
+        return context.datStore.data.map { preferences ->
+            preferences[TOTAL_STEP]?:6000L
         }
     }
 }
