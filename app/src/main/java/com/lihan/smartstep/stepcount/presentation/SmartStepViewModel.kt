@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -13,7 +14,11 @@ class SmartStepViewModel: ViewModel() {
     private var hasLoadedInitialData = false
 
     private val _state = MutableStateFlow(SmartStepState())
-    val state = _state.onStart {
+    val state = _state
+        .onEach { it ->
+            println("state ${it}")
+        }
+        .onStart {
         if (!hasLoadedInitialData){
 
             hasLoadedInitialData = true
@@ -29,7 +34,48 @@ class SmartStepViewModel: ViewModel() {
             SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             SmartStepAction.OnStepGoalClick -> showStepGoal()
             SmartStepAction.OnStepGoalSaveClick -> saveStepGoal()
-            else -> Unit
+            SmartStepAction.OnExitClick -> Unit
+            SmartStepAction.OnMenuClick -> Unit
+            SmartStepAction.OnPersonSettingsClick -> Unit
+            SmartStepAction.OnShowBackgroundAccessModal -> TODO()
+            SmartStepAction.OnShowEnableAccessModal -> {
+                _state.update { it.copy(
+                    isShowSensorsModal = false,
+                    isShowEnableAccessModal = true
+                ) }
+            }
+            SmartStepAction.OnShowSensorsAccessModal -> {
+                _state.update { it.copy(
+                    isShowSensorsModal = true,
+                    isShowEnableAccessModal = false
+                ) }
+            }
+            is SmartStepAction.OnStepGoalValueChanged -> TODO()
+            is SmartStepAction.OnUpdatePermission -> {
+                _state.update { it.copy(
+                    motionSensorsPermissionGranted = action.isGranted,
+
+                ) }
+            }
+
+            SmartStepAction.OnDismissEnableAccessModal -> {
+                _state.update { it.copy(
+                    isShowEnableAccessModal = false
+                ) }
+            }
+            SmartStepAction.OnDismissSensorsAccessModal ->{
+                _state.update { it.copy(
+                    isShowSensorsModal = false
+                ) }
+            }
+
+            SmartStepAction.OnResumeGetGranted -> {
+                _state.update { it.copy(
+                    motionSensorsPermissionGranted = true,
+                    isShowSensorsModal = false,
+                    isShowEnableAccessModal = false
+                ) }
+            }
         }
     }
 

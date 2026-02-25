@@ -8,4 +8,13 @@ sealed interface SmartStepAction {
     data object OnStepGoalSaveClick: SmartStepAction
     data object OnDismissStepGoal: SmartStepAction
     data class OnStepGoalValueChanged(val value: String): SmartStepAction
+    data class OnUpdatePermission(
+        val isGranted: Boolean
+    ): SmartStepAction
+    data object OnShowSensorsAccessModal: SmartStepAction
+    data object OnShowEnableAccessModal: SmartStepAction
+    data object OnShowBackgroundAccessModal: SmartStepAction
+    data object OnDismissSensorsAccessModal: SmartStepAction
+    data object OnDismissEnableAccessModal: SmartStepAction
+    data object OnResumeGetGranted: SmartStepAction
 }

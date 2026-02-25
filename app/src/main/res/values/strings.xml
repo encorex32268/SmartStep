@@ -42,6 +42,7 @@
     <string name="continue_button">Continue</string>
     <string name="background_access_description">Background access helps Smart Step track your activity more reliably.</string>
     <string name="background_access_title">Background access recommended</string>
+    <string name="stop_counting_steps_issue">Fix the “Stop Counting Steps” issue</string>
 
 
 </resources>

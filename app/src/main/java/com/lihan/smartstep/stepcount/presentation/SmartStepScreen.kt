@@ -1,27 +1,23 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 
 package com.lihan.smartstep.stepcount.presentation
 
-import androidx.annotation.StringRes
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -35,57 +31,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.presentation.components.AdaptiveModal
-import com.lihan.smartstep.core.presentation.components.ModalListPicker
-import com.lihan.smartstep.core.presentation.components.WheelPicker
-import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
-import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
+import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
+import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
+import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
+import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
+import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.BackgroundWhite20
-import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
-
-data class DrawerItem(
-    @param:StringRes val id: Int,
-    val textColor: Color
-)
-
-val drawerItems = listOf(
-    DrawerItem(R.string.step_goal , TextPrimary),
-    DrawerItem(R.string.personal_settings , TextPrimary),
-    DrawerItem(R.string.exit , ButtonPrimary),
-)
-val closeDrawerActions = listOf(
-    SmartStepAction.OnExitClick,
-    SmartStepAction.OnPersonSettingsClick,
-    SmartStepAction.OnStepGoalClick,
-)
-
 
 @Composable
 fun SmartStepScreenRoot(
@@ -99,6 +84,8 @@ fun SmartStepScreenRoot(
         initialValue = DrawerValue.Closed
     )
     val scope = rememberCoroutineScope()
+
+
 
     SmartStepScreen(
         drawerState = drawerState,
@@ -135,6 +122,48 @@ fun SmartStepScreen(
     modifier: Modifier = Modifier
 ) {
 
+    val context = LocalContext.current
+
+    var hasRequestedPermission by rememberSaveable { mutableStateOf(false) }
+
+    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Manifest.permission.ACTIVITY_RECOGNITION
+    } else {
+        //VERSION.SDK_INT < Q
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
+    }
+
+    val activityRecognitionPermissionState = rememberPermissionState(
+        permission = permission,
+        onPermissionResult = { isGranted ->
+            onAction(SmartStepAction.OnUpdatePermission(isGranted = isGranted))
+            hasRequestedPermission = true
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        activityRecognitionPermissionState.launchPermissionRequest()
+    }
+
+    LifecycleResumeEffect(activityRecognitionPermissionState.status) {
+        when{
+            activityRecognitionPermissionState.status.isGranted -> {
+                onAction(SmartStepAction.OnResumeGetGranted)
+            }
+            activityRecognitionPermissionState.status.shouldShowRationale ->{
+                onAction(SmartStepAction.OnShowSensorsAccessModal)
+            }
+            hasRequestedPermission &&
+                    !activityRecognitionPermissionState.status.isGranted &&
+                    !activityRecognitionPermissionState.status.shouldShowRationale ->{
+                onAction(SmartStepAction.OnShowEnableAccessModal)
+                    }
+        }
+        onPauseOrDispose {
+
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -148,6 +177,22 @@ fun SmartStepScreen(
                         .fillMaxSize()
                         .padding(12.dp)
                 ) {
+                    if (!state.motionSensorsPermissionGranted){
+                        item {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        onAction(SmartStepAction.OnShowEnableAccessModal)
+                                    }
+                                    .padding(vertical = 16.dp, horizontal = 24.dp),
+                                text = stringResource(R.string.stop_counting_steps_issue),
+                                style = MaterialTheme.typography.bodyLargeMedium,
+                                color = TextPrimary
+                            )
+                            HorizontalDivider(color = StrokeMain)
+                        }
+                    }
                     itemsIndexed(drawerItems){ index , drawerItem ->
                         if(index != 0){
                             HorizontalDivider(color = StrokeMain)
@@ -155,8 +200,8 @@ fun SmartStepScreen(
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable{
-                                    when(drawerItem.id){
+                                .clickable {
+                                    when (drawerItem.id) {
                                         R.string.step_goal -> onAction(SmartStepAction.OnStepGoalClick)
                                         R.string.personal_settings -> onAction(SmartStepAction.OnPersonSettingsClick)
                                         R.string.exit -> onAction(SmartStepAction.OnExitClick)
@@ -181,8 +226,7 @@ fun SmartStepScreen(
         ) {
             CenterAlignedTopAppBar(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BackgroundMain
                 ),
@@ -209,7 +253,9 @@ fun SmartStepScreen(
                 }
             )
             Box(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 contentAlignment = Alignment.Center
             ){
                 StepsCard(
@@ -226,70 +272,49 @@ fun SmartStepScreen(
     }
 
     if (state.isShowStepGoal){
-        //TODO: Show StepGoal
-        AdaptiveModal(
+        StepsGoalModal(
+            onStepGoalValueChanged = {
+                onAction(SmartStepAction.OnStepGoalValueChanged(it))
+            },
             onDismiss = {
                 onAction(SmartStepAction.OnDismissStepGoal)
             },
-            content = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .widthIn(max = 312.dp)
-                        .heightIn(max = 376.dp)
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.modal_step_goal),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    WheelPicker(
-                        items = stepGoalItems.reversed(),
-                        initIndex = stepGoalItems.lastIndex - 2,
-                        onValueChanged = { string ->
-                            onAction(SmartStepAction.OnStepGoalValueChanged(string))
-                        },
-                        itemContent = { centerIndex, index , itemString ->
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(44.dp)
-                                    .padding(vertical = 10.dp),
-                                text = itemString,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = if (centerIndex  != index){
-                                    TextSecondary
-                                }else{
-                                    TextPrimary
-                                },
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.save),
-                        onClick = {
-                            onAction(SmartStepAction.OnStepGoalSaveClick)
-                        }
-                    )
-                    SmartStepTextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.cancel),
-                        onClick = {
-                            onAction(SmartStepAction.OnDismissStepGoal)
-                        }
-                    )
-
-                }
+            onSave = {
+                onAction(SmartStepAction.OnStepGoalSaveClick)
+            },
+            onCancel = {
+                onAction(SmartStepAction.OnDismissStepGoal)
             }
         )
     }
 
+    when {
+        state.isShowSensorsModal -> {
+            MotionSensorsAccessModal(
+                onAllowAccessClick = {
+                    activityRecognitionPermissionState.launchPermissionRequest()
+                },
+                onDismiss = {
+                    onAction(SmartStepAction.OnDismissSensorsAccessModal)
+                }
+            )
+        }
+
+        state.isShowEnableAccessModal -> {
+            EnableAccessModal(
+                onOpenSettingsClick = {
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", context.packageName, null)
+                    )
+                    context.startActivity(intent)
+                },
+                onDismiss = {
+                    onAction(SmartStepAction.OnDismissEnableAccessModal)
+                }
+            )
+        }
+    }
 
 
 }
