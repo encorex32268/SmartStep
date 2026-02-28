@@ -69,15 +69,21 @@ class ProfileViewModel(
             combine(
                 flow = userInfoDataStore.getGender(),
                 flow2 = userInfoDataStore.getHeight(),
-                flow3 = userInfoDataStore.getWeight()
-            ){ gender,height,weight ->
+                flow3 = userInfoDataStore.getWeight(),
+                flow4 = userInfoDataStore.getHeightUnit(),
+                flow5 = userInfoDataStore.getWeightUnit()
+            ){ gender,height,weight,heightUnitType,weightUnitType ->
 
                 _state.update { it.copy(
                     gender = gender,
                     height = height,
                     heightModalValue = height,
                     weight = weight,
-                    weightModalValue = weight
+                    weightModalValue = weight,
+                    selectHeightUnitType = heightUnitType,
+                    selectHeightUnitTypeModal = heightUnitType,
+                    selectWeightUnitType = weightUnitType,
+                    selectWeightUnitTypeModal = weightUnitType
                 ) }
 
             }.first()
@@ -92,8 +98,6 @@ class ProfileViewModel(
         }else{
             (value.toFloat() / 2.20462).roundToInt()
         }
-
-
         _state.update { it.copy(
             weightModalValue = newValue
         ) }
@@ -131,8 +135,8 @@ class ProfileViewModel(
 
 
     private fun onHeightConfirm(value: String) {
-        val currentHeightUnitType = state.value.selectHeightUnitType
-        val newValue = if (currentHeightUnitType == UnitType.Cm && value.isDigitsOnly()){
+        val currentHeightUnitTypeModal = state.value.selectHeightUnitTypeModal
+        val newValue = if (currentHeightUnitTypeModal == UnitType.Cm){
             value.toInt()
         }else{
             val ft = value.substringBefore("ft").toIntOrNull()?:0
@@ -179,6 +183,8 @@ class ProfileViewModel(
                 async { userInfoDataStore.updateGender(currentState.gender) },
                 async { userInfoDataStore.updateHeight(currentState.height) },
                 async { userInfoDataStore.updateWeight(weightToSave) },
+                async { userInfoDataStore.updateHeightUnit(currentState.selectHeightUnitType) },
+                async { userInfoDataStore.updateWeightUnit(currentState.selectWeightUnitType) },
                 async { userInfoDataStore.updateIsSetting(true) }
             ).awaitAll()
 

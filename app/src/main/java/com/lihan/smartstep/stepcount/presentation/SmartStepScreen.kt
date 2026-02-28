@@ -8,6 +8,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,6 +58,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.data.isNotInPowerManagerWhiteList
 import com.lihan.smartstep.core.data.openPowerManagerIntent
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
@@ -138,14 +143,12 @@ fun SmartStepScreen(
     val activityRecognitionPermissionState = rememberPermissionState(
         permission = permission,
         onPermissionResult = {
-            onAction(SmartStepAction.OnPermissionGranted)
             hasPermissionRequest = true
         }
     )
     val showPowerWarning = rememberPowerManagerStatus()
 
-
-    LifecycleResumeEffect(activityRecognitionPermissionState.status,hasPermissionRequest) {
+    LifecycleResumeEffect(activityRecognitionPermissionState.status) {
         when (val status = activityRecognitionPermissionState.status) {
             is PermissionStatus.Denied -> {
                 if (hasPermissionRequest){
@@ -162,8 +165,8 @@ fun SmartStepScreen(
             }
             is PermissionStatus.Granted -> {
                 onAction(SmartStepAction.OnPermissionGranted)
-                if (showPowerWarning){
-                    onAction(SmartStepAction.OnShowBackgroundAccessModal)
+                if (showPowerWarning && !state.isShownBackgroundAccessModal){
+                    onAction(SmartStepAction.OnShowBackgroundAccessModalFirstTime)
                 }
             }
         }
@@ -269,6 +272,7 @@ fun SmartStepScreen(
         ){
             StepsCard(
                 modifier = Modifier
+                    .widthIn(max = 394.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 steps = state.step.formatThousands(),
@@ -318,8 +322,9 @@ fun SmartStepScreen(
     if (state.isShowBackgroundAccessModal) {
         BackgroundAccessModal(
             onContinueClick = {
-                onAction(SmartStepAction.OnDismissBackgroundAccessModal)
                 context.openPowerManagerIntent()
+                onAction(SmartStepAction.OnDismissBackgroundAccessModal)
+
             },
             onDismiss = {
                 onAction(SmartStepAction.OnDismissBackgroundAccessModal)

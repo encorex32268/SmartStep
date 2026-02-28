@@ -9,7 +9,21 @@ sealed interface UnitType{
     data object Cm: UnitType
     data object FtIn: UnitType
 
+    fun toKey(): String = when(this) {
+        Kg -> "KG"
+        Lbs -> "LBS"
+        Cm -> "CM"
+        FtIn -> "FtIn"
+    }
+
     companion object{
+        fun fromKey(key: String?): UnitType = when(key) {
+            "KG" -> Kg
+            "LBS" -> Lbs
+            "CM" -> Cm
+            "FtIn" -> FtIn
+            else -> Kg
+        }
 
         fun UnitType.toStringResId(): Int{
             return when(this){

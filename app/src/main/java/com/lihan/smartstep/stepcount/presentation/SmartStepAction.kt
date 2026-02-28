@@ -13,6 +13,7 @@ sealed interface SmartStepAction {
     data object OnShowSensorsAccessModal: SmartStepAction
     data object OnShowEnableAccessModal: SmartStepAction
     data object OnShowBackgroundAccessModal: SmartStepAction
+    data object OnShowBackgroundAccessModalFirstTime: SmartStepAction
     data object OnDismissSensorsAccessModal: SmartStepAction
     data object OnDismissEnableAccessModal: SmartStepAction
     data object OnDismissBackgroundAccessModal: SmartStepAction

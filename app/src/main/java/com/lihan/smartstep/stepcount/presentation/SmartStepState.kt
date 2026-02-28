@@ -12,6 +12,7 @@ data class SmartStepState(
     val isShowBackgroundAccessModal: Boolean = false,
     val hasRequestPermission: Boolean = false,
     val isShowExitModal: Boolean = false,
+    val isShownBackgroundAccessModal: Boolean = false
 )
 
 val stepGoalItems = (1..40).map { (it * 1000) .toString()}

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -23,6 +24,7 @@ class SmartStepViewModel(
         .onStart {
         if (!hasLoadedInitialData){
             observeTotalStep()
+            initBackgroundAccess()
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -43,9 +45,26 @@ class SmartStepViewModel(
             SmartStepAction.OnMenuClick -> Unit
             SmartStepAction.OnPersonSettingsClick -> Unit
             SmartStepAction.OnShowBackgroundAccessModal -> {
-                _state.update { it.copy(
-                    isShowBackgroundAccessModal = true
-                ) }
+                viewModelScope.launch {
+                    _state.update { it.copy(
+                        isShowBackgroundAccessModal = true
+                    ) }
+                }
+            }
+            SmartStepAction.OnShowBackgroundAccessModalFirstTime ->{
+                viewModelScope.launch {
+                    val isShownBackgroundAccess = userInfoDataStore.getShownBackgroundAccess().first()
+                    if (isShownBackgroundAccess) {
+                        return@launch
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isShowBackgroundAccessModal = true
+                            )
+                        }
+                        userInfoDataStore.updateIsShownBackgroundAccess(true)
+                    }
+                }
             }
             SmartStepAction.OnShowEnableAccessModal -> {
                 _state.update { it.copy(
@@ -142,6 +161,17 @@ class SmartStepViewModel(
             .onEach { totalStep ->
                 _state.update { it.copy(
                     totalStep = totalStep
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun initBackgroundAccess(){
+        userInfoDataStore
+            .getShownBackgroundAccess()
+            .onEach { isShown ->
+                _state.update { it.copy(
+                    isShownBackgroundAccessModal = isShown
                 ) }
             }
             .launchIn(viewModelScope)

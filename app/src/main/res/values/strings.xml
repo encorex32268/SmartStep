@@ -18,7 +18,7 @@
     <string name="female">Female</string>
     <string name="male">Male</string>
     <string name="height_cm">%1$s cm</string>
-    <string name="height_ft_in">%1$sft %2%s in</string>
+    <string name="height_ft_in">%1$sft %2$sin</string>
     <string name="weight">Weight</string>
     <string name="weight_kg">%1$s kg</string>
     <string name="weight_lbs">%1$s lbs</string>

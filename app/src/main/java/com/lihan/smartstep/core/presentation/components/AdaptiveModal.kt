@@ -3,12 +3,16 @@ package com.lihan.smartstep.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +41,7 @@ fun AdaptiveModal(
 ) {
     val isTablet = LocalConfiguration.current.screenWidthDp > 600
 
+
     if (!isTablet && !isDialogLayout){
         ModalBottomSheet(
             modifier = modifier,
@@ -55,6 +60,13 @@ fun AdaptiveModal(
         ) {
             Column(
                 modifier = modifier
+                    .then(
+                        if (isTablet){
+                            Modifier.widthIn(max = 312.dp)
+                        }else{
+                            Modifier.fillMaxWidth()
+                        }
+                    )
                     .background(BackgroundSecondary, RoundedCornerShape(28.dp))
             ) {
                 content()

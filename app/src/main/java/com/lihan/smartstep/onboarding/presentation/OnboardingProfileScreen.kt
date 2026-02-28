@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -72,6 +73,7 @@ fun OnboardingProfileScreen(
             Spacer(Modifier.height(32.dp))
             Text(
                 modifier = Modifier
+                    .widthIn(max = 394.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 36.dp),
                 text = stringResource(R.string.my_profile_tips),
@@ -91,6 +93,7 @@ fun OnboardingProfileScreen(
         confirmButton = {
             PrimaryButton(
                 modifier = Modifier
+                    .widthIn(max = 394.dp)
                     .fillMaxWidth()
                     .padding(16.dp),
                 text = stringResource(R.string.start),
@@ -125,6 +128,7 @@ fun OnboardingProfileScreen(
                 },
                 isExpandGender = state.isExpandGender,
                 modifier = Modifier
+                    .widthIn(max = 394.dp)
                     .fillMaxWidth()
                     .padding(16.dp)
                     .clip(shape = RoundedCornerShape(14.dp))
