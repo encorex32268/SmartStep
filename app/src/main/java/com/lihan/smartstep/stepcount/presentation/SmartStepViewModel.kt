@@ -102,6 +102,13 @@ class SmartStepViewModel(
                     isShowExitModal = true
                 ) }
             }
+
+            SmartStepAction.OnPermissionGranted -> {
+                _state.update { it.copy(
+                    isShowSensorsModal = false,
+                    isShowEnableAccessModal = false
+                ) }
+            }
         }
     }
 

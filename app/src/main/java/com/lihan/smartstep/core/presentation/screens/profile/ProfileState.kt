@@ -8,13 +8,13 @@ import kotlin.math.roundToInt
 data class ProfileState(
     val gender: Gender = Gender.FEMALE,
     val isExpandGender: Boolean = false,
-    val height: Int = 170,
-    val heightModalValue: Int = 170,
+    val height: Int = 175,
+    val heightModalValue: Int = 175,
     val selectHeightUnitType: UnitType = UnitType.Cm,
     val selectHeightUnitTypeModal: UnitType = UnitType.Cm,
     val isShowHeightModal: Boolean = false,
-    val weight: Int = 60,
-    val weightModalValue: Int = 60,
+    val weight: Int = 65,
+    val weightModalValue: Int = 65,
     val selectWeightUnitType: UnitType = UnitType.Kg,
     val selectWeightUnitTypeModal: UnitType = UnitType.Kg,
     val isShowWeightModal: Boolean = false

@@ -19,4 +19,5 @@ sealed interface SmartStepAction {
     data object OnResumeGetGranted: SmartStepAction
     data object OnDismissExitModal: SmartStepAction
     data object OnShowExitModal: SmartStepAction
+    data object OnPermissionGranted: SmartStepAction
 }

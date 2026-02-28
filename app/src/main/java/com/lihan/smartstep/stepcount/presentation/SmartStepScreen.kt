@@ -4,13 +4,10 @@ package com.lihan.smartstep.stepcount.presentation
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.PowerManager
 import android.provider.Settings
-import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -38,8 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,15 +50,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.data.openPowerManagerIntent
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
+import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
@@ -76,8 +70,6 @@ import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
-import androidx.core.net.toUri
-import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -133,62 +125,50 @@ fun SmartStepScreen(
 
     val context = LocalContext.current
 
-    var hasRequestedPermission by rememberSaveable { mutableStateOf(false) }
-
     val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Manifest.permission.ACTIVITY_RECOGNITION
     } else {
         //VERSION.SDK_INT < Q
         "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
     }
-    val packageName = context.packageName
-    val powerManager= context.getSystemService(Context.POWER_SERVICE) as PowerManager
-    var isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
 
-
+    var hasPermissionRequest by rememberSaveable {
+        mutableStateOf(false)
+    }
     val activityRecognitionPermissionState = rememberPermissionState(
         permission = permission,
-        onPermissionResult = { isGranted ->
-            isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
-            onAction(SmartStepAction.OnUpdatePermission(isGranted = isGranted))
-            hasRequestedPermission = true
+        onPermissionResult = {
+            onAction(SmartStepAction.OnPermissionGranted)
+            hasPermissionRequest = true
         }
     )
+    val showPowerWarning = rememberPowerManagerStatus()
 
 
+    LifecycleResumeEffect(activityRecognitionPermissionState.status,hasPermissionRequest) {
+        when (val status = activityRecognitionPermissionState.status) {
+            is PermissionStatus.Denied -> {
+                if (hasPermissionRequest){
+                    val shouldShowRationale = status.shouldShowRationale
+                    if (shouldShowRationale){
+                        onAction(SmartStepAction.OnShowSensorsAccessModal)
+                    }else{
+                        onAction(SmartStepAction.OnShowEnableAccessModal)
+                    }
+                }else{
+                    activityRecognitionPermissionState.launchPermissionRequest()
+                }
 
-
-    LaunchedEffect(activityRecognitionPermissionState.status.isGranted) {
-        isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
-        if (activityRecognitionPermissionState.status.isGranted && isNotInWhiteList) {
-            onAction(SmartStepAction.OnShowBackgroundAccessModal)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        activityRecognitionPermissionState.launchPermissionRequest()
-    }
-
-    LifecycleResumeEffect(activityRecognitionPermissionState.status) {
-        when{
-            activityRecognitionPermissionState.status.isGranted -> {
-                onAction(SmartStepAction.OnResumeGetGranted)
-                if (isNotInWhiteList) {
+            }
+            is PermissionStatus.Granted -> {
+                onAction(SmartStepAction.OnPermissionGranted)
+                if (showPowerWarning){
                     onAction(SmartStepAction.OnShowBackgroundAccessModal)
                 }
             }
-            activityRecognitionPermissionState.status.shouldShowRationale ->{
-                onAction(SmartStepAction.OnShowSensorsAccessModal)
-            }
-            hasRequestedPermission &&
-                    !activityRecognitionPermissionState.status.isGranted &&
-                    !activityRecognitionPermissionState.status.shouldShowRationale ->{
-                onAction(SmartStepAction.OnShowEnableAccessModal)
-                    }
         }
-        onPauseOrDispose {
+        onPauseOrDispose {  }
 
-        }
     }
 
     ModalNavigationDrawer(
@@ -204,8 +184,8 @@ fun SmartStepScreen(
                         .fillMaxSize()
                         .padding(12.dp)
                 ) {
-                    if (isNotInWhiteList){
-                        item {
+                    item {
+                        if (showPowerWarning){
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -220,6 +200,7 @@ fun SmartStepScreen(
                             HorizontalDivider(color = StrokeMain)
                         }
                     }
+
                     itemsIndexed(drawerItems){ index , drawerItem ->
                         if(index != 0){
                             HorizontalDivider(color = StrokeMain)
@@ -317,9 +298,6 @@ fun SmartStepScreen(
             MotionSensorsAccessModal(
                 onAllowAccessClick = {
                     activityRecognitionPermissionState.launchPermissionRequest()
-                },
-                onDismiss = {
-                    onAction(SmartStepAction.OnDismissSensorsAccessModal)
                 }
             )
         }
@@ -327,15 +305,11 @@ fun SmartStepScreen(
         state.isShowEnableAccessModal -> {
             EnableAccessModal(
                 onOpenSettingsClick = {
-                    onAction(SmartStepAction.OnDismissEnableAccessModal)
                     val intent = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", context.packageName, null)
                     )
                     context.startActivity(intent)
-                },
-                onDismiss = {
-                    onAction(SmartStepAction.OnDismissEnableAccessModal)
                 }
             )
         }
@@ -345,16 +319,7 @@ fun SmartStepScreen(
         BackgroundAccessModal(
             onContinueClick = {
                 onAction(SmartStepAction.OnDismissBackgroundAccessModal)
-                try {
-                    val intent = Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = "package:$packageName".toUri()
-                    }
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                    context.startActivity(intent)
-                }
+                context.openPowerManagerIntent()
             },
             onDismiss = {
                 onAction(SmartStepAction.OnDismissBackgroundAccessModal)

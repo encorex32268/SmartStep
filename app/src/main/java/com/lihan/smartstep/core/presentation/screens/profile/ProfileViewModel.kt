@@ -182,7 +182,6 @@ class ProfileViewModel(
                 async { userInfoDataStore.updateIsSetting(true) }
             ).awaitAll()
 
-
             _uiEvent.send(
                 ProfileUiEvent.OnNavigateToSmartStep
             )

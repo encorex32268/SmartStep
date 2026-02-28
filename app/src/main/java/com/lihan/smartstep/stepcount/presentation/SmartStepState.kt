@@ -3,7 +3,7 @@ package com.lihan.smartstep.stepcount.presentation
 import java.text.DecimalFormat
 
 data class SmartStepState(
-    val step: Long = 4523,
+    val step: Long = 0,
     val totalStep: Long = 6000,
     val isShowStepGoal: Boolean = false,
     val motionSensorsPermissionGranted: Boolean = false,

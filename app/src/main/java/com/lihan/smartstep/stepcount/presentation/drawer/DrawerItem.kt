@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lihan.smartstep.R
 import com.lihan.smartstep.stepcount.presentation.SmartStepAction
-import com.lihan.smartstep.stepcount.presentation.SmartStepScreen
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.TextPrimary
 

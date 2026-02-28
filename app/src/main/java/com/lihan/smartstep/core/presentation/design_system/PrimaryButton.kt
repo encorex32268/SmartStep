@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.StrokeMain
-import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.TextWhite
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 

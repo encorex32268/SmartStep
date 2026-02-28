@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.ObserveEvent
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.lihan.smartstep.stepcount.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -8,8 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
-import com.lihan.smartstep.core.presentation.design_system.PowerTurnOn
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextPrimary
@@ -32,11 +32,10 @@ import com.lihan.smartstep.ui.theme.bodyLargeRegular
 @Composable
 fun EnableAccessModal(
     onOpenSettingsClick: () -> Unit,
-    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AdaptiveModal(
-        onDismiss = onDismiss,
+        onDismiss = {},
         isDialogLayout = false,
         modifier = modifier,
         dragHandle = null,
@@ -104,8 +103,7 @@ private fun ExitModalPreview() {
             contentAlignment = Alignment.Center
         ){
             EnableAccessModal(
-                onOpenSettingsClick = {},
-                onDismiss = {}
+                onOpenSettingsClick = {}
             )
         }
     }

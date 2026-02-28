@@ -48,9 +48,7 @@ fun OnboardingProfileScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     ObserveEvent(viewModel.uiEvent) { event ->
         when(event){
-            ProfileUiEvent.OnNavigateToSmartStep -> {
-                onNavigateToSmartStep()
-            }
+            ProfileUiEvent.OnNavigateToSmartStep -> onNavigateToSmartStep()
         }
     }
     OnboardingProfileScreen(

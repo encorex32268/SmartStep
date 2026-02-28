@@ -5,7 +5,6 @@ import com.lihan.smartstep.core.data.AppUserInfo
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
