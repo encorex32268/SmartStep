@@ -83,7 +83,7 @@ import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 fun SmartStepScreenRoot(
     onExit: () -> Unit,
     onNavigateToPersonSettings: () -> Unit,
-    viewModel: SmartStepViewModel = viewModel()
+    viewModel: SmartStepViewModel
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 

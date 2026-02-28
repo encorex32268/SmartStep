@@ -2,26 +2,27 @@ package com.lihan.smartstep.stepcount.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.smartstep.core.domain.UserInfoDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SmartStepViewModel: ViewModel() {
+class SmartStepViewModel(
+    private val userInfoDataStore: UserInfoDataStore
+): ViewModel() {
 
     private var hasLoadedInitialData = false
 
     private val _state = MutableStateFlow(SmartStepState())
     val state = _state
-        .onEach { it ->
-            println("state ${it}")
-        }
         .onStart {
         if (!hasLoadedInitialData){
-
+            observeTotalStep()
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -105,14 +106,14 @@ class SmartStepViewModel: ViewModel() {
     }
 
     private fun saveStepGoal(value: String) {
-        //TODO: SaveStepGoal
-
-        viewModelScope.launch {
-
-        }
         _state.update { it.copy(
             isShowStepGoal = false
         ) }
+        val totalStep = value.toLongOrNull() ?: return
+
+        viewModelScope.launch {
+            userInfoDataStore.updateTotalStep(totalStep)
+        }
 
     }
 
@@ -126,5 +127,16 @@ class SmartStepViewModel: ViewModel() {
         _state.update { it.copy(
             isShowStepGoal = false
         ) }
+    }
+
+    private fun observeTotalStep(){
+        userInfoDataStore
+            .getTotalStep()
+            .onEach { totalStep ->
+                _state.update { it.copy(
+                    totalStep = totalStep
+                ) }
+            }
+            .launchIn(viewModelScope)
     }
 }

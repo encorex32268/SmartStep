@@ -29,6 +29,7 @@ import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileViewModel
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
+import com.lihan.smartstep.stepcount.presentation.SmartStepViewModel
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import kotlinx.serialization.Serializable
@@ -115,7 +116,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable<Route.SmartStep>{
+                            val viewModel = viewModel {
+                                SmartStepViewModel(
+                                    userInfoDataStore = userInfoDataStore
+                                )
+                            }
                             SmartStepScreenRoot(
+                                viewModel = viewModel,
                                 onExit = {
                                     this@MainActivity.finish()
                                 },
