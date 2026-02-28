@@ -30,12 +30,13 @@ import com.lihan.smartstep.core.presentation.screens.profile.ProfileViewModel
 import com.lihan.smartstep.ui.theme.BackgroundWhite
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PersonalSettingsScreenRoot(
     onBack: () -> Unit,
-    viewModel: ProfileViewModel = viewModel(),
     modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = koinViewModel(),
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -95,7 +96,14 @@ fun PersonalSettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                containerColor = BackgroundWhite
+                containerColor = BackgroundWhite,
+                onDismissGenderDropMenu = {
+                    onAction(ProfileAction.OnDismissGenderDropMenu)
+                },
+                onGenderDropMenuShow = {
+                    onAction(ProfileAction.OnGenderDropMenuShow)
+                },
+                isExpandGender = state.isExpandGender
             )
         },
         confirmButton = {

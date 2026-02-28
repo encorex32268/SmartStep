@@ -18,14 +18,15 @@ import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
-import com.lihan.smartstep.profile.presentation.GenderDropdownMenu
-import com.lihan.smartstep.profile.presentation.InfoRow
+import com.lihan.smartstep.core.presentation.screens.profile.compoments.GenderDropdownMenu
+import com.lihan.smartstep.core.presentation.screens.profile.compoments.InfoRow
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 
 @Composable
 fun ProfileSetting(
     gender: Gender,
+    isExpandGender: Boolean,
     selectHeightUnitType: UnitType,
     selectWeightUnitType: UnitType,
     height: Int,
@@ -35,11 +36,11 @@ fun ProfileSetting(
     onGenderItemSelect: (Gender) -> Unit,
     onHeightModalShow: () -> Unit,
     onWeightModalShow: () -> Unit,
+    onGenderDropMenuShow: () -> Unit,
+    onDismissGenderDropMenu: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = BackgroundSecondary
 ){
-    var isExpandGender by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -48,14 +49,9 @@ fun ProfileSetting(
             title = stringResource(R.string.gender),
             value = gender,
             isExpand = isExpandGender,
-            onDropdownClick = {
-                isExpandGender = true
-            },
-            onDismiss = {
-                isExpandGender = false
-            },
+            onDropdownClick = onGenderDropMenuShow,
+            onDismiss = onDismissGenderDropMenu,
             onItemSelect = {
-                isExpandGender = false
                 onGenderItemSelect(it)
             },
             containerColor = containerColor
@@ -104,7 +100,10 @@ private fun ProfileScreenPreview() {
             weightLbs = 220,
             onHeightModalShow = {},
             onWeightModalShow = {},
-            onGenderItemSelect = {}
+            onGenderItemSelect = {},
+            onGenderDropMenuShow = {},
+            onDismissGenderDropMenu = {},
+            isExpandGender = false
         )
     }
 }

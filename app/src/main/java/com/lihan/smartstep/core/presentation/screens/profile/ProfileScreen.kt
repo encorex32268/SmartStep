@@ -40,7 +40,9 @@ fun ProfileScreen(
         modifier = modifier
     ) {
         CenterAlignedTopAppBar(
-            modifier = Modifier.height(56.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
             windowInsets = WindowInsets(left = 16.dp, right = 16.dp),
             title = {
                 Text(

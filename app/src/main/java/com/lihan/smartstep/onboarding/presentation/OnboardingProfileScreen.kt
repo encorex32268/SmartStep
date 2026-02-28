@@ -37,12 +37,13 @@ import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.TextWhite
 import com.lihan.smartstep.ui.theme.bodyLargeRegular
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OnboardingProfileScreenRoot(
     onNavigateToSmartStep: () -> Unit,
-    viewModel: ProfileViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = koinViewModel()
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
     ObserveEvent(viewModel.uiEvent) { event ->
@@ -118,6 +119,13 @@ fun OnboardingProfileScreen(
                 onGenderItemSelect = { gender ->
                     onAction(ProfileAction.OnGenderItemSelected(gender))
                 },
+                onDismissGenderDropMenu = {
+                    onAction(ProfileAction.OnDismissGenderDropMenu)
+                },
+                onGenderDropMenuShow = {
+                    onAction(ProfileAction.OnGenderDropMenuShow)
+                },
+                isExpandGender = state.isExpandGender,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)

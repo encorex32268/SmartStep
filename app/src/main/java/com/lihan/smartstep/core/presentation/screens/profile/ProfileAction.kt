@@ -20,5 +20,7 @@ sealed interface ProfileAction {
     data class OnWeightModalFirstValueChange(val value: String): ProfileAction
     data class OnWeightUnitTypeClick(val unitType: UnitType): ProfileAction
     data object OnConfirmClick: ProfileAction
+    data object OnDismissGenderDropMenu: ProfileAction
+    data object OnGenderDropMenuShow: ProfileAction
 
 }

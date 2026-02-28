@@ -78,12 +78,13 @@ import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
 import com.lihan.smartstep.stepcount.presentation.components.ExitModal
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SmartStepScreenRoot(
     onExit: () -> Unit,
     onNavigateToPersonSettings: () -> Unit,
-    viewModel: SmartStepViewModel
+    viewModel: SmartStepViewModel = koinViewModel()
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 

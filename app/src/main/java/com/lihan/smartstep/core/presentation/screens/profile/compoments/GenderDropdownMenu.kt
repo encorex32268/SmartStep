@@ -1,4 +1,4 @@
-package com.lihan.smartstep.profile.presentation
+package com.lihan.smartstep.core.presentation.screens.profile.compoments
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.design_system.CheckMark
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.ui.theme.BackgroundSecondary

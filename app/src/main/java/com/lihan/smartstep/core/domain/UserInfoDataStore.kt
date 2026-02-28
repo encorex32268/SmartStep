@@ -4,6 +4,7 @@ import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlinx.coroutines.flow.Flow
 
 interface UserInfoDataStore {
+
     suspend fun updateGender(gender: Gender)
     fun getGender(): Flow<Gender>
 

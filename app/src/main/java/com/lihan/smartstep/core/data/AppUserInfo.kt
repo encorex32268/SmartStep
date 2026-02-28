@@ -24,7 +24,7 @@ class AppUserInfo(
         private val TOTAL_STEP = longPreferencesKey("total_step")
     }
 
-    val Context.datStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
+    private val Context.datStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
 
     override suspend fun updateGender(gender: Gender) {
         context.datStore.updateData { preferences ->

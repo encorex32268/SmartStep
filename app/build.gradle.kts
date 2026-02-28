@@ -68,4 +68,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.navigation.compose)
     implementation(libs.google.accompanist.permissions)
+
+    implementation(libs.bundles.koin)
 }

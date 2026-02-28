@@ -13,7 +13,7 @@ dataStroe = "1.2.0"
 navigation = "2.9.5"
 permission = "0.37.3"
 lifecycleCompose = "2.8.0"
-
+koin = "4.1.1"
 
 
 [libraries]
@@ -48,6 +48,11 @@ google-accompanist-permissions = { module = "com.google.accompanist:accompanist-
 #ViewModel-Compose
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
 
+#Koin
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+
 
 
 [plugins]
@@ -56,4 +61,11 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization" , version.ref = "kotlin"}
 
+
+[bundles]
+koin = [
+    "koin-android",
+    "koin-androidx-compose",
+    "koin-core"
+]
 

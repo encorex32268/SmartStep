@@ -54,11 +54,13 @@ class ProfileViewModel(
             is ProfileAction.OnWeightModalOkClick -> onWeightConfirm(action.value)
             is ProfileAction.OnHeightUnitTypeClick -> onHeightUnitTypeChange(action.unitType)
             is ProfileAction.OnWeightUnitTypeClick -> onWeightUnitTypeChange(action.unitType)
+            ProfileAction.OnSkipClick,
             ProfileAction.OnConfirmClick -> saveProfile()
             is ProfileAction.OnHeightModalFirstValueChange -> onHeightModalFirstValueChange(action.value)
             is ProfileAction.OnHeightModalSecondValueChange -> onHeightModalSecondValueChange(action.value)
             is ProfileAction.OnWeightModalFirstValueChange -> onWeightModalFirstValueChange(action.value)
-            else -> Unit
+            ProfileAction.OnDismissGenderDropMenu -> dismissGenderDropdown()
+            ProfileAction.OnGenderDropMenuShow -> showGenderDropdown()
         }
     }
 
@@ -166,19 +168,20 @@ class ProfileViewModel(
     private fun saveProfile() {
         viewModelScope.launch {
             val currentState = state.value
-            val genderUpdateJob = async { userInfoDataStore.updateGender(currentState.gender) }
-            val heightUpdateJob = async {
-                userInfoDataStore.updateHeight(currentState.height)
+
+            val weightToSave = if (currentState.selectWeightUnitType == UnitType.Lbs) {
+                (currentState.weight / 2.20462).roundToInt()
+            } else {
+                currentState.weight
             }
-            val weightUpdateJob = async {
-                val currentWeight = if (currentState.selectWeightUnitType == UnitType.Lbs){
-                    (currentState.weight / 2.20462 ).roundToInt()
-                }else{
-                    currentState.weight
-                }
-                userInfoDataStore.updateWeight(currentWeight)
-            }
-            awaitAll(genderUpdateJob,heightUpdateJob,weightUpdateJob)
+
+            listOf(
+                async { userInfoDataStore.updateGender(currentState.gender) },
+                async { userInfoDataStore.updateHeight(currentState.height) },
+                async { userInfoDataStore.updateWeight(weightToSave) },
+                async { userInfoDataStore.updateIsSetting(true) }
+            ).awaitAll()
+
 
             _uiEvent.send(
                 ProfileUiEvent.OnNavigateToSmartStep
