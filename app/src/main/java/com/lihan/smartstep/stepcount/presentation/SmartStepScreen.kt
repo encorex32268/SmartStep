@@ -3,10 +3,14 @@
 package com.lihan.smartstep.stepcount.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
+import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -58,6 +62,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.lihan.smartstep.R
+import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
@@ -71,6 +76,8 @@ import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
+import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 
 @Composable
 fun SmartStepScreenRoot(
@@ -114,6 +121,7 @@ fun SmartStepScreenRoot(
 }
 
 
+@SuppressLint("BatteryLife")
 @Composable
 fun SmartStepScreen(
     drawerState: DrawerState,
@@ -132,14 +140,29 @@ fun SmartStepScreen(
         //VERSION.SDK_INT < Q
         "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
     }
+    val packageName = context.packageName
+    val powerManager= context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    var isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
+
 
     val activityRecognitionPermissionState = rememberPermissionState(
         permission = permission,
         onPermissionResult = { isGranted ->
+            isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
             onAction(SmartStepAction.OnUpdatePermission(isGranted = isGranted))
             hasRequestedPermission = true
         }
     )
+
+
+
+
+    LaunchedEffect(activityRecognitionPermissionState.status.isGranted) {
+        isNotInWhiteList = !powerManager.isIgnoringBatteryOptimizations(packageName)
+        if (activityRecognitionPermissionState.status.isGranted && isNotInWhiteList) {
+            onAction(SmartStepAction.OnShowBackgroundAccessModal)
+        }
+    }
 
     LaunchedEffect(Unit) {
         activityRecognitionPermissionState.launchPermissionRequest()
@@ -149,6 +172,9 @@ fun SmartStepScreen(
         when{
             activityRecognitionPermissionState.status.isGranted -> {
                 onAction(SmartStepAction.OnResumeGetGranted)
+                if (isNotInWhiteList) {
+                    onAction(SmartStepAction.OnShowBackgroundAccessModal)
+                }
             }
             activityRecognitionPermissionState.status.shouldShowRationale ->{
                 onAction(SmartStepAction.OnShowSensorsAccessModal)
@@ -177,13 +203,13 @@ fun SmartStepScreen(
                         .fillMaxSize()
                         .padding(12.dp)
                 ) {
-                    if (!state.motionSensorsPermissionGranted){
+                    if (isNotInWhiteList){
                         item {
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        onAction(SmartStepAction.OnShowEnableAccessModal)
+                                        onAction(SmartStepAction.OnShowBackgroundAccessModal)
                                     }
                                     .padding(vertical = 16.dp, horizontal = 24.dp),
                                 text = stringResource(R.string.stop_counting_steps_issue),
@@ -204,7 +230,7 @@ fun SmartStepScreen(
                                     when (drawerItem.id) {
                                         R.string.step_goal -> onAction(SmartStepAction.OnStepGoalClick)
                                         R.string.personal_settings -> onAction(SmartStepAction.OnPersonSettingsClick)
-                                        R.string.exit -> onAction(SmartStepAction.OnExitClick)
+                                        R.string.exit -> onAction(SmartStepAction.OnShowExitModal)
                                     }
                                 }
                                 .padding(vertical = 16.dp, horizontal = 24.dp),
@@ -252,35 +278,32 @@ fun SmartStepScreen(
                     )
                 }
             )
-            Box(
+
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            StepsCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ){
-                StepsCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    steps = state.step.formatThousands(),
-                    stepsTotal = state.totalStep.toString()
-                )
+                    .padding(horizontal = 16.dp),
+                steps = state.step.formatThousands(),
+                stepsTotal = state.totalStep.toString()
+            )
 
-            }
         }
 
     }
 
     if (state.isShowStepGoal){
         StepsGoalModal(
-            onStepGoalValueChanged = {
-                onAction(SmartStepAction.OnStepGoalValueChanged(it))
-            },
             onDismiss = {
                 onAction(SmartStepAction.OnDismissStepGoal)
             },
             onSave = {
-                onAction(SmartStepAction.OnStepGoalSaveClick)
+                onAction(SmartStepAction.OnStepGoalSaveClick(it))
             },
             onCancel = {
                 onAction(SmartStepAction.OnDismissStepGoal)
@@ -303,6 +326,7 @@ fun SmartStepScreen(
         state.isShowEnableAccessModal -> {
             EnableAccessModal(
                 onOpenSettingsClick = {
+                    onAction(SmartStepAction.OnDismissEnableAccessModal)
                     val intent = Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", context.packageName, null)
@@ -316,6 +340,37 @@ fun SmartStepScreen(
         }
     }
 
+    if (state.isShowBackgroundAccessModal) {
+        BackgroundAccessModal(
+            onContinueClick = {
+                onAction(SmartStepAction.OnDismissBackgroundAccessModal)
+                try {
+                    val intent = Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = "package:$packageName".toUri()
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    context.startActivity(intent)
+                }
+            },
+            onDismiss = {
+                onAction(SmartStepAction.OnDismissBackgroundAccessModal)
+            }
+        )
+    }
+
+    if(state.isShowExitModal){
+        ExitModal(
+            onOkClick = {
+                onAction(SmartStepAction.OnExitClick)
+            },
+            onDismiss = {
+                onAction(SmartStepAction.OnDismissExitModal)
+            }
+        )
+    }
 
 }
 

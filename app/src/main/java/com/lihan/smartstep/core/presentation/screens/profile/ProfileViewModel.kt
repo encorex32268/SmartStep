@@ -1,4 +1,4 @@
-package com.lihan.smartstep.onboarding.presentation
+package com.lihan.smartstep.core.presentation.screens.profile
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
@@ -8,11 +8,13 @@ import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,6 +25,9 @@ class ProfileViewModel(
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private val _uiEvent = Channel<ProfileUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(ProfileState())
     val state = _state.onStart {
@@ -44,18 +49,16 @@ class ProfileViewModel(
             ProfileAction.OnHeightModalDismiss -> dismissHeightModal()
             is ProfileAction.OnHeightModalOkClick -> onHeightConfirm(action.value)
             ProfileAction.OnHeightModalShow -> showHeightModal()
-            ProfileAction.OnSkipClick -> {
-                //TODO: Skip Click
-            }
             ProfileAction.OnWeightModalDismiss -> dismissWeightModal()
             ProfileAction.OnWeightModalShow -> showWeightModal()
             is ProfileAction.OnWeightModalOkClick -> onWeightConfirm(action.value)
             is ProfileAction.OnHeightUnitTypeClick -> onHeightUnitTypeChange(action.unitType)
             is ProfileAction.OnWeightUnitTypeClick -> onWeightUnitTypeChange(action.unitType)
-            ProfileAction.OnStartClick -> saveProfile()
+            ProfileAction.OnConfirmClick -> saveProfile()
             is ProfileAction.OnHeightModalFirstValueChange -> onHeightModalFirstValueChange(action.value)
             is ProfileAction.OnHeightModalSecondValueChange -> onHeightModalSecondValueChange(action.value)
             is ProfileAction.OnWeightModalFirstValueChange -> onWeightModalFirstValueChange(action.value)
+            else -> Unit
         }
     }
 
@@ -98,7 +101,7 @@ class ProfileViewModel(
         val currentHeightUnitType = state.value.selectHeightUnitType
         if (currentHeightUnitType == UnitType.Cm) return
 
-        val ft = state.value.heightFtIn.first
+        val ft = state.value.heightModalValueFtIn.first
         val inch = value.toInt()
 
         val newValue = (((ft * 12) + inch)*2.54f).roundToInt().toString()
@@ -116,7 +119,7 @@ class ProfileViewModel(
             value.toInt()
         }else{
             val ft = value.toInt()
-            val inch = currentState.heightFtIn.second
+            val inch = currentState.heightModalValueFtIn.second
             (((ft * 12) + inch)*2.54f).roundToInt()
         }
         _state.update { it.copy(
@@ -140,7 +143,8 @@ class ProfileViewModel(
 
         _state.update { it.copy(
             isShowHeightModal = false,
-            height = newValue
+            height = newValue,
+            selectHeightUnitType = it.selectHeightUnitTypeModal
         ) }
     }
 
@@ -154,7 +158,8 @@ class ProfileViewModel(
         }
         _state.update { it.copy(
             isShowWeightModal = false,
-            weight = newWeight
+            weight = newWeight,
+            selectWeightUnitType = it.selectWeightUnitTypeModal
         ) }
     }
 
@@ -175,7 +180,9 @@ class ProfileViewModel(
             }
             awaitAll(genderUpdateJob,heightUpdateJob,weightUpdateJob)
 
-            //TODO: Navigate To Home
+            _uiEvent.send(
+                ProfileUiEvent.OnNavigateToSmartStep
+            )
         }
     }
 
@@ -202,13 +209,13 @@ class ProfileViewModel(
 
     private fun onHeightUnitTypeChange(unitType: UnitType) {
         _state.update { it.copy(
-            selectHeightUnitType = unitType
+            selectHeightUnitTypeModal = unitType
         ) }
     }
 
     private fun onWeightUnitTypeChange(unitType: UnitType) {
         _state.update { it.copy(
-            selectWeightUnitType = unitType
+            selectWeightUnitTypeModal = unitType
         ) }
     }
 

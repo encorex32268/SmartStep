@@ -59,7 +59,6 @@ fun ModalListPicker(
     secondValue: String = "",
     secondItems: List<String> = emptyList()
 ) {
-    val scope = rememberCoroutineScope()
 
     val listState = key(items) {
         rememberLazyListState(
@@ -91,6 +90,8 @@ fun ModalListPicker(
 
     AdaptiveModal(
         modifier = modifier,
+        isDialogLayout = true,
+        dragHandle = null,
         onDismiss = onDismiss,
         content = {
             Column(

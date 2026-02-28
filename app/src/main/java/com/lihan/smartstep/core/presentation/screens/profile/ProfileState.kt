@@ -1,10 +1,8 @@
-package com.lihan.smartstep.onboarding.presentation
+package com.lihan.smartstep.core.presentation.screens.profile
 
-import androidx.compose.runtime.retain.retain
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlin.math.roundToInt
-import kotlin.text.toFloat
 
 
 data class ProfileState(
@@ -13,10 +11,12 @@ data class ProfileState(
     val height: Int = 170,
     val heightModalValue: Int = 170,
     val selectHeightUnitType: UnitType = UnitType.Cm,
+    val selectHeightUnitTypeModal: UnitType = UnitType.Cm,
     val isShowHeightModal: Boolean = false,
     val weight: Int = 60,
     val weightModalValue: Int = 60,
     val selectWeightUnitType: UnitType = UnitType.Kg,
+    val selectWeightUnitTypeModal: UnitType = UnitType.Kg,
     val isShowWeightModal: Boolean = false
 ){
 
@@ -24,23 +24,8 @@ data class ProfileState(
     val heightFtItems: List<String> = (0..9).map{ "$it" }
     val heightInchItems: List<String> = (0..9).map{ "$it" }
 
-    val heightFtIn: Pair<Int,Int>
-        get(){
-            val totalInches = height / 2.54
-            val heightFt = (totalInches / 12).toInt()
-            val heightIn = (totalInches % 12).roundToInt()
-
-            return Pair(heightFt,heightIn)
-        }
-
-    val heightModalValueFtIn: Pair<Int,Int>
-        get(){
-            val totalInches = heightModalValue / 2.54
-            val heightFt = (totalInches / 12).toInt()
-            val heightIn = (totalInches % 12).roundToInt()
-
-            return Pair(heightFt,heightIn)
-        }
+    val heightFtIn: Pair<Int, Int> get() = cmToFtIn(height)
+    val heightModalValueFtIn: Pair<Int, Int> get() = cmToFtIn(heightModalValue)
 
 
 
@@ -58,4 +43,10 @@ data class ProfileState(
 
     val weightLbs: Int
         get() = (weight * 2.20462).roundToInt()
+
+    private fun cmToFtIn(cm: Int): Pair<Int, Int> {
+        val totalInches = cm / 2.54
+        return Pair((totalInches / 12).toInt(), (totalInches % 12).roundToInt())
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.lihan.smartstep.onboarding.presentation
+package com.lihan.smartstep.core.presentation.screens.profile
 
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
@@ -19,6 +19,6 @@ sealed interface ProfileAction {
     data class OnWeightModalOkClick(val value: String): ProfileAction
     data class OnWeightModalFirstValueChange(val value: String): ProfileAction
     data class OnWeightUnitTypeClick(val unitType: UnitType): ProfileAction
-    data object OnStartClick: ProfileAction
+    data object OnConfirmClick: ProfileAction
 
 }

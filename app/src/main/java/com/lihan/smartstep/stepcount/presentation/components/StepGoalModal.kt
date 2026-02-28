@@ -10,6 +10,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,11 +34,12 @@ import com.lihan.smartstep.ui.theme.TextSecondary
 @Composable
 fun StepsGoalModal(
     onDismiss: () -> Unit,
-    onSave: () -> Unit,
+    onSave: (String) -> Unit,
     onCancel: () -> Unit,
-    onStepGoalValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val items = remember { stepGoalItems.reversed() }
+    var currentCenterIndex by remember { mutableIntStateOf(0) }
     AdaptiveModal(
         onDismiss = onDismiss,
         dragHandle = null,
@@ -53,10 +59,11 @@ fun StepsGoalModal(
                 )
                 Spacer(Modifier.height(16.dp))
                 WheelPicker(
-                    items = stepGoalItems.reversed(),
+                    items = items,
                     initIndex = stepGoalItems.lastIndex - 2,
-                    onValueChanged = onStepGoalValueChanged,
+                    onValueChanged = {},
                     itemContent = { centerIndex, index , itemString ->
+                        currentCenterIndex = centerIndex
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -77,7 +84,9 @@ fun StepsGoalModal(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.save),
-                    onClick = onSave
+                    onClick = {
+                        onSave(items[currentCenterIndex])
+                    }
                 )
                 SmartStepTextButton(
                     modifier = Modifier.fillMaxWidth(),

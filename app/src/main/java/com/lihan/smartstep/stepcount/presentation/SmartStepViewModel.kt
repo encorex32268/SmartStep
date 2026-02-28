@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SmartStepViewModel: ViewModel() {
 
@@ -33,11 +34,18 @@ class SmartStepViewModel: ViewModel() {
         when(action){
             SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             SmartStepAction.OnStepGoalClick -> showStepGoal()
-            SmartStepAction.OnStepGoalSaveClick -> saveStepGoal()
-            SmartStepAction.OnExitClick -> Unit
+            SmartStepAction.OnExitClick -> {
+                _state.update { it.copy(
+                    isShowExitModal = false
+                ) }
+            }
             SmartStepAction.OnMenuClick -> Unit
             SmartStepAction.OnPersonSettingsClick -> Unit
-            SmartStepAction.OnShowBackgroundAccessModal -> TODO()
+            SmartStepAction.OnShowBackgroundAccessModal -> {
+                _state.update { it.copy(
+                    isShowBackgroundAccessModal = true
+                ) }
+            }
             SmartStepAction.OnShowEnableAccessModal -> {
                 _state.update { it.copy(
                     isShowSensorsModal = false,
@@ -50,7 +58,6 @@ class SmartStepViewModel: ViewModel() {
                     isShowEnableAccessModal = false
                 ) }
             }
-            is SmartStepAction.OnStepGoalValueChanged -> TODO()
             is SmartStepAction.OnUpdatePermission -> {
                 _state.update { it.copy(
                     motionSensorsPermissionGranted = action.isGranted,
@@ -76,11 +83,37 @@ class SmartStepViewModel: ViewModel() {
                     isShowEnableAccessModal = false
                 ) }
             }
+
+            SmartStepAction.OnDismissBackgroundAccessModal -> {
+                _state.update { it.copy(
+                    isShowBackgroundAccessModal = false
+                ) }
+            }
+
+            is SmartStepAction.OnStepGoalSaveClick -> saveStepGoal(action.value)
+            SmartStepAction.OnDismissExitModal -> {
+                _state.update { it.copy(
+                    isShowExitModal = false
+                ) }
+            }
+            SmartStepAction.OnShowExitModal -> {
+                _state.update { it.copy(
+                    isShowExitModal = true
+                ) }
+            }
         }
     }
 
-    private fun saveStepGoal() {
+    private fun saveStepGoal(value: String) {
         //TODO: SaveStepGoal
+
+        viewModelScope.launch {
+
+        }
+        _state.update { it.copy(
+            isShowStepGoal = false
+        ) }
+
     }
 
     private fun showStepGoal() {

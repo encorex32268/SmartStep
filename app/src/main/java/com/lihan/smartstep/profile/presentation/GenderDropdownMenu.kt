@@ -48,7 +48,8 @@ fun GenderDropdownMenu(
     onItemSelect: (Gender) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    items: List<Gender> = Gender.entries
+    items: List<Gender> = Gender.entries,
+    containerColor: Color = BackgroundSecondary
 ) {
     val density = LocalDensity.current
     var dropdownItemWidth by remember {
@@ -65,7 +66,8 @@ fun GenderDropdownMenu(
                 .fillMaxWidth()
                 .onSizeChanged{
                     dropdownItemWidth = with(density) { it.width.toDp() }
-                }
+                },
+            containerColor = containerColor
         )
         DropdownMenu(
             modifier = Modifier.width(dropdownItemWidth),

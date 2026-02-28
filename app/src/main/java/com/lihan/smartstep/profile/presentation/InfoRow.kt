@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
 import com.lihan.smartstep.core.presentation.design_system.ArrowsUp
@@ -30,13 +31,14 @@ fun InfoRow(
     value: String,
     onRowClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isExpand: Boolean = false
+    isExpand: Boolean = false,
+    containerColor: Color = BackgroundSecondary
 ) {
 
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(10.dp),
-        color = BackgroundSecondary,
+        color = containerColor,
         border = BorderStroke(1.dp, StrokeMain),
         onClick = onRowClick
     ) {
