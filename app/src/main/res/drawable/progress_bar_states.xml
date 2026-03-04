@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="10dp" /> <solid android:color= "@color/background_main" /> </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <inset
+            android:insetLeft="2dp"
+            android:insetRight="2dp"
+            android:insetTop="2dp"
+            android:insetBottom="2dp">
+
+            <scale android:scaleWidth="100%">
+                <shape>
+                    <corners android:radius="100dp" />
+                    <solid android:color="@color/button_primary" />
+                </shape>
+            </scale>
+        </inset>
+    </item>
+</layer-list>

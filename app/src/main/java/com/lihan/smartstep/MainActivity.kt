@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lihan.smartstep.core.data.DefaultNotification
+import com.lihan.smartstep.core.domain.SmartStepNotification
 import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
@@ -47,6 +51,10 @@ sealed interface Route{
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel by inject<MainViewModel>()
+
+    private val smartStepNotification: SmartStepNotification by lazy {
+        DefaultNotification(this@MainActivity)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,14 +117,15 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center
                                 ){
-                                    WheelPicker(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        items = (120..230).map { it.toString() },
-                                        value = "175",
-                                        onValueChange = {
-
+                                    Button(
+                                        onClick = {
+                                            smartStepNotification.sendNotification()
                                         }
-                                    )
+                                    ) {
+                                        Text(
+                                            text = "Send Notification"
+                                        )
+                                    }
                                 }
                             }
                         }
