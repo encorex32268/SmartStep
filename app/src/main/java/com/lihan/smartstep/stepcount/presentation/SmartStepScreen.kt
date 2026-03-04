@@ -285,6 +285,7 @@ fun SmartStepScreen(
 
     if (state.isShowStepGoal){
         StepsGoalModal(
+            value = state.totalStep.toString(),
             onDismiss = {
                 onAction(SmartStepAction.OnDismissStepGoal)
             },

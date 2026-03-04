@@ -4,12 +4,15 @@ package com.lihan.smartstep.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,7 +37,9 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.components.model.UnitType.Companion.isNeedTwoColumn
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
+import com.lihan.smartstep.core.presentation.modifier.negativePadding
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.ui.theme.BackgroundTertiary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.TextSecondary
@@ -59,33 +65,16 @@ fun ModalListPicker(
     secondItems: List<String> = emptyList()
 ) {
 
-    val listState = key(items) {
-        rememberLazyListState(
-            initialFirstVisibleItemIndex = items.indexOf(value).coerceIn(0, items.lastIndex)
-        )
+    var firstItemValue by rememberSaveable {
+        mutableStateOf(value)
+    }
+
+    var secondItemValue by rememberSaveable {
+        mutableStateOf(secondValue)
     }
 
     val ftInOfFt = stringResource(R.string.ft_in_ft)
     val ftInOfIn = stringResource(R.string.ft_in_in)
-
-    var firstCenterValue by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-    var secondCenterValue by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-
-    val secondListState = key(secondItems) {
-        rememberLazyListState(
-            initialFirstVisibleItemIndex = if (secondItems.isEmpty()){ 0 } else {
-                secondItems.indexOf(secondValue).coerceIn(0, secondItems.lastIndex)
-            }
-        )
-    }
-
-
 
     AdaptiveModal(
         modifier = modifier,
@@ -118,122 +107,101 @@ fun ModalListPicker(
                     selectedOption = selectedOption,
                     onClick = onUnitTypeClick,
                 )
-                Spacer(Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .negativePadding(24.dp)
                 ) {
-                    //when user select ft/in
-                    if (selectedOption.isNeedTwoColumn){
-                        WheelPicker(
-                            modifier = Modifier.weight(1f),
-                            listState = listState,
-                            items = items,
-                            onValueChanged = onFirstItemChange,
-                            itemContent = { centerIndex, index, itemString ->
-                                firstCenterValue = centerIndex
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(bottom = 44.dp)
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .background(color = BackgroundTertiary)
+                            .align(Alignment.BottomStart)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(176.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        if (selectedOption.isNeedTwoColumn) {
+                            WheelPicker(
+                                items = items,
+                                value = value,
+                                onValueChange = {
+                                    firstItemValue = items[it]
+                                    onFirstItemChange(items[it])
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            ){
+                                Spacer(Modifier.weight(2f))
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ){
                                     Text(
-                                        modifier = Modifier.padding(vertical = 10.dp),
-                                        text = itemString,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = if (centerIndex  != index){
-                                            TextSecondary
-                                        }else{
-                                            TextPrimary
-                                        },
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
                                         text = stringResource(R.string.ft_in_ft),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = if (centerIndex == index){
-                                            TextPrimary
-                                        }else{
-                                            Color.Transparent
-                                        }
-
-                                    )
-                                }
-                            }
-                        )
-
-                        WheelPicker(
-                            modifier = Modifier.weight(1f),
-                            listState = secondListState,
-                            items = secondItems,
-                            onValueChanged = onSecondItemChange,
-                            itemContent = { centerIndex, index, itemString ->
-                                secondCenterValue = centerIndex
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    Text(
-                                        modifier = Modifier
-                                            .height(44.dp)
-                                            .padding(vertical = 10.dp),
-                                        text = itemString,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = if (centerIndex  != index){
-                                            TextSecondary
-                                        }else{
-                                            TextPrimary
-                                        },
+                                        color = TextPrimary,
                                         textAlign = TextAlign.Center
                                     )
+                                }
+                                Spacer(Modifier.weight(1f))
+                            }
+                            WheelPicker(
+                                items = secondItems,
+                                value = secondValue,
+                                onValueChange = {
+                                    secondItemValue = secondItems[it]
+                                    onSecondItemChange(secondItems[it])
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            ){
+                                Spacer(Modifier.weight(2f))
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ){
                                     Text(
+                                        modifier = Modifier.fillMaxWidth(),
                                         text = stringResource(R.string.ft_in_in),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = if (centerIndex == index){
-                                            TextPrimary
-                                        }else{
-                                            Color.Transparent
-                                        }
+                                        color = TextPrimary,
+                                        textAlign = TextAlign.Center
                                     )
                                 }
+                                Spacer(Modifier.weight(1f))
                             }
-                        )
-
-                    }else{
-                        WheelPicker(
-                            listState = listState,
-                            items = items,
-                            onValueChanged = onFirstItemChange,
-                            itemContent = { centerIndex, index , itemString ->
-                                firstCenterValue = centerIndex
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(44.dp)
-                                        .padding(vertical = 10.dp),
-                                    text = itemString,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = if (centerIndex  != index){
-                                        TextSecondary
-                                    }else{
-                                        TextPrimary
-                                    },
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        )
+                        } else {
+                            WheelPicker(
+                                items = items,
+                                value = value,
+                                onValueChange = {
+                                    firstItemValue = items[it]
+                                    onFirstItemChange(items[it])
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
                     }
-
                 }
 
-
                 Spacer(Modifier.height(20.dp))
-
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
                 ) {
@@ -244,10 +212,10 @@ fun ModalListPicker(
                     SmartStepTextButton(
                         text = stringResource(R.string.ok),
                         onClick = {
-                            val itemString = if (selectedOption.isNeedTwoColumn){
-                                items[firstCenterValue] + ftInOfFt + secondItems[secondCenterValue] + ftInOfIn
-                            }else{
-                                items[firstCenterValue]
+                            val itemString = if (selectedOption.isNeedTwoColumn) {
+                                firstItemValue + ftInOfFt + secondItemValue + ftInOfIn
+                            } else {
+                                firstItemValue
                             }
                             onOkClick(itemString)
                         }
@@ -267,21 +235,25 @@ private fun ListPickerPreview() {
         ModalListPicker(
             title = stringResource(R.string.height),
             description = stringResource(R.string.used_to_calculate_distance),
-            value = "170",
+            value = "150",
+            secondValue = "150",
             onDismiss = {},
             onOkClick = {},
             onCancelClick = {},
+//            firstOption = UnitType.Cm,
             firstOption = UnitType.Cm,
             secondOption = UnitType.FtIn,
             selectedOption = UnitType.FtIn,
             items = (0..30).map {
-                "${145+it}"
+                "${145 + it}"
             },
             onUnitTypeClick = {},
-            secondItems =(0..30).map {
-                "${145+it}"
+//            secondItems = (0..30).map {
+            secondItems = (0..30).map {
+                "${145 + it}"
             },
             onFirstItemChange = {},
+//            onSecondItemChange = {}
             onSecondItemChange = {}
         )
     }

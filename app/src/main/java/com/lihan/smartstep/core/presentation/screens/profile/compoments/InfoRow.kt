@@ -14,10 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
 import com.lihan.smartstep.core.presentation.design_system.ArrowsUp
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.StrokeMain
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.TextSecondary
@@ -30,8 +32,8 @@ fun InfoRow(
     value: String,
     onRowClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isExpand: Boolean = false,
-    containerColor: Color = BackgroundSecondary
+    containerColor: Color = BackgroundSecondary,
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
 
     Surface(
@@ -62,19 +64,25 @@ fun InfoRow(
                     color = TextPrimary
                 )
             }
-
-            Icon(
-                imageVector = if (isExpand) {
-                    ArrowsUp
-                } else {
-                    ArrowsDown
-                },
-                tint = TextPrimary,
-                contentDescription = null
-            )
-
+            if (trailingIcon != null){
+                trailingIcon()
+            }
         }
 
     }
 
+}
+
+
+@Composable
+@Preview
+private fun InfoRowPreview(){
+    SmartStepTheme {
+        InfoRow(
+            title = "Title",
+            value = "value",
+            onRowClick = {},
+
+        )
+    }
 }

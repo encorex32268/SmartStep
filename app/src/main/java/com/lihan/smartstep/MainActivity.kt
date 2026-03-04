@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -16,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
@@ -34,6 +38,9 @@ sealed interface Route{
 
     @Serializable
     data object PersonalSettings: Route
+
+    @Serializable
+    data object Test: Route
 
 }
 
@@ -57,13 +64,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartStepTheme {
                 val mainState by mainViewModel.state.collectAsStateWithLifecycle()
+                val startDestination = mainState.startDestination
                 val navController = rememberNavController()
                 if (mainState.isReady){
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         NavHost(
                             modifier = Modifier.fillMaxSize(),
                             navController = navController,
-                            startDestination = mainViewModel.state.value.startDestination
+                            startDestination = Route.Test
                         ){
                             composable<Route.OnboardingProfileSetting>{
                                 OnboardingProfileScreenRoot(
@@ -94,6 +102,22 @@ class MainActivity : ComponentActivity() {
                                         navController.navigateUp()
                                     }
                                 )
+                            }
+
+                            composable<Route.Test>{
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ){
+                                    WheelPicker(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        items = (120..230).map { it.toString() },
+                                        value = "175",
+                                        onValueChange = {
+
+                                        }
+                                    )
+                                }
                             }
                         }
 

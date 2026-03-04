@@ -2,6 +2,8 @@
 
 package com.lihan.smartstep.stepcount.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,19 +30,24 @@ import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
+import com.lihan.smartstep.core.presentation.modifier.negativePadding
 import com.lihan.smartstep.stepcount.presentation.stepGoalItems
+import com.lihan.smartstep.ui.theme.BackgroundTertiary
+import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.TextSecondary
 
 @Composable
 fun StepsGoalModal(
+    value: String,
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
     onCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    items: List<String> = stepGoalItems.reversed()
 ) {
-    val items = remember { stepGoalItems.reversed() }
     var currentCenterIndex by remember { mutableIntStateOf(0) }
+
     AdaptiveModal(
         onDismiss = onDismiss,
         dragHandle = null,
@@ -59,28 +66,23 @@ fun StepsGoalModal(
                     color = TextPrimary
                 )
                 Spacer(Modifier.height(16.dp))
-                WheelPicker(
-                    items = items,
-                    initIndex = stepGoalItems.lastIndex - 2,
-                    onValueChanged = {},
-                    itemContent = { centerIndex, index , itemString ->
-                        currentCenterIndex = centerIndex
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(44.dp)
-                                .padding(vertical = 10.dp),
-                            text = itemString,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = if (centerIndex  != index){
-                                TextSecondary
-                            }else{
-                                TextPrimary
-                            },
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth().negativePadding(16.dp)
+                ){
+                    Box(
+                        modifier = Modifier
+                            .padding(bottom = 44.dp)
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .background(color = BackgroundTertiary)
+                            .align(Alignment.BottomStart)
+                    )
+                    WheelPicker(
+                        items = items,
+                        onValueChange = {},
+                        value = value
+                    )
+                }
                 Spacer(Modifier.height(24.dp))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -105,5 +107,12 @@ fun StepsGoalModal(
 @Preview(showBackground = true)
 @Composable
 private fun StepsGoalModalPreview() {
-
+    SmartStepTheme {
+        StepsGoalModal(
+            value = "6000",
+            onDismiss = {},
+            onSave = {},
+            onCancel = {}
+        )
+    }
 }

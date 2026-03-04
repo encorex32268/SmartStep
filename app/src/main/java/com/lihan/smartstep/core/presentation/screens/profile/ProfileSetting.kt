@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,11 +14,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.model.UnitType
+import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
+import com.lihan.smartstep.core.presentation.design_system.ArrowsUp
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.GenderDropdownMenu
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.InfoRow
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
+import com.lihan.smartstep.ui.theme.TextPrimary
 
 @Composable
 fun ProfileSetting(
@@ -60,7 +64,14 @@ fun ProfileSetting(
                 else ->  stringResource(R.string.height_cm,height)
             },
             onRowClick = onHeightModalShow,
-            containerColor = containerColor
+            containerColor = containerColor,
+            trailingIcon = {
+                Icon(
+                    imageVector = ArrowsDown,
+                    tint = TextPrimary,
+                    contentDescription = null
+                )
+            }
         )
 
         InfoRow(
@@ -71,7 +82,14 @@ fun ProfileSetting(
                 else ->  stringResource(R.string.weight_kg,weight)
             },
             onRowClick = onWeightModalShow,
-            containerColor = containerColor
+            containerColor = containerColor,
+            trailingIcon = {
+                Icon(
+                    imageVector = ArrowsDown,
+                    tint = TextPrimary,
+                    contentDescription = null
+                )
+            }
         )
 
     }

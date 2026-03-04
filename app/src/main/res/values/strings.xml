@@ -45,6 +45,12 @@
     <string name="stop_counting_steps_issue">Fix the “Stop Counting Steps” issue</string>
     <string name="personal_settings_title">My profile</string>
     <string name="personal_settings_header">Personal Settings</string>
+    <string name="edit_steps">Edit steps</string>
+    <string name="edit_steps_description"><![CDATA[Calories, distance & duration will\nbe recalculated accordingly.]]></string>
+    <string name="date">Date</string>
+    <string name="steps">Steps</string>
+    <string name="reset_title">Are you sure you want to reset today ’s steps?</string>
+    <string name="reset">Reset</string>
 
 
 </resources>

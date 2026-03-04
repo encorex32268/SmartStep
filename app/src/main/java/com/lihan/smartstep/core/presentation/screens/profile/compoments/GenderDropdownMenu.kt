@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
 import com.lihan.smartstep.core.presentation.design_system.CheckMark
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
@@ -65,7 +66,14 @@ fun GenderDropdownMenu(
                 .onSizeChanged{
                     dropdownItemWidth = with(density) { it.width.toDp() }
                 },
-            containerColor = containerColor
+            containerColor = containerColor,
+            trailingIcon = {
+                Icon(
+                    imageVector = ArrowsDown,
+                    tint = TextPrimary,
+                    contentDescription = null
+                )
+            }
         )
         DropdownMenu(
             modifier = Modifier.width(dropdownItemWidth),
