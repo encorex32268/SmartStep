@@ -51,6 +51,8 @@
     <string name="steps">Steps</string>
     <string name="reset_title">Are you sure you want to reset today ’s steps?</string>
     <string name="reset">Reset</string>
+    <string name="paused">Paused</string>
+    <string name="daily_average_steps">Daily Average: %1$s steps</string>
 
 
 </resources>

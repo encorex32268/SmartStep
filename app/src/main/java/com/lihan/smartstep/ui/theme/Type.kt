@@ -33,6 +33,22 @@ val Typography = Typography(
     )
 )
 
+val Typography.regular: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 18.sp
+    )
+
+val Typography.medium: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 24.sp
+    )
+
 val Typography.titleAccent: TextStyle
     get() = TextStyle(
         fontFamily = Inter,

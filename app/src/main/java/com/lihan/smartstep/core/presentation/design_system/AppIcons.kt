@@ -50,4 +50,24 @@ val Road: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.road)
 
+val Pause: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.pause)
+
+val Direction: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.direction)
+
+val WeightDiet: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.weight_diet)
+
+val Clock: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.time_clock)
+
+val Play: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.play)
+
 

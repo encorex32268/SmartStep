@@ -19,5 +19,6 @@ val stepGoalItems = (1..40).map { (it * 1000) .toString()}
 
 
 fun Long.formatThousands(): String {
+    if (this == 0L) return "0"
     return DecimalFormat("#,###").format(this)
 }

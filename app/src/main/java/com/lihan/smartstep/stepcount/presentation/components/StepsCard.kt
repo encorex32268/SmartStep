@@ -3,13 +3,17 @@
 package com.lihan.smartstep.stepcount.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +31,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.presentation.design_system.Clock
+import com.lihan.smartstep.core.presentation.design_system.Direction
+import com.lihan.smartstep.core.presentation.design_system.Pause
+import com.lihan.smartstep.core.presentation.design_system.PenEdit
+import com.lihan.smartstep.core.presentation.design_system.Play
+import com.lihan.smartstep.core.presentation.design_system.SmartStepIconButton
 import com.lihan.smartstep.core.presentation.design_system.Sneaker
+import com.lihan.smartstep.core.presentation.design_system.WeightDiet
 import com.lihan.smartstep.ui.theme.BackgroundWhite20
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -36,6 +47,7 @@ import com.lihan.smartstep.ui.theme.titleAccent
 
 @Composable
 fun StepsCard(
+    isCounting: Boolean,
     steps: String,
     stepsTotal: String,
     modifier: Modifier = Modifier
@@ -51,27 +63,49 @@ fun StepsCard(
                 .fillMaxWidth()
                 .padding(16.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .size(38.dp)
-                    .background(color = BackgroundWhite20),
-                contentAlignment = Alignment.Center
-            ){
-                Icon(
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SmartStepIconButton(
                     imageVector = Sneaker,
-                    contentDescription = null,
-                    tint = TextWhite
+                    enabled = false,
                 )
+                Spacer(Modifier.weight(1f))
+                SmartStepIconButton(
+                    imageVector = PenEdit,
+                    shape = CircleShape,
+                    onClick = { /* PenEdit Click */}
+                )
+                Spacer(Modifier.width(16.dp))
+                SmartStepIconButton(
+                    imageVector = if (isCounting){
+                        Pause
+                    }else{
+                        Play
+                    },
+                    shape = CircleShape,
+                    onClick = { /* Pause Click */}
+                )
+
             }
+
             Spacer(Modifier.height(16.dp))
             Text(
                 text = steps,
                 style = MaterialTheme.typography.titleAccent,
-                color = TextWhite
+                color = if (isCounting){
+                    TextWhite
+                }else{
+                    BackgroundWhite20
+                }
             )
             Text(
-                text = stringResource(R.string.total_steps,stepsTotal),
+                text = if (isCounting){
+                    stringResource(R.string.total_steps,stepsTotal)
+                }else{
+                    stringResource(R.string.paused)
+                },
                 style = MaterialTheme.typography.titleMedium,
                 color = TextWhite.copy(alpha = 0.9f)
             )
@@ -113,6 +147,55 @@ fun StepsCard(
                 )
 
             }
+            Spacer(Modifier.height(32.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    SmartStepIconButton(
+                        imageVector = Direction,
+                        enabled = false
+                    )
+                    CounterElement(
+                        value = "3.2",
+                        unit = "km"
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    SmartStepIconButton(
+                        imageVector = WeightDiet,
+                        onClick = { /* PenEdit Click */}
+                    )
+                    CounterElement(
+                        value = "215",
+                        unit = "kcal"
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    SmartStepIconButton(
+                        imageVector = Clock,
+                        onClick = { /* Pause Click */}
+                    )
+                    CounterElement(
+                        value = "42",
+                        unit = "min"
+                    )
+                }
+
+            }
+
+
 
         }
 
@@ -126,6 +209,7 @@ fun StepsCard(
 private fun StepsCardPreview() {
     SmartStepTheme {
         StepsCard(
+            isCounting = false,
             steps = "4,523",
             stepsTotal = "6000"
         )

@@ -12,11 +12,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
@@ -61,11 +64,14 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.data.isNotInPowerManagerWhiteList
 import com.lihan.smartstep.core.data.openPowerManagerIntent
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
+import com.lihan.smartstep.stepcount.presentation.components.DailyStepsCard
 import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
+import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
+import com.lihan.smartstep.stepcount.presentation.components.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
 import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
 import com.lihan.smartstep.ui.theme.BackgroundMain
@@ -76,6 +82,8 @@ import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import java.time.DayOfWeek
+import java.util.Locale
 
 @Composable
 fun SmartStepScreenRoot(
@@ -89,10 +97,12 @@ fun SmartStepScreenRoot(
         initialValue = DrawerValue.Closed
     )
     val scope = rememberCoroutineScope()
+    val showPowerWarning = rememberPowerManagerStatus()
 
 
 
     SmartStepScreen(
+        showPowerWarning = showPowerWarning,
         drawerState = drawerState,
         state = state,
         onAction = { action ->
@@ -122,6 +132,7 @@ fun SmartStepScreenRoot(
 @SuppressLint("BatteryLife")
 @Composable
 fun SmartStepScreen(
+    showPowerWarning: Boolean,
     drawerState: DrawerState,
     state: SmartStepState,
     onAction: (SmartStepAction) -> Unit,
@@ -146,7 +157,6 @@ fun SmartStepScreen(
             hasPermissionRequest = true
         }
     )
-    val showPowerWarning = rememberPowerManagerStatus()
 
     LifecycleResumeEffect(activityRecognitionPermissionState.status) {
         when (val status = activityRecognitionPermissionState.status) {
@@ -265,18 +275,31 @@ fun SmartStepScreen(
             )
 
         }
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
             StepsCard(
                 modifier = Modifier
                     .widthIn(max = 394.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 steps = state.step.formatThousands(),
-                stepsTotal = state.totalStep.toString()
+                stepsTotal = state.totalStep.toString(),
+                isCounting = false
+            )
+            Spacer(Modifier.height(8.dp))
+            DailyStepsCard(
+                dailySteps =  getDaysOfWeek().mapIndexed { index, week ->
+                    DailyStepUI(
+                        steps = (index*2000) .toString(),
+                        date = week.getDisplayName(java.time.format.TextStyle.SHORT, Locale.US),
+                        goalSteps = 6000.toString()
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
         }
@@ -357,7 +380,8 @@ private fun SmartStepScreenPreview() {
                 isShowStepGoal = false
             ),
             onAction = {},
-            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+            showPowerWarning = false
         )
     }
 }
