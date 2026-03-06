@@ -26,9 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
-import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
-import com.lihan.smartstep.core.presentation.screens.profile.compoments.InfoRow
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.SmartStepTextField
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextPrimary
@@ -36,18 +34,18 @@ import com.lihan.smartstep.ui.theme.TextSecondary
 import com.lihan.smartstep.ui.theme.bodyMediumRegular
 
 @Composable
-fun EditStepsModal(
-    date: String,
-    steps: String,
+fun EditStepsDialog(
+    dateTextFieldState: TextFieldState,
+    stepsTextState: TextFieldState,
+    onCancelClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onDateClick: () -> Unit,
-    onStepClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isShowDate: Boolean = false
+    modifier: Modifier = Modifier
 ) {
     AdaptiveModal(
         modifier = modifier,
         isDialogLayout = true,
-        onDismiss = {},
+        onDismiss = onCancelClick,
         dialogProperties = DialogProperties(),
         content = {
             Column(
@@ -71,7 +69,7 @@ fun EditStepsModal(
 
                 SmartStepTextField(
                     title = stringResource(R.string.date),
-                    textState = TextFieldState(),
+                    textState = dateTextFieldState,
                     onClick = onDateClick,
                     enabled = false,
                     trailingIcon = {
@@ -84,7 +82,7 @@ fun EditStepsModal(
                 Spacer(Modifier.height(8.dp))
                 SmartStepTextField(
                     title = stringResource(R.string.steps),
-                    textState = TextFieldState(),
+                    textState = stepsTextState,
                     onClick = {}
                 )
                 Spacer(Modifier.height(16.dp))
@@ -95,12 +93,12 @@ fun EditStepsModal(
                 ) {
                     SmartStepTextButton(
                         text = stringResource(R.string.cancel),
-                        onClick = {}
+                        onClick = onCancelClick
                     )
                     Spacer(Modifier.width(4.dp))
                     SmartStepTextButton(
                         text = stringResource(R.string.save),
-                        onClick = {}
+                        onClick = onSaveClick
                     )
                 }
             }
@@ -117,10 +115,11 @@ fun EditStepsModal(
 @Composable
 private fun EditStepsDialogPreview() {
     SmartStepTheme {
-        EditStepsModal(
-            date = "2026/03/03",
-            steps = "23000",
-            onStepClick = {},
+        EditStepsDialog(
+            dateTextFieldState = TextFieldState("2026/03/03"),
+            stepsTextState = TextFieldState("23000"),
+            onSaveClick = {},
+            onCancelClick = {},
             onDateClick = {}
         )
     }

@@ -15,6 +15,8 @@ data class DrawerItem(
 val drawerItems = listOf(
     DrawerItem(R.string.step_goal , TextPrimary),
     DrawerItem(R.string.personal_settings , TextPrimary),
+    DrawerItem(R.string.edit_steps_drawer , TextPrimary),
+    DrawerItem(R.string.reset_today_steps , TextPrimary),
     DrawerItem(R.string.exit , ButtonPrimary),
 )
 val closeDrawerActions = listOf(
@@ -23,5 +25,7 @@ val closeDrawerActions = listOf(
     SmartStepAction.OnStepGoalClick,
     SmartStepAction.OnShowEnableAccessModal,
     SmartStepAction.OnShowBackgroundAccessModal,
-    SmartStepAction.OnShowExitModal
+    SmartStepAction.OnExitClick,
+    SmartStepAction.OnResetTodayStepsClick,
+    SmartStepAction.OnEditStepsClick,
 )

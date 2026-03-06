@@ -31,7 +31,6 @@ import com.lihan.smartstep.ui.theme.bodyLargeRegular
 @Composable
 fun StepResetDialog(
     onDismiss: () -> Unit,
-    onCancelClick: () -> Unit,
     onResetClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +60,7 @@ fun StepResetDialog(
             ) {
                 SmartStepTextButton(
                     text = stringResource(R.string.cancel),
-                    onClick = onCancelClick
+                    onClick = onDismiss
                 )
                 Spacer(Modifier.width(8.dp))
                 SmartStepTextButton(
@@ -81,8 +80,7 @@ private fun StepResetDialogPreview() {
     SmartStepTheme {
         StepResetDialog(
             onDismiss = {},
-            onResetClick = {},
-            onCancelClick = {}
+            onResetClick = {}
         )
     }
 }

@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             modifier = Modifier.fillMaxSize(),
                             navController = navController,
-                            startDestination = Route.Test
+                            startDestination = startDestination
                         ){
                             composable<Route.OnboardingProfileSetting>{
                                 OnboardingProfileScreenRoot(

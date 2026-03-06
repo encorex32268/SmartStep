@@ -2,8 +2,6 @@
 
 package com.lihan.smartstep.stepcount.presentation.components
 
-import android.icu.util.Calendar
-import android.icu.util.TimeZone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,17 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,13 +28,16 @@ import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.components.WheelPicker
-import com.lihan.smartstep.core.presentation.components.model.UnitType.Companion.isNeedTwoColumn
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
 import com.lihan.smartstep.core.presentation.modifier.negativePadding
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import com.lihan.smartstep.ui.theme.BackgroundTertiary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextPrimary
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 fun String.withZero(): String{
     val value = this.toIntOrNull()?:return this
@@ -52,9 +49,9 @@ fun String.withZero(): String{
 }
 
 @Composable
-fun DatePicker(
-    onSave: () -> Unit,
-    onCancel: () -> Unit,
+fun DatePickerDialog(
+    onSaveClick: (Long) -> Unit,
+    onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var year by rememberSaveable {
@@ -64,16 +61,17 @@ fun DatePicker(
         mutableStateOf(DateTimeUtils.getThisMonth())
     }
 
-    val dayRange by rememberSaveable(year,month) {
-        mutableStateOf(
-            DateTimeUtils.getDayRange(year.toInt(),month.toInt()).map { it.toString() }
-        )
+    var dayRange = rememberSaveable(year,month) {
+        DateTimeUtils.getDayRange(year.toInt(),month.toInt()).map { it.toString() }
+
     }
 
-    var day by rememberSaveable {
-        mutableStateOf(
-            DateTimeUtils.getToday()
-        )
+    var day  = rememberSaveable(dayRange){
+        DateTimeUtils.getToday()
+    }
+
+    LaunchedEffect(year,month) {
+        dayRange = DateTimeUtils.getDayRange(year.toInt(),month.toInt()).map { it.toString() }
     }
 
     AdaptiveModal(
@@ -124,7 +122,6 @@ fun DatePicker(
                             items = DateTimeUtils.monthRange.map { it.toString() },
                             value = month,
                             onValueChange = {
-                                day = dayRange.first()
                                 month = it.toString()
                             }
                         )
@@ -134,7 +131,7 @@ fun DatePicker(
                             items = dayRange,
                             value = day,
                             onValueChange = {
-
+                                day = (it + 1).toString()
                             }
                         )
 
@@ -149,11 +146,27 @@ fun DatePicker(
                 ) {
                     SmartStepTextButton(
                         text = stringResource(R.string.cancel),
-                        onClick = onCancel
+                        onClick = onCancelClick
                     )
                     SmartStepTextButton(
                         text = stringResource(R.string.save),
-                        onClick = onSave
+                        onClick = {
+                            val now = LocalDateTime.now()
+                            val year = year.toIntOrNull()?:now.year
+                            val month = if (month.toIntOrNull() != null){
+                                month.toInt() +  1
+                            }else{
+                                now.monthValue
+                            }
+                            val day = day.toIntOrNull()?:now.dayOfMonth
+
+                            val timestamp = LocalDateTime
+                                .of(year,month,day,0,0)
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant().epochSecond
+
+                            onSaveClick(timestamp)
+                        }
                     )
                 }
 
@@ -166,11 +179,11 @@ fun DatePicker(
 
 @Preview(showBackground = true)
 @Composable
-private fun DatePickerPreview() {
+private fun DatePickerDialogPreview() {
     SmartStepTheme {
-        DatePicker(
-            onSave = {},
-            onCancel = {}
+        DatePickerDialog(
+            onSaveClick = {},
+            onCancelClick = {}
         )
     }
 }

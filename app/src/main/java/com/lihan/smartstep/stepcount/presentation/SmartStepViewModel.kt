@@ -1,5 +1,7 @@
 package com.lihan.smartstep.stepcount.presentation
 
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.UserInfoDataStore
@@ -12,6 +14,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class SmartStepViewModel(
     private val userInfoDataStore: UserInfoDataStore
@@ -37,7 +42,7 @@ class SmartStepViewModel(
         when(action){
             SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             SmartStepAction.OnStepGoalClick -> showStepGoal()
-            SmartStepAction.OnExitClick -> {
+            SmartStepAction.OnExitOkClick -> {
                 _state.update { it.copy(
                     isShowExitModal = false
                 ) }
@@ -116,7 +121,7 @@ class SmartStepViewModel(
                     isShowExitModal = false
                 ) }
             }
-            SmartStepAction.OnShowExitModal -> {
+            SmartStepAction.OnExitClick -> {
                 _state.update { it.copy(
                     isShowExitModal = true
                 ) }
@@ -128,7 +133,63 @@ class SmartStepViewModel(
                     isShowEnableAccessModal = false
                 ) }
             }
+
+            SmartStepAction.OnEditStepsClick -> {
+                state.value.editStepsDateTextFieldState.clearText()
+                _state.update { it.copy(
+                    isShowEditSteps = true
+                ) }
+            }
+            SmartStepAction.OnResetTodayStepsClick ->{
+                _state.update { it.copy(
+                    isShowResetStepsDialog = true
+                ) }
+            }
+
+            SmartStepAction.OnDismissDatePickerDialog -> {
+                _state.update { it.copy(
+                    isShowDatePicker = false
+                ) }
+            }
+            SmartStepAction.OnDismissEditStepsDialog -> {
+                _state.update { it.copy(
+                    isShowEditSteps = false
+                ) }
+            }
+            SmartStepAction.OnDismissResetStepsDialog -> {
+                _state.update { it.copy(
+                    isShowResetStepsDialog = false
+                ) }
+            }
+            SmartStepAction.OnEditStepsSaveClick -> onEditStepsSave()
+            SmartStepAction.OnResetStepClick -> onResetSteps()
+            SmartStepAction.OnShowDatePicker -> {
+                _state.update { it.copy(
+                    isShowDatePicker = true
+                ) }
+            }
+
+            is SmartStepAction.OnDatePickerSaveClick -> {
+                state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(action.timestamp.epochSecondToDateString())
+                _state.update { it.copy(
+                    isShowDatePicker = false
+                ) }
+            }
+            SmartStepAction.OnDismissDatePicker -> {
+                state.value.editStepsDateTextFieldState.clearText()
+                _state.update { it.copy(
+                    isShowDatePicker = false
+                ) }
+            }
         }
+    }
+
+    private fun onEditStepsSave() {
+
+    }
+
+    private fun onResetSteps() {
+
     }
 
     private fun saveStepGoal(value: String) {
@@ -176,4 +237,18 @@ class SmartStepViewModel(
             }
             .launchIn(viewModelScope)
     }
+}
+
+
+fun Long.epochSecondToDateString(): String {
+    val zoneId = ZoneId.systemDefault()
+    val offset = zoneId.rules.getOffset(Instant.ofEpochSecond(this))
+
+    val localDateTime = LocalDateTime.ofEpochSecond(
+        this, 0, offset
+    )
+    val year = localDateTime.year + 1920
+    val month = localDateTime.monthValue
+    val day = localDateTime.dayOfMonth
+    return "$year/$month/$day"
 }

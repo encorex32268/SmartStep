@@ -19,7 +19,7 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             val isSetProfile = userInfoDataStore.getIsSetting().first()
-            println("isSetProfile: ${isSetProfile}")
+
             _state.update { it.copy(
                 startDestination = if (isSetProfile){
                     Route.SmartStep

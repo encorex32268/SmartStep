@@ -17,11 +17,11 @@ object DateTimeUtils {
 
     fun getDayRange(year: Int,month: Int): IntRange{
         val maxDay = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            YearMonth.of(year, month).lengthOfMonth()
+            YearMonth.of(year, month+1).lengthOfMonth()
         } else {
             Calendar.getInstance().apply {
                 set(Calendar.YEAR, year)
-                set(Calendar.MONTH, month - 1)
+                set(Calendar.MONTH, month + 1)
             }.getActualMaximum(Calendar.DAY_OF_MONTH)
         }
         return 1..maxDay

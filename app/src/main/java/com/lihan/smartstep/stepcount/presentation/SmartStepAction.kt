@@ -19,6 +19,16 @@ sealed interface SmartStepAction {
     data object OnDismissBackgroundAccessModal: SmartStepAction
     data object OnResumeGetGranted: SmartStepAction
     data object OnDismissExitModal: SmartStepAction
-    data object OnShowExitModal: SmartStepAction
+    data object OnExitOkClick: SmartStepAction
     data object OnPermissionGranted: SmartStepAction
+    data object OnEditStepsClick: SmartStepAction
+    data object OnResetTodayStepsClick: SmartStepAction
+    data object OnResetStepClick: SmartStepAction
+    data object OnDismissResetStepsDialog: SmartStepAction
+    data object OnDismissDatePickerDialog: SmartStepAction
+    data object OnDismissEditStepsDialog: SmartStepAction
+    data object OnEditStepsSaveClick: SmartStepAction
+    data object OnShowDatePicker: SmartStepAction
+    data object OnDismissDatePicker: SmartStepAction
+    data class OnDatePickerSaveClick(val timestamp: Long): SmartStepAction
 }

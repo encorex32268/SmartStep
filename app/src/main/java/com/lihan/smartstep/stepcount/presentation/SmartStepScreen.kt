@@ -8,12 +8,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,6 +24,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -41,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,13 +58,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.data.isNotInPowerManagerWhiteList
 import com.lihan.smartstep.core.data.openPowerManagerIntent
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.DailyStepsCard
+import com.lihan.smartstep.stepcount.presentation.components.DatePickerDialog
+import com.lihan.smartstep.stepcount.presentation.components.EditStepsDialog
 import com.lihan.smartstep.stepcount.presentation.components.EnableAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.ExitModal
 import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccessModal
+import com.lihan.smartstep.stepcount.presentation.components.StepResetDialog
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
 import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
@@ -82,7 +81,6 @@ import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import java.time.DayOfWeek
 import java.util.Locale
 
 @Composable
@@ -225,7 +223,9 @@ fun SmartStepScreen(
                                     when (drawerItem.id) {
                                         R.string.step_goal -> onAction(SmartStepAction.OnStepGoalClick)
                                         R.string.personal_settings -> onAction(SmartStepAction.OnPersonSettingsClick)
-                                        R.string.exit -> onAction(SmartStepAction.OnShowExitModal)
+                                        R.string.edit_steps_drawer -> onAction(SmartStepAction.OnEditStepsClick)
+                                        R.string.reset_today_steps -> onAction(SmartStepAction.OnResetTodayStepsClick)
+                                        R.string.exit -> onAction(SmartStepAction.OnExitClick)
                                     }
                                 }
                                 .padding(vertical = 16.dp, horizontal = 24.dp),
@@ -299,7 +299,9 @@ fun SmartStepScreen(
                         goalSteps = 6000.toString()
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .widthIn(max = 394.dp)
+                    .fillMaxWidth()
             )
 
         }
@@ -359,10 +361,47 @@ fun SmartStepScreen(
     if(state.isShowExitModal){
         ExitModal(
             onOkClick = {
-                onAction(SmartStepAction.OnExitClick)
+                onAction(SmartStepAction.OnExitOkClick)
             },
             onDismiss = {
                 onAction(SmartStepAction.OnDismissExitModal)
+            }
+        )
+    }
+
+    if (state.isShowEditSteps){
+        EditStepsDialog(
+            dateTextFieldState = state.editStepsDateTextFieldState,
+            stepsTextState = state.editStepsStepsTextFieldState,
+            onCancelClick = {
+                onAction(SmartStepAction.OnDismissEditStepsDialog)
+            },
+            onSaveClick = {
+                onAction(SmartStepAction.OnEditStepsSaveClick)
+            },
+            onDateClick = {
+                onAction(SmartStepAction.OnShowDatePicker)
+            }
+        )
+        if (state.isShowDatePicker){
+            DatePickerDialog(
+                onSaveClick = {
+                    onAction(SmartStepAction.OnDatePickerSaveClick(it))
+                },
+                onCancelClick = {
+                    onAction(SmartStepAction.OnDismissDatePickerDialog)
+                }
+            )
+        }
+    }
+
+    if (state.isShowResetStepsDialog){
+        StepResetDialog(
+            onDismiss = {
+                onAction(SmartStepAction.OnDismissResetStepsDialog)
+            },
+            onResetClick = {
+                onAction(SmartStepAction.OnResetStepClick)
             }
         )
     }
@@ -377,7 +416,10 @@ private fun SmartStepScreenPreview() {
         SmartStepScreen(
             state = SmartStepState(
                 step = 1234,
-                isShowStepGoal = false
+                isShowStepGoal = false,
+                isShowResetStepsDialog = false,
+                isShowEditSteps = false,
+                isShowDatePicker = false
             ),
             onAction = {},
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
