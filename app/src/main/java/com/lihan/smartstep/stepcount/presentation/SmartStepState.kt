@@ -18,7 +18,8 @@ data class SmartStepState(
     val isShowResetStepsDialog: Boolean = false,
     val isShowDatePicker: Boolean = false,
     val editStepsDateTextFieldState: TextFieldState = TextFieldState(),
-    val editStepsStepsTextFieldState: TextFieldState = TextFieldState()
+    val editStepsStepsTextFieldState: TextFieldState = TextFieldState(),
+    val isTrackingStep: Boolean = false
 )
 
 val stepGoalItems = (1..40).map { (it * 1000) .toString()}

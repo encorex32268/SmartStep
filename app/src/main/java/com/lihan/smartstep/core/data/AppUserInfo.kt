@@ -12,6 +12,7 @@ import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class AppUserInfo(
@@ -27,6 +28,8 @@ class AppUserInfo(
         private val IS_SHOWN_BACKGROUND_ACCESS = booleanPreferencesKey("background_access")
         private val HEIGHT_UNIT = stringPreferencesKey("height_unit")
         private val WEIGHT_UNIT = stringPreferencesKey("weight_unit")
+        private val INITIAL_STEPS = longPreferencesKey("initial_steps")
+        private val TODAY_STEPS = longPreferencesKey("today_steps")
     }
 
     private val Context.datStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
@@ -148,6 +151,34 @@ class AppUserInfo(
     override fun getShownBackgroundAccess(): Flow<Boolean> {
         return context.datStore.data.map { preferences ->
             preferences[IS_SHOWN_BACKGROUND_ACCESS]?:false
+        }
+    }
+
+    override suspend fun updateDeviceInitSteps(value: Long) {
+        context.datStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[INITIAL_STEPS] = value
+            }
+        }
+    }
+
+    override fun getDeviceInitSteps(): Flow<Long> {
+        return context.datStore.data.map { preferences ->
+            preferences[INITIAL_STEPS]?:0L
+        }
+    }
+
+    override suspend fun updateTodaySteps(value: Long) {
+        context.datStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[TODAY_STEPS] = value
+            }
+        }
+    }
+
+    override fun getTodaySteps(): Flow<Long> {
+        return context.datStore.data.map { preferences ->
+            preferences[TODAY_STEPS]?:0L
         }
     }
 }

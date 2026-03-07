@@ -1,10 +1,48 @@
 
+2026/03/07 (六)
+- DataStore裡面建立初始化步數 deviceInitSteps
+- userTodaySteps DataStore
+- observe UserStep Counting
+
+
+規劃
+Task List
+- 1. 初始化 步數 紀錄
+
+- 2. 時時紀錄步數
+- 3. 今日步數 = 現在Total - 初始化Total
+
+- . WorkManager 0點的時候 重新計算
+3/7 init 1,000
+3/8 7,000  => nowTotal - init  = 6,000 save to db , (2026/03/07,goal:3000,steps:6,000)
+再將獲取 Total init => 7,000 開始
+
+
+
+
+
+
+
+
+2026/03/06 (五)
+- EditSteps Steps InputTransformation proposed - new value - char - old value
+- Room database
+
+
+
+2026/03/05 (四)
+- DailyAverage Card Done.
+- EditSteps / Reset Dialog State
+- EditSteps Date Change
+
 
 2026/03/04 (三)
 - Fix StepGoalModal
 - Fixed StepGoalModal
 - Built DatePicker
 - Built StepResetDialog
+- Notification
+- DailyAverage Card
 
 2026/03/03 (二)
 

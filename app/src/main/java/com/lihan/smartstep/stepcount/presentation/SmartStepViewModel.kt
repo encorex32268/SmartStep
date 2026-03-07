@@ -1,14 +1,25 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.lihan.smartstep.stepcount.presentation
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.UserInfoDataStore
+import com.lihan.smartstep.stepcount.domain.AppSensorManager
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -19,9 +30,11 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 class SmartStepViewModel(
-    private val userInfoDataStore: UserInfoDataStore
+    private val userInfoDataStore: UserInfoDataStore,
+    private val appSensorManager: AppSensorManager
 ): ViewModel() {
 
+    private var currentTodaySteps = 0L
     private var hasLoadedInitialData = false
 
     private val _state = MutableStateFlow(SmartStepState())
@@ -30,6 +43,7 @@ class SmartStepViewModel(
         if (!hasLoadedInitialData){
             observeTotalStep()
             initBackgroundAccess()
+            initSensorManager()
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -37,6 +51,7 @@ class SmartStepViewModel(
         SharingStarted.WhileSubscribed(5_000),
         SmartStepState()
     )
+
 
     fun onAction(action: SmartStepAction){
         when(action){
@@ -137,7 +152,8 @@ class SmartStepViewModel(
             SmartStepAction.OnEditStepsClick -> {
                 state.value.editStepsDateTextFieldState.clearText()
                 _state.update { it.copy(
-                    isShowEditSteps = true
+                    isShowEditSteps = true,
+                    step = 0L
                 ) }
             }
             SmartStepAction.OnResetTodayStepsClick ->{
@@ -181,6 +197,17 @@ class SmartStepViewModel(
                     isShowDatePicker = false
                 ) }
             }
+
+            SmartStepAction.OnResumeCounting ->{
+                _state.update { it.copy(
+                    isTrackingStep = true
+                ) }
+            }
+            SmartStepAction.OnStopCounting -> {
+                _state.update { it.copy(
+                    isTrackingStep = false
+                ) }
+            }
         }
     }
 
@@ -191,6 +218,33 @@ class SmartStepViewModel(
     private fun onResetSteps() {
 
     }
+
+    private fun initSensorManager() {
+        viewModelScope.launch {
+            val userTodaySteps = userInfoDataStore.getTodaySteps().first()
+            _state.update { it.copy(step = userTodaySteps) }
+        }
+
+        state.map { it.isTrackingStep }
+            .distinctUntilChanged()
+            .flatMapLatest { isTracking ->
+                if (isTracking){
+                    appSensorManager.trackingStep()
+                }else{
+                    userInfoDataStore.updateTodaySteps(state.value.step)
+                    userInfoDataStore.updateDeviceInitSteps(0)
+                    emptyFlow()
+                }
+            }.onEach { step ->
+                _state.update { it.copy(
+                    step = it.step + step
+                ) }
+            }
+            .launchIn(viewModelScope)
+
+
+    }
+
 
     private fun saveStepGoal(value: String) {
         _state.update { it.copy(

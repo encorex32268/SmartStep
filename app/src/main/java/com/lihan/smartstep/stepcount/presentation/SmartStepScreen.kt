@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -288,7 +287,13 @@ fun SmartStepScreen(
                     .fillMaxWidth(),
                 steps = state.step.formatThousands(),
                 stepsTotal = state.totalStep.toString(),
-                isCounting = false
+                isCounting = state.isTrackingStep,
+                onPauseClick = {
+                    onAction(SmartStepAction.OnStopCounting)
+                },
+                onResumeClick = {
+                    onAction(SmartStepAction.OnResumeCounting)
+                }
             )
             Spacer(Modifier.height(8.dp))
             DailyStepsCard(

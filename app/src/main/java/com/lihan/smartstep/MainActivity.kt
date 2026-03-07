@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,10 +26,13 @@ import com.lihan.smartstep.core.data.DefaultNotification
 import com.lihan.smartstep.core.domain.SmartStepNotification
 import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
+import com.lihan.smartstep.stepcount.data.DefaultSensorManager
+import com.lihan.smartstep.stepcount.domain.AppSensorManager
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.SmartStepTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
 
@@ -52,9 +56,6 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel by inject<MainViewModel>()
 
-    private val smartStepNotification: SmartStepNotification by lazy {
-        DefaultNotification(this@MainActivity)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SmartStepTheme {
+
                 val mainState by mainViewModel.state.collectAsStateWithLifecycle()
                 val startDestination = mainState.startDestination
                 val navController = rememberNavController()
@@ -113,20 +115,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable<Route.Test>{
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ){
-                                    Button(
-                                        onClick = {
-                                            smartStepNotification.sendNotification()
-                                        }
-                                    ) {
-                                        Text(
-                                            text = "Send Notification"
-                                        )
-                                    }
-                                }
+
                             }
                         }
 
