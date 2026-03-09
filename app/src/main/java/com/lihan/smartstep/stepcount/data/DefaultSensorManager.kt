@@ -44,7 +44,10 @@ class DefaultSensorManager(
                     }else{
                         totalSteps - deviceInitSteps
                     }
-                    trySend(trackingStep)
+                    //a batch of 10 or more to update state
+                    if (trackingStep % 10 >= 0){
+                        trySend(trackingStep)
+                    }
                 }
             }
         }

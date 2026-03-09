@@ -287,12 +287,18 @@ fun SmartStepScreen(
                     .fillMaxWidth(),
                 steps = state.step.formatThousands(),
                 stepsTotal = state.totalStep.toString(),
+                distance = state.distance,
+                calories = state.calories,
+                timer = state.timer,
                 isCounting = state.isTrackingStep,
                 onPauseClick = {
                     onAction(SmartStepAction.OnStopCounting)
                 },
                 onResumeClick = {
                     onAction(SmartStepAction.OnResumeCounting)
+                },
+                onEditClick = {
+                    onAction(SmartStepAction.OnEditClick)
                 }
             )
             Spacer(Modifier.height(8.dp))

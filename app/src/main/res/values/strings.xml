@@ -55,6 +55,9 @@
     <string name="reset">Reset</string>
     <string name="paused">Paused</string>
     <string name="daily_average_steps">Daily Average: %1$s steps</string>
+    <string name="km">km</string>
+    <string name="kcal">kcal</string>
+    <string name="min">min</string>
 
 
 </resources>

@@ -2,6 +2,8 @@ package com.lihan.smartstep.stepcount.presentation
 
 import androidx.compose.foundation.text.input.TextFieldState
 import java.text.DecimalFormat
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 data class SmartStepState(
     val step: Long = 0,
@@ -19,7 +21,10 @@ data class SmartStepState(
     val isShowDatePicker: Boolean = false,
     val editStepsDateTextFieldState: TextFieldState = TextFieldState(),
     val editStepsStepsTextFieldState: TextFieldState = TextFieldState(),
-    val isTrackingStep: Boolean = false
+    val isTrackingStep: Boolean = false,
+    val timer: Duration = 0.minutes,
+    val distance: Double = 0.0,
+    val calories: Long = 0L
 )
 
 val stepGoalItems = (1..40).map { (it * 1000) .toString()}

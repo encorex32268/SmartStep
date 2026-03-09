@@ -42,14 +42,20 @@ import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextWhite
 import com.lihan.smartstep.ui.theme.titleAccent
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun StepsCard(
     isCounting: Boolean,
     steps: String,
     stepsTotal: String,
+    distance: Double,
+    calories: Long,
+    timer: Duration,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -75,7 +81,7 @@ fun StepsCard(
                 SmartStepIconButton(
                     imageVector = PenEdit,
                     shape = CircleShape,
-                    onClick = { /* PenEdit Click */}
+                    onClick = onEditClick
                 )
                 Spacer(Modifier.width(16.dp))
                 SmartStepIconButton(
@@ -168,8 +174,8 @@ fun StepsCard(
                         enabled = false
                     )
                     CounterElement(
-                        value = "3.2",
-                        unit = "km"
+                        value = distance.toString(),
+                        unit = stringResource(R.string.km)
                     )
                 }
                 Column(
@@ -178,11 +184,11 @@ fun StepsCard(
                 ){
                     SmartStepIconButton(
                         imageVector = WeightDiet,
-                        onClick = { /* PenEdit Click */}
+                        onClick = { }
                     )
                     CounterElement(
-                        value = "215",
-                        unit = "kcal"
+                        value = calories.toString(),
+                        unit = stringResource(R.string.kcal)
                     )
                 }
                 Column(
@@ -191,11 +197,11 @@ fun StepsCard(
                 ){
                     SmartStepIconButton(
                         imageVector = Clock,
-                        onClick = { /* Pause Click */}
+                        onClick = { }
                     )
                     CounterElement(
-                        value = "42",
-                        unit = "min"
+                        value = timer.inWholeMinutes.toString(),
+                        unit = stringResource(R.string.min)
                     )
                 }
 
@@ -219,7 +225,11 @@ private fun StepsCardPreview() {
             steps = "4,523",
             stepsTotal = "6000",
             onPauseClick = {},
-            onResumeClick = {}
+            onResumeClick = {},
+            onEditClick = {},
+            distance = 1.23,
+            calories = 304,
+            timer = 120.seconds
         )
     }
 }

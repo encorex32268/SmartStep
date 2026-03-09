@@ -33,5 +33,6 @@ sealed interface SmartStepAction {
     data class OnDatePickerSaveClick(val timestamp: Long): SmartStepAction
     data object OnStopCounting: SmartStepAction
     data object OnResumeCounting: SmartStepAction
+    data object OnEditClick: SmartStepAction
 
 }

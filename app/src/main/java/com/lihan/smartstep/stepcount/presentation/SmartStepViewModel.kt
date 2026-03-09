@@ -8,7 +8,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.UserInfoDataStore
+import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.stepcount.domain.AppSensorManager
+import com.lihan.smartstep.stepcount.domain.Timer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +27,11 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.math.roundToLong
 
 class SmartStepViewModel(
     private val userInfoDataStore: UserInfoDataStore,
@@ -148,7 +152,7 @@ class SmartStepViewModel(
                     isShowEnableAccessModal = false
                 ) }
             }
-
+            SmartStepAction.OnEditClick,
             SmartStepAction.OnEditStepsClick -> {
                 state.value.editStepsDateTextFieldState.clearText()
                 _state.update { it.copy(
@@ -216,7 +220,10 @@ class SmartStepViewModel(
     }
 
     private fun onResetSteps() {
-
+        viewModelScope.launch {
+            userInfoDataStore.updateTodaySteps(0)
+            userInfoDataStore.updateDeviceInitSteps(0)
+        }
     }
 
     private fun initSensorManager() {
@@ -236,13 +243,43 @@ class SmartStepViewModel(
                     emptyFlow()
                 }
             }.onEach { step ->
-                _state.update { it.copy(
-                    step = it.step + step
-                ) }
+                calculateDataByStep(step)
             }
             .launchIn(viewModelScope)
 
+        state.map { it.isTrackingStep }
+            .distinctUntilChanged()
+            .flatMapLatest { isTracking ->
+                if (isTracking){
+                    Timer.emitDuration()
+                }else emptyFlow()
+            }.onEach { duration ->
+                _state.update { it.copy(
+                    timer = it.timer + duration
+                ) }
+            }.launchIn(viewModelScope)
 
+
+    }
+
+    private suspend fun calculateDataByStep(step: Long) {
+
+        val newStep = state.value.step + step
+
+        val height = userInfoDataStore.getHeight().first()
+        val distance = (height * 0.415) * newStep
+
+        val weight = userInfoDataStore.getWeight().first()
+        val isMale = userInfoDataStore.getGender().first() == Gender.MALE
+        val genderRate = if (isMale) 1f else 0.9f
+        val calories = weight * genderRate * 0.0005
+
+
+        _state.update { it.copy(
+            step = newStep,
+            calories = calories.roundToLong(),
+            distance = distance
+        ) }
     }
 
 
