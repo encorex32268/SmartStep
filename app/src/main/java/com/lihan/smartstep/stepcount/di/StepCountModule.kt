@@ -4,7 +4,9 @@ import androidx.room.Room
 import com.lihan.smartstep.stepcount.data.DefaultSensorManager
 import com.lihan.smartstep.stepcount.data.local.DailyStepDao
 import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
+import com.lihan.smartstep.stepcount.data.repository.SmartStepRepositoryImpl
 import com.lihan.smartstep.stepcount.domain.AppSensorManager
+import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
 import com.lihan.smartstep.stepcount.presentation.SmartStepViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModelOf
@@ -25,8 +27,11 @@ val stepCountModule = module {
     single { get<SmartStepDatabase>().dailyStepDao }.bind<DailyStepDao>()
     single {
         DefaultSensorManager(
-            context = androidContext(),
-            userInfoDataStore = get()
+            context = androidContext()
         )
     }.bind<AppSensorManager>()
+
+    single { SmartStepRepositoryImpl(
+        database = get()
+    ) }.bind<SmartStepRepository>()
 }

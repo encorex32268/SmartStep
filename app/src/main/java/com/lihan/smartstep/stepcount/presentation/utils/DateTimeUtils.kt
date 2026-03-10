@@ -2,8 +2,10 @@ package com.lihan.smartstep.stepcount.presentation.utils
 
 import android.annotation.SuppressLint
 import android.os.Build
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 
@@ -47,12 +49,25 @@ object DateTimeUtils {
 
     @SuppressLint("DefaultLocale")
     fun getToday(): String {
-        val month = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val day = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LocalDateTime.now().dayOfMonth
         } else {
             Date().day + 1
         }
-        return month.toString()
+        return day.toString()
+    }
+
+    fun getTodayEpochMilli(): Long {
+        return LocalDateTime.now()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+    }
+
+
+    fun getCustomDayOfWeek(): List<DayOfWeek>{
+        val dayOfWeeks = DayOfWeek.entries
+        return listOf(dayOfWeeks.last()) + dayOfWeeks.subList(0,5)
     }
 
 }

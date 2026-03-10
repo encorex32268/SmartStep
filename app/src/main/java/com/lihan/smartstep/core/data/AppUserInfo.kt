@@ -29,7 +29,7 @@ class AppUserInfo(
         private val IS_SHOWN_BACKGROUND_ACCESS = booleanPreferencesKey("background_access")
         private val HEIGHT_UNIT = stringPreferencesKey("height_unit")
         private val WEIGHT_UNIT = stringPreferencesKey("weight_unit")
-        private val INITIAL_STEPS = longPreferencesKey("initial_steps")
+        private val TODAY_TIMER = longPreferencesKey("mill_seconds")
         private val TODAY_STEPS = longPreferencesKey("today_steps")
         private val DAILY_STEPS = stringPreferencesKey("daily_steps")
     }
@@ -156,20 +156,6 @@ class AppUserInfo(
         }
     }
 
-    override suspend fun updateDeviceInitSteps(value: Long) {
-        context.dataStore.updateData { preferences ->
-            preferences.toMutablePreferences().also { mutablePreferences ->
-                mutablePreferences[INITIAL_STEPS] = value
-            }
-        }
-    }
-
-    override fun getDeviceInitSteps(): Flow<Long> {
-        return context.dataStore.data.map { preferences ->
-            preferences[INITIAL_STEPS]?:0L
-        }
-    }
-
     override suspend fun updateTodaySteps(value: Long) {
         context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
@@ -201,6 +187,20 @@ class AppUserInfo(
             } else {
                 Json.decodeFromString<List<DailyStep>>(json)
             }
+        }
+    }
+
+    override suspend fun updateTodayTimer(millSeconds: Long) {
+        context.dataStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[TODAY_TIMER] = millSeconds
+            }
+        }
+    }
+
+    override fun getTodayTimer(): Flow<Long> {
+        return context.dataStore.data.map { preferences ->
+            preferences[TODAY_TIMER]?:0L
         }
     }
 }

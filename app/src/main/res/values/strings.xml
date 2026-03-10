@@ -10,7 +10,7 @@
     <string name="lbs">lbs</string>
     <string name="gender">Gender</string>
     <string name="not_run_in_the_background">The app will fully close and will\nnot run in the background.</string>
-    <string name="total_steps">/%1$s Steps</string>
+    <string name="total_steps">/%1$d Steps</string>
     <string name="my_profile">My profile</string>
     <string name="skip">Skip</string>
     <string name="my_profile_tips">This information helps calculate your activity more accurately.</string>

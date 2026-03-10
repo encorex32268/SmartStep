@@ -76,7 +76,7 @@ private fun DailyStepPreview() {
         DailyStep(
             date = "Sun",
             steps = "12,345",
-            percentage = 0.3f
+            percentage = 0f
         )
     }
 }

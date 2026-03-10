@@ -21,33 +21,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.modifier.negativePadding
-import com.lihan.smartstep.stepcount.presentation.components.model.DailyStepUI
+import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.formatThousands
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.ButtonSecondary
 import com.lihan.smartstep.ui.theme.medium
 import java.time.DayOfWeek
+import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
 fun DailyStepsCard(
+    average: Long,
     dailySteps: List<DailyStepUI>,
     modifier: Modifier = Modifier
 ) {
 
-    val average by remember(dailySteps){
-        val sum = dailySteps.sumOf {
-            it.steps.toLongOrNull()?:0
-        }
-        mutableLongStateOf(
-           if (sum == 0L) {
-               0
-           }else{
-               sum / 7
-           }
-        )
-    }
-    
     Surface(
         modifier = modifier,
         color = ButtonPrimary,
@@ -76,9 +65,11 @@ fun DailyStepsCard(
                     val percentage = remember(dailyStep) {
                         (dailyStep.steps.toLong() / dailyStep.goalSteps.toLong().toFloat())
                     }
+
+                    println("${dailyStep.date}: ${percentage}")
                     DailyStep(
                         steps = dailyStep.steps.toLong().formatThousands(),
-                        percentage = percentage,
+                        percentage = if (percentage.isNaN()) 0f else percentage,
                         date = dailyStep.date,
                         modifier = Modifier.weight(1f)
                     )
@@ -98,12 +89,14 @@ private fun DailyStepsCardPreview() {
     val date = getDaysOfWeek().mapIndexed { index, week ->
         DailyStepUI(
             steps = (index*2000) .toString(),
-            date = week.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH),
-            goalSteps = 6000.toString()
+            date = week.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
+            goalSteps = 6000.toString(),
+            timestamp = 0
         )
     }
 
     DailyStepsCard(
+        average = 1933,
         dailySteps = date
     )
 }
@@ -111,7 +104,5 @@ private fun DailyStepsCardPreview() {
 fun getDaysOfWeek(firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<DayOfWeek> {
     val days = DayOfWeek.entries
     val firstIndex = days.indexOf(firstDay)
-
-    // 重新排列：從指定的那天開始，繞一圈回來
     return days.subList(firstIndex, days.size) + days.subList(0, firstIndex)
 }

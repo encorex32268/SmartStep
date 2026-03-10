@@ -1,8 +1,9 @@
-package com.lihan.smartstep.stepcount.presentation.components.model
+package com.lihan.smartstep.stepcount.presentation.model
 
 data class DailyStepUI(
     val steps: String,
     val date: String,
+    val timestamp: Long,
     val goalSteps: String
 )
 

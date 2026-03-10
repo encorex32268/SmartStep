@@ -31,12 +31,12 @@ interface UserInfoDataStore {
     suspend fun updateIsShownBackgroundAccess(isShown: Boolean)
     fun getShownBackgroundAccess(): Flow<Boolean>
 
-    suspend fun updateDeviceInitSteps(value: Long)
-    fun getDeviceInitSteps(): Flow<Long>
-
     suspend fun updateTodaySteps(value: Long)
     fun getTodaySteps(): Flow<Long>
 
     suspend fun updateTempDailySteps(dailySteps: List<DailyStep>)
     fun getTempDailySteps(): Flow<List<DailyStep>>
+
+    suspend fun updateTodayTimer(millSeconds: Long)
+    fun getTodayTimer(): Flow<Long>
 }

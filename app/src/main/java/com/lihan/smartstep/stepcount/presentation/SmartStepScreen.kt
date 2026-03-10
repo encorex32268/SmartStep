@@ -69,7 +69,7 @@ import com.lihan.smartstep.stepcount.presentation.components.StepResetDialog
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
 import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
-import com.lihan.smartstep.stepcount.presentation.components.model.DailyStepUI
+import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
 import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
 import com.lihan.smartstep.ui.theme.BackgroundMain
@@ -80,6 +80,7 @@ import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
@@ -285,8 +286,8 @@ fun SmartStepScreen(
                 modifier = Modifier
                     .widthIn(max = 394.dp)
                     .fillMaxWidth(),
-                steps = state.step.formatThousands(),
-                stepsTotal = state.totalStep.toString(),
+                steps = state.step,
+                stepsTotal = state.totalStep,
                 distance = state.distance,
                 calories = state.calories,
                 timer = state.timer,
@@ -303,13 +304,8 @@ fun SmartStepScreen(
             )
             Spacer(Modifier.height(8.dp))
             DailyStepsCard(
-                dailySteps =  getDaysOfWeek().mapIndexed { index, week ->
-                    DailyStepUI(
-                        steps = (index*2000) .toString(),
-                        date = week.getDisplayName(java.time.format.TextStyle.SHORT, Locale.US),
-                        goalSteps = 6000.toString()
-                    )
-                },
+                average = state.average,
+                dailySteps = state.dailySteps,
                 modifier = Modifier
                     .widthIn(max = 394.dp)
                     .fillMaxWidth()

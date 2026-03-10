@@ -1,6 +1,8 @@
 package com.lihan.smartstep.stepcount.presentation
 
 import androidx.compose.foundation.text.input.TextFieldState
+import com.lihan.smartstep.stepcount.domain.model.DailyStep
+import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import java.text.DecimalFormat
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -24,8 +26,14 @@ data class SmartStepState(
     val isTrackingStep: Boolean = false,
     val timer: Duration = 0.minutes,
     val distance: Double = 0.0,
-    val calories: Long = 0L
-)
+    val calories: Long = 0L,
+    val dailySteps: List<DailyStepUI> = emptyList()
+){
+    val average: Long
+        get() = dailySteps.sumOf { it.steps.toLong() } / 7
+
+
+}
 
 val stepGoalItems = (1..40).map { (it * 1000) .toString()}
 

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SmartStepRepository {
 
-    fun updateDailyStep(dailyStep: DailyStep)
+    suspend fun updateDailyStep(dailyStep: DailyStep)
 
-    fun getDailyStep(timestamp: Long): Flow<DailyStep>
+    fun getWeekDailySteps(timestamp: Long): Flow<List<DailyStep>>
 }

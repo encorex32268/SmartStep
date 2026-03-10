@@ -1,15 +1,19 @@
-package com.lihan.smartstep.stepcount.data.worker
+package com.lihan.smartstep.core.data.worker
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.stepcount.data.local.DailyStepEntity
 import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
+import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
+import kotlinx.coroutines.flow.first
 
 class DailySyncWorker(
     appContext: Context,
     val workerParameters: WorkerParameters,
-    val database: SmartStepDatabase
+    val database: SmartStepDatabase,
+    val userInfoDataStore: UserInfoDataStore
 ): CoroutineWorker(
     appContext,
     workerParameters
@@ -24,12 +28,12 @@ class DailySyncWorker(
         if (runAttemptCount > 3){
             return Result.failure()
         }
-        val timestamp = workerParameters.inputData.getLong(TIMESTAMP,0L)
-        val goal = workerParameters.inputData.getLong(GOAL_STEPS,0L)
-        val steps = workerParameters.inputData.getLong(STEPS,0L)
+
+        val goal = userInfoDataStore.getTotalStep().first()
+        val steps = userInfoDataStore.getTodaySteps().first()
 
         val entity =  DailyStepEntity(
-            timestamp = timestamp,
+            timestamp = DateTimeUtils.getTodayEpochMilli(),
             goal = goal,
             steps = steps
         )

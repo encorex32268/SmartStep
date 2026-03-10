@@ -6,11 +6,16 @@ import android.app.NotificationManager
 import android.os.Build
 import com.lihan.smartstep.core.di.coreModule
 import com.lihan.smartstep.stepcount.di.stepCountModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class SmartStepApplication: Application() {
+
+    val applicationScope = CoroutineScope(SupervisorJob())
+
     companion object{
         const val CHANNEL_ID = "smart_step"
     }

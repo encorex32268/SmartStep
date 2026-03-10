@@ -15,38 +15,29 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DefaultSensorManager(
-    private val context: Context,
-    private val userInfoDataStore: UserInfoDataStore
+    private val context: Context
 ) : AppSensorManager {
+
     private val sensorManager: SensorManager by lazy {
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
+    private var stepBuffer = 0L
+
+    companion object{
+        private const val BATCH_SIZE = 10
+    }
     override fun trackingStep(): Flow<Long> = callbackFlow {
-        val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         val sensorEventListener = object : SensorEventListener {
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
             override fun onSensorChanged(sensorEvent: SensorEvent?) {
-                this@callbackFlow.launch {
-                    val totalStepsFloat = sensorEvent?.values?.firstOrNull()
-                    if (totalStepsFloat == null) {
-                        trySend(0)
-                        return@launch
-                    }
-                    val totalSteps = totalStepsFloat.toLong()
-                    val deviceInitSteps = userInfoDataStore.getDeviceInitSteps().first()
-
-                    if (deviceInitSteps == 0L) {
-                        userInfoDataStore.updateDeviceInitSteps(totalSteps)
-                    }
-                    val trackingStep = if (deviceInitSteps == 0L){
-                        0
-                    }else{
-                        totalSteps - deviceInitSteps
-                    }
-                    //a batch of 10 or more to update state
-                    if (trackingStep % 10 >= 0){
-                        trySend(trackingStep)
+                val detected = sensorEvent?.values?.getOrNull(0) ?: 0f
+                if (detected == 1.0f) {
+                    stepBuffer++
+                    if (stepBuffer >= BATCH_SIZE) {
+                        trySend(stepBuffer)
+                        stepBuffer = 0
                     }
                 }
             }
@@ -55,7 +46,8 @@ class DefaultSensorManager(
         sensorManager.registerListener(
             sensorEventListener,
             stepSensor,
-            SensorManager.SENSOR_DELAY_UI
+            SensorManager.SENSOR_DELAY_NORMAL,
+            10_000_000
         )
 
 

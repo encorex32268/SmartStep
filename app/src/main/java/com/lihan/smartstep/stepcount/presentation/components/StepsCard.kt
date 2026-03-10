@@ -37,6 +37,7 @@ import com.lihan.smartstep.core.presentation.design_system.Play
 import com.lihan.smartstep.core.presentation.design_system.SmartStepIconButton
 import com.lihan.smartstep.core.presentation.design_system.Sneaker
 import com.lihan.smartstep.core.presentation.design_system.WeightDiet
+import com.lihan.smartstep.stepcount.presentation.formatThousands
 import com.lihan.smartstep.ui.theme.BackgroundWhite20
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -48,8 +49,8 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun StepsCard(
     isCounting: Boolean,
-    steps: String,
-    stepsTotal: String,
+    steps: Long,
+    stepsTotal: Long,
     distance: Double,
     calories: Long,
     timer: Duration,
@@ -104,7 +105,7 @@ fun StepsCard(
 
             Spacer(Modifier.height(16.dp))
             Text(
-                text = steps,
+                text = steps.formatThousands(),
                 style = MaterialTheme.typography.titleAccent,
                 color = if (isCounting){
                     TextWhite
@@ -133,7 +134,7 @@ fun StepsCard(
                 Slider(
                     modifier = Modifier
                         .padding(bottom = 0.5.dp),
-                    value = 0.3f,
+                    value = (steps.toFloat() / stepsTotal.toFloat()),
                     onValueChange = {},
                     track = {
                         SliderDefaults.Track(
@@ -222,8 +223,8 @@ private fun StepsCardPreview() {
     SmartStepTheme {
         StepsCard(
             isCounting = false,
-            steps = "4,523",
-            stepsTotal = "6000",
+            steps = 5423,
+            stepsTotal = 6000,
             onPauseClick = {},
             onResumeClick = {},
             onEditClick = {},
