@@ -17,6 +17,8 @@ koin = "4.1.1"
 room = "2.8.4"
 desugar = "2.0.3"
 ksp = "2.3.4"
+worker = "2.11.1"
+serialization = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +64,13 @@ room-ktx = { module = "androidx.room:room-ktx" , version.ref = "room"}
 
 #Desugar JDK
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs" , version.ref = "desugar"}
+
+#Worker
+work = { module = "androidx.work:work-runtime-ktx" , version.ref = "worker"}
+work-testing = { module = "androidx.work:work-testing" , version.ref = "worker"}
+
+#Serialization
+serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json" , version.ref = "serialization"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

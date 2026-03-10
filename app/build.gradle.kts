@@ -20,6 +20,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "false"
     }
 
     buildTypes {
@@ -48,6 +49,11 @@ android {
 
 configurations.all {
     exclude(group = "com.intellij", module = "annotations")
+    resolutionStrategy.eachDependency {
+        if (requested.group == "com.google.guava" && requested.name == "listenablefuture") {
+            useVersion("9999.0-empty-to-avoid-conflict-with-guava")
+        }
+    }
 }
 
 dependencies {
@@ -83,5 +89,12 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    implementation(libs.work)
+    androidTestImplementation(libs.work)
+    androidTestImplementation(libs.work.testing)
+    implementation(libs.serialization)
+
+    implementation("com.google.guava:guava:31.1-android")
+    androidTestImplementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 
 }

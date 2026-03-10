@@ -1,8 +1,11 @@
 
+2026/03/10 THU
+-
 
 2026/03/09 MON
 - calculate distance , calories , timer update state
--
+- daily steps
+- WorkManager DailyWorker , Test OK
 
 2026/03/07 (六)
 - DataStore裡面建立初始化步數 deviceInitSteps

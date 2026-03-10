@@ -11,9 +11,10 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
+import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 class AppUserInfo(
     private val context: Context
@@ -30,12 +31,13 @@ class AppUserInfo(
         private val WEIGHT_UNIT = stringPreferencesKey("weight_unit")
         private val INITIAL_STEPS = longPreferencesKey("initial_steps")
         private val TODAY_STEPS = longPreferencesKey("today_steps")
+        private val DAILY_STEPS = stringPreferencesKey("daily_steps")
     }
 
-    private val Context.datStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
 
     override suspend fun updateGender(gender: Gender) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[GENDER_INT] = when(gender){
                     Gender.FEMALE -> 0
@@ -46,7 +48,7 @@ class AppUserInfo(
     }
 
     override fun getGender(): Flow<Gender> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             when(preferences[GENDER_INT]?:0){
                 0 -> Gender.FEMALE
                 1 -> Gender.MALE
@@ -56,7 +58,7 @@ class AppUserInfo(
     }
 
     override suspend fun updateHeight(height: Int) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[HEIGHT_INT] = height
             }
@@ -64,13 +66,13 @@ class AppUserInfo(
     }
 
     override fun getHeight(): Flow<Int> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[HEIGHT_INT]?:175
         }
     }
 
     override suspend fun updateWeight(weight: Int) {
-       context.datStore.updateData { preferences ->
+       context.dataStore.updateData { preferences ->
            preferences.toMutablePreferences().also { mutablePreferences ->
                mutablePreferences[WEIGHT_INT] = weight
            }
@@ -78,13 +80,13 @@ class AppUserInfo(
     }
 
     override fun getWeight(): Flow<Int> {
-       return context.datStore.data.map { preferences ->
+       return context.dataStore.data.map { preferences ->
            preferences[WEIGHT_INT]?:65
        }
     }
 
     override suspend fun updateHeightUnit(unitType: UnitType) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[HEIGHT_UNIT] = unitType.toKey()
             }
@@ -92,14 +94,14 @@ class AppUserInfo(
     }
 
     override fun getHeightUnit(): Flow<UnitType> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             UnitType.fromKey(preferences[HEIGHT_UNIT]?:"CM")
         }
     }
 
 
     override suspend fun updateWeightUnit(unitType: UnitType) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[WEIGHT_UNIT] = unitType.toKey()
             }
@@ -107,13 +109,13 @@ class AppUserInfo(
     }
 
     override fun getWeightUnit(): Flow<UnitType> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             UnitType.fromKey(preferences[WEIGHT_UNIT]?:"KG")
         }
     }
 
     override suspend fun updateIsSetting(isSet: Boolean) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[IS_SET_BOOLEAN] = isSet
             }
@@ -121,13 +123,13 @@ class AppUserInfo(
     }
 
     override fun getIsSetting(): Flow<Boolean> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[IS_SET_BOOLEAN]?:false
         }
     }
 
     override suspend fun updateTotalStep(value: Long) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[TOTAL_STEP] = value
             }
@@ -135,13 +137,13 @@ class AppUserInfo(
     }
 
     override fun getTotalStep(): Flow<Long> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[TOTAL_STEP]?:6000L
         }
     }
 
     override suspend fun updateIsShownBackgroundAccess(isShown: Boolean) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[IS_SHOWN_BACKGROUND_ACCESS] = isShown
             }
@@ -149,13 +151,13 @@ class AppUserInfo(
     }
 
     override fun getShownBackgroundAccess(): Flow<Boolean> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[IS_SHOWN_BACKGROUND_ACCESS]?:false
         }
     }
 
     override suspend fun updateDeviceInitSteps(value: Long) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[INITIAL_STEPS] = value
             }
@@ -163,13 +165,13 @@ class AppUserInfo(
     }
 
     override fun getDeviceInitSteps(): Flow<Long> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[INITIAL_STEPS]?:0L
         }
     }
 
     override suspend fun updateTodaySteps(value: Long) {
-        context.datStore.updateData { preferences ->
+        context.dataStore.updateData { preferences ->
             preferences.toMutablePreferences().also { mutablePreferences ->
                 mutablePreferences[TODAY_STEPS] = value
             }
@@ -177,8 +179,28 @@ class AppUserInfo(
     }
 
     override fun getTodaySteps(): Flow<Long> {
-        return context.datStore.data.map { preferences ->
+        return context.dataStore.data.map { preferences ->
             preferences[TODAY_STEPS]?:0L
+        }
+    }
+
+    override suspend fun updateTempDailySteps(dailySteps: List<DailyStep>) {
+        val json = Json.encodeToString(dailySteps)
+        context.dataStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[DAILY_STEPS] = json
+            }
+        }
+    }
+
+    override fun getTempDailySteps(): Flow<List<DailyStep>> {
+        return context.dataStore.data.map { preferences ->
+            val json = preferences[DAILY_STEPS]
+            if (json.isNullOrEmpty()) {
+                emptyList()
+            } else {
+                Json.decodeFromString<List<DailyStep>>(json)
+            }
         }
     }
 }

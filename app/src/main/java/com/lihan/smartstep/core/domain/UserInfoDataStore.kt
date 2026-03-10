@@ -2,6 +2,7 @@ package com.lihan.smartstep.core.domain
 
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
+import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import kotlinx.coroutines.flow.Flow
 
 interface UserInfoDataStore {
@@ -35,4 +36,7 @@ interface UserInfoDataStore {
 
     suspend fun updateTodaySteps(value: Long)
     fun getTodaySteps(): Flow<Long>
+
+    suspend fun updateTempDailySteps(dailySteps: List<DailyStep>)
+    fun getTempDailySteps(): Flow<List<DailyStep>>
 }

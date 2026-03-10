@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val userInfoDataStore: UserInfoDataStore
+    private val userInfoDataStore: UserInfoDataStore,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(MainState())
