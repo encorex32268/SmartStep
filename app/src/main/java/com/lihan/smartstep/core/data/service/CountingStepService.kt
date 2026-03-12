@@ -79,11 +79,13 @@ class CountingStepService: Service(){
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
             .setCustomBigContentView(notificationLayoutExpand)
-            .setOnlyAlertOnce(true)
             .setSilent(true)
             .setOngoing(false)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setDeleteIntent(createDeleteIntent())
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setSortKey("step_tracker")
+            .setGroup("step_group")
 
 
         serviceJob?.cancel()

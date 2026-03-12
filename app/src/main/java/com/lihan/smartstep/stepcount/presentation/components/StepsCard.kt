@@ -37,6 +37,7 @@ import com.lihan.smartstep.core.presentation.design_system.Play
 import com.lihan.smartstep.core.presentation.design_system.SmartStepIconButton
 import com.lihan.smartstep.core.presentation.design_system.Sneaker
 import com.lihan.smartstep.core.presentation.design_system.WeightDiet
+import com.lihan.smartstep.stepcount.domain.util.formatToString
 import com.lihan.smartstep.stepcount.presentation.formatThousands
 import com.lihan.smartstep.ui.theme.BackgroundWhite20
 import com.lihan.smartstep.ui.theme.ButtonPrimary
@@ -175,7 +176,7 @@ fun StepsCard(
                         enabled = false
                     )
                     CounterElement(
-                        value = distance.toString(),
+                        value = distance.formatToString(),
                         unit = stringResource(R.string.km)
                     )
                 }
@@ -228,7 +229,7 @@ private fun StepsCardPreview() {
             onPauseClick = {},
             onResumeClick = {},
             onEditClick = {},
-            distance = 1.23,
+            distance = 1.231314,
             calories = 304,
             timer = 120
         )
