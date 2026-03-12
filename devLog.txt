@@ -5,6 +5,7 @@
 - import Timber
 - Fix Notification Layout
 - CountingService Fix
+- Create Slide to Delete Foreground Service
 
 
 2026/03/11

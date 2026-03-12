@@ -33,7 +33,7 @@ class SmartStepApplication: Application() {
             )
         }
         if (BuildConfig.DEBUG){
-            Timber.plant()
+            Timber.plant(Timber.DebugTree())
         }
 
         createNotificationChannel()

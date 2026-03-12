@@ -39,6 +39,11 @@
             android:foregroundServiceType="health"
             android:exported="false"
             />
+
+        <receiver
+            android:name=".core.data.service.NotificationDeleteReceiver"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
