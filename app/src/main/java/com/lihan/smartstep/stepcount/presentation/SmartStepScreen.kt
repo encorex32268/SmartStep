@@ -8,6 +8,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,13 +55,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.data.openPowerManagerIntent
+import com.lihan.smartstep.core.data.isIgnoringBatteryOptimizations
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.DailyStepsCard
 import com.lihan.smartstep.stepcount.presentation.components.DatePickerDialog
@@ -68,10 +73,9 @@ import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccess
 import com.lihan.smartstep.stepcount.presentation.components.StepResetDialog
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
-import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
-import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
 import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
+import com.lihan.smartstep.stepcount.presentation.utils.isAppInForeground
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -80,15 +84,13 @@ import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun SmartStepScreenRoot(
     onExit: () -> Unit,
     onNavigateToPersonSettings: () -> Unit,
     viewModel: SmartStepViewModel = koinViewModel()
-){
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val drawerState = rememberDrawerState(
@@ -104,21 +106,24 @@ fun SmartStepScreenRoot(
         drawerState = drawerState,
         state = state,
         onAction = { action ->
-            if (action in closeDrawerActions){
+            if (action in closeDrawerActions) {
                 scope.launch { drawerState.close() }
             }
-            when(action){
+            when (action) {
                 SmartStepAction.OnMenuClick -> {
                     scope.launch {
                         drawerState.open()
                     }
                 }
+
                 SmartStepAction.OnExitClick -> {
                     onExit()
                 }
+
                 SmartStepAction.OnPersonSettingsClick -> {
                     onNavigateToPersonSettings()
                 }
+
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -156,29 +161,63 @@ fun SmartStepScreen(
         }
     )
 
+    val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(
+            permission = Manifest.permission.POST_NOTIFICATIONS,
+            onPermissionResult = { granted ->
+                if (granted){
+                    //TODO: Start Service
+                }
+            }
+        )
+    } else {
+        null
+    }
+
+    val backgroundRunningAccept = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { _ ->
+        val isIgnoringBatteryOptimizations = context.isIgnoringBatteryOptimizations()
+        if (isIgnoringBatteryOptimizations){
+            notificationPermission?.launchPermissionRequest()
+        }
+    }
+
+
+    val isInForeground by isAppInForeground()
+
+    LaunchedEffect(isInForeground) {
+        if (isInForeground) {
+
+        } else {
+
+        }
+    }
+
     LifecycleResumeEffect(activityRecognitionPermissionState.status) {
         when (val status = activityRecognitionPermissionState.status) {
             is PermissionStatus.Denied -> {
-                if (hasPermissionRequest){
+                if (hasPermissionRequest) {
                     val shouldShowRationale = status.shouldShowRationale
-                    if (shouldShowRationale){
+                    if (shouldShowRationale) {
                         onAction(SmartStepAction.OnShowSensorsAccessModal)
-                    }else{
+                    } else {
                         onAction(SmartStepAction.OnShowEnableAccessModal)
                     }
-                }else{
+                } else {
                     activityRecognitionPermissionState.launchPermissionRequest()
                 }
 
             }
+
             is PermissionStatus.Granted -> {
                 onAction(SmartStepAction.OnPermissionGranted)
-                if (showPowerWarning && !state.isShownBackgroundAccessModal){
+                if (showPowerWarning && !state.isShownBackgroundAccessModal) {
                     onAction(SmartStepAction.OnShowBackgroundAccessModalFirstTime)
                 }
             }
         }
-        onPauseOrDispose {  }
+        onPauseOrDispose { }
 
     }
 
@@ -196,7 +235,7 @@ fun SmartStepScreen(
                         .padding(12.dp)
                 ) {
                     item {
-                        if (showPowerWarning){
+                        if (showPowerWarning) {
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -212,8 +251,8 @@ fun SmartStepScreen(
                         }
                     }
 
-                    itemsIndexed(drawerItems){ index , drawerItem ->
-                        if(index != 0){
+                    itemsIndexed(drawerItems) { index, drawerItem ->
+                        if (index != 0) {
                             HorizontalDivider(color = StrokeMain)
                         }
                         Text(
@@ -251,7 +290,7 @@ fun SmartStepScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BackgroundMain
                 ),
-                windowInsets =  WindowInsets.systemBars,
+                windowInsets = WindowInsets.systemBars,
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -281,7 +320,7 @@ fun SmartStepScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             StepsCard(
                 modifier = Modifier
                     .widthIn(max = 394.dp)
@@ -315,7 +354,7 @@ fun SmartStepScreen(
 
     }
 
-    if (state.isShowStepGoal){
+    if (state.isShowStepGoal) {
         StepsGoalModal(
             value = state.totalStep.toString(),
             onDismiss = {
@@ -355,7 +394,11 @@ fun SmartStepScreen(
     if (state.isShowBackgroundAccessModal) {
         BackgroundAccessModal(
             onContinueClick = {
-                context.openPowerManagerIntent()
+                val intent = Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = "package:${context.packageName}".toUri()
+                }
+                backgroundRunningAccept.launch(intent)
+
                 onAction(SmartStepAction.OnDismissBackgroundAccessModal)
 
             },
@@ -365,7 +408,7 @@ fun SmartStepScreen(
         )
     }
 
-    if(state.isShowExitModal){
+    if (state.isShowExitModal) {
         ExitModal(
             onOkClick = {
                 onAction(SmartStepAction.OnExitOkClick)
@@ -376,7 +419,7 @@ fun SmartStepScreen(
         )
     }
 
-    if (state.isShowEditSteps){
+    if (state.isShowEditSteps) {
         EditStepsDialog(
             dateTextFieldState = state.editStepsDateTextFieldState,
             stepsTextState = state.editStepsStepsTextFieldState,
@@ -390,7 +433,7 @@ fun SmartStepScreen(
                 onAction(SmartStepAction.OnShowDatePicker)
             }
         )
-        if (state.isShowDatePicker){
+        if (state.isShowDatePicker) {
             DatePickerDialog(
                 onSaveClick = {
                     onAction(SmartStepAction.OnDatePickerSaveClick(it))
@@ -402,7 +445,7 @@ fun SmartStepScreen(
         }
     }
 
-    if (state.isShowResetStepsDialog){
+    if (state.isShowResetStepsDialog) {
         StepResetDialog(
             onDismiss = {
                 onAction(SmartStepAction.OnDismissResetStepsDialog)

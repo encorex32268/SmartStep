@@ -65,8 +65,6 @@ fun DailyStepsCard(
                     val percentage = remember(dailyStep) {
                         (dailyStep.steps.toLong() / dailyStep.goalSteps.toLong().toFloat())
                     }
-
-                    println("${dailyStep.date}: ${percentage}")
                     DailyStep(
                         steps = dailyStep.steps.toLong().formatThousands(),
                         percentage = if (percentage.isNaN()) 0f else percentage,

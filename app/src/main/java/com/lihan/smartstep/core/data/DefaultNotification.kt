@@ -18,18 +18,20 @@ class DefaultNotification(
     private val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
     override fun sendNotification() {
+        notificationManager.notify(101,getNotification())
+
+    }
+
+    override fun getNotification(): Notification {
 
         val notificationLayout = RemoteViews(context.packageName , R.layout.notification_small)
         val notificationLayoutExpand = RemoteViews(context.packageName , R.layout.notification_large)
 
-        val notification = NotificationCompat.Builder(context,CHANNEL_ID)
+        return NotificationCompat.Builder(context,CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_icon)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
             .setCustomBigContentView(notificationLayoutExpand)
             .build()
-
-        notificationManager.notify(101,notification)
-
     }
 }

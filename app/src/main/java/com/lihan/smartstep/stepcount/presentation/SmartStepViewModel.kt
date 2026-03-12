@@ -4,55 +4,38 @@ package com.lihan.smartstep.stepcount.presentation
 
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.smartstep.core.data.SmartStepTracker
 import com.lihan.smartstep.core.domain.UserInfoDataStore
-import com.lihan.smartstep.onboarding.presentation.model.Gender
-import com.lihan.smartstep.stepcount.domain.AppSensorManager
-import com.lihan.smartstep.stepcount.domain.Timer
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
-import com.lihan.smartstep.stepcount.presentation.components.DailyStep
+import com.lihan.smartstep.stepcount.domain.util.epochMilToDayOfWeekShort
+import com.lihan.smartstep.stepcount.domain.util.epochSecondToDateString
 import com.lihan.smartstep.stepcount.presentation.mapper.toUi
 import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getCustomDayOfWeek
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.time.DayOfWeek
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.TextStyle
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class SmartStepViewModel(
     private val userInfoDataStore: UserInfoDataStore,
-    private val appSensorManager: AppSensorManager,
-    private val repository: SmartStepRepository
+    private val repository: SmartStepRepository,
+    private val smartStepTracker: SmartStepTracker
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -61,10 +44,10 @@ class SmartStepViewModel(
     val state = _state
         .onStart {
         if (!hasLoadedInitialData){
-            observeTotalStep()
             initBackgroundAccess()
-            initSensorManager()
             getWeekDailySteps()
+            observeSmartStepTracker()
+            observeSmartStepTrackerStepDate()
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -73,40 +56,12 @@ class SmartStepViewModel(
         SmartStepState()
     )
 
-    private fun getWeekDailySteps() {
-        val today = DateTimeUtils.getTodayEpochMilli()
-        repository
-            .getWeekDailySteps(today)
-            .onEach { dailySteps ->
-                val hashMap = mutableMapOf<String, DailyStepUI>()
-                dailySteps.sortedBy { it.timestamp }.forEach { dailyStep ->
-                    val dailyStepUi = dailyStep.toUi()
-                    val short = dailyStepUi.timestamp.epochMilToDayOfWeekShort()
-                    hashMap[short] = dailyStepUi
-                }
-
-                val newDailySteps = getCustomDayOfWeek().map {
-                    val short = it.getDisplayName(TextStyle.SHORT, java.util.Locale.ENGLISH)
-                    hashMap[short] ?: DailyStepUI(
-                        steps = "0",
-                        date = short,
-                        goalSteps = "0",
-                        timestamp = 0
-                    )
-                }
-                _state.update { it.copy(
-                    dailySteps = newDailySteps
-                ) }
-            }
-            .launchIn(viewModelScope)
-    }
-
-
     fun onAction(action: SmartStepAction){
         when(action){
             SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             SmartStepAction.OnStepGoalClick -> showStepGoal()
             SmartStepAction.OnExitOkClick -> {
+                smartStepTracker.stopTracking()
                 _state.update { it.copy(
                     isShowExitModal = false
                 ) }
@@ -248,14 +203,10 @@ class SmartStepViewModel(
             }
 
             SmartStepAction.OnResumeCounting ->{
-                _state.update { it.copy(
-                    isTrackingStep = true
-                ) }
+                smartStepTracker.startTracking()
             }
             SmartStepAction.OnStopCounting -> {
-                _state.update { it.copy(
-                    isTrackingStep = false
-                ) }
+                smartStepTracker.stopTracking()
             }
         }
     }
@@ -269,71 +220,6 @@ class SmartStepViewModel(
             userInfoDataStore.updateTodaySteps(0)
             userInfoDataStore.updateTodayTimer(0L)
         }
-    }
-
-    private fun initSensorManager() {
-        viewModelScope.launch {
-            val userTodaySteps = userInfoDataStore.getTodaySteps().first()
-            val timer = userInfoDataStore.getTodayTimer().first().toDuration(DurationUnit.MILLISECONDS)
-            _state.update {it.copy(
-                step = userTodaySteps,
-                timer = timer
-            ) }
-            calculateDataByStep(0)
-
-        state.map { it.isTrackingStep }
-            .distinctUntilChanged()
-            .flatMapLatest { isTracking ->
-                if (isTracking){
-                    appSensorManager.trackingStep()
-                }else{
-                    userInfoDataStore.updateTodayTimer(state.value.timer.inWholeMilliseconds)
-                    userInfoDataStore.updateTodaySteps(state.value.step)
-                    saveDataToDB()
-                    emptyFlow()
-                }
-            }.onEach { step ->
-                calculateDataByStep(step)
-                saveDataToDB()
-            }
-            .launchIn(this)
-
-        state.map { it.isTrackingStep }
-            .distinctUntilChanged()
-            .flatMapLatest { isTracking ->
-                if (isTracking){
-                    Timer.emitDuration()
-                }else {
-                    emptyFlow()
-                }
-            }.onEach { duration ->
-                _state.update { it.copy(
-                    timer = it.timer + duration
-                ) }
-            }.launchIn(this)
-
-        }
-
-
-    }
-
-    private suspend fun calculateDataByStep(step: Long) {
-
-        val newStep = state.value.step + step
-
-        val height = userInfoDataStore.getHeight().first()
-        val distance = ((height * 0.415) * newStep)/100/1000
-
-        val weight = userInfoDataStore.getWeight().first()
-        val isMale = userInfoDataStore.getGender().first() == Gender.MALE
-        val genderRate = if (isMale) 1f else 0.9f
-        val calories = weight * genderRate * 0.0005 * newStep
-
-        _state.update { it.copy(
-            step = newStep,
-            calories = calories.roundToLong(),
-            distance = (distance * 10).roundToInt() / 10.0
-        ) }
     }
 
 
@@ -361,16 +247,7 @@ class SmartStepViewModel(
         ) }
     }
 
-    private fun observeTotalStep(){
-        userInfoDataStore
-            .getTotalStep()
-            .onEach { totalStep ->
-                _state.update { it.copy(
-                    totalStep = totalStep
-                ) }
-            }
-            .launchIn(viewModelScope)
-    }
+
 
     private fun initBackgroundAccess(){
         userInfoDataStore
@@ -394,27 +271,57 @@ class SmartStepViewModel(
             repository.updateDailyStep(dailyStep)
         }
     }
+
+    private fun observeSmartStepTracker() {
+        smartStepTracker.isTracking
+            .onEach { isTracking ->
+                _state.update { it.copy(
+                    isTrackingStep = isTracking
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+
+    private fun observeSmartStepTrackerStepDate() {
+        smartStepTracker.stepDate
+            .onEach { stepDate ->
+                _state.update { it.copy(
+                    timer = stepDate.countingTimestamp.milliseconds.toInt(DurationUnit.MINUTES),
+                    totalStep = stepDate.goalSteps,
+                    step = stepDate.steps,
+                    distance = stepDate.distance,
+                    calories = stepDate.calories
+                ) }
+            }.launchIn(viewModelScope)
+    }
+
+    private fun getWeekDailySteps() {
+        val today = DateTimeUtils.getTodayEpochMilli()
+        repository
+            .getWeekDailySteps(today)
+            .onEach { dailySteps ->
+                val hashMap = mutableMapOf<String, DailyStepUI>()
+                dailySteps.sortedBy { it.timestamp }.forEach { dailyStep ->
+                    val dailyStepUi = dailyStep.toUi()
+                    val short = dailyStepUi.timestamp.epochMilToDayOfWeekShort()
+                    hashMap[short] = dailyStepUi
+                }
+
+                val newDailySteps = getCustomDayOfWeek().map {
+                    val short = it.getDisplayName(TextStyle.SHORT, java.util.Locale.ENGLISH)
+                    hashMap[short] ?: DailyStepUI(
+                        steps = "0",
+                        date = short,
+                        goalSteps = "0",
+                        timestamp = 0
+                    )
+                }
+                _state.update { it.copy(
+                    dailySteps = newDailySteps
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
 }
 
-
-fun Long.epochSecondToDateString(): String {
-    val zoneId = ZoneId.systemDefault()
-    val offset = zoneId.rules.getOffset(Instant.ofEpochSecond(this))
-
-    val localDateTime = LocalDateTime.ofEpochSecond(
-        this, 0, offset
-    )
-    val year = localDateTime.year + 1920
-    val month = localDateTime.monthValue
-    val day = localDateTime.dayOfMonth
-    return "$year/$month/$day"
-}
-
-fun Long.epochMilToDayOfWeekShort(): String {
-    val zoneId = ZoneId.systemDefault()
-    val localDateTime = LocalDateTime.ofInstant(
-        Instant.ofEpochMilli(this),
-        zoneId
-    )
-    return localDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, java.util.Locale.ENGLISH)
-}

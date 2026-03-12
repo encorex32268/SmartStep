@@ -24,7 +24,7 @@ data class SmartStepState(
     val editStepsDateTextFieldState: TextFieldState = TextFieldState(),
     val editStepsStepsTextFieldState: TextFieldState = TextFieldState(),
     val isTrackingStep: Boolean = false,
-    val timer: Duration = 0.minutes,
+    val timer: Int = 0,
     val distance: Double = 0.0,
     val calories: Long = 0L,
     val dailySteps: List<DailyStepUI> = emptyList()

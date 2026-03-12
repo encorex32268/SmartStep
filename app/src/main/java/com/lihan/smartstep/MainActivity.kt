@@ -5,14 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,17 +19,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lihan.smartstep.core.data.DefaultNotification
-import com.lihan.smartstep.core.domain.SmartStepNotification
-import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
-import com.lihan.smartstep.stepcount.data.DefaultSensorManager
-import com.lihan.smartstep.stepcount.domain.AppSensorManager
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.SmartStepTheme
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
 
@@ -115,7 +106,13 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable<Route.Test>{
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
 
+                                }
                             }
                         }
 
@@ -126,3 +123,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

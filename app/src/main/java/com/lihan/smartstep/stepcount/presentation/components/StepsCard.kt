@@ -53,7 +53,7 @@ fun StepsCard(
     stepsTotal: Long,
     distance: Double,
     calories: Long,
-    timer: Duration,
+    timer: Int,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
     onEditClick: () -> Unit,
@@ -201,7 +201,7 @@ fun StepsCard(
                         onClick = { }
                     )
                     CounterElement(
-                        value = timer.inWholeMinutes.toString(),
+                        value = timer.toString(),
                         unit = stringResource(R.string.min)
                     )
                 }
@@ -230,7 +230,7 @@ private fun StepsCardPreview() {
             onEditClick = {},
             distance = 1.23,
             calories = 304,
-            timer = 120.seconds
+            timer = 120
         )
     }
 }

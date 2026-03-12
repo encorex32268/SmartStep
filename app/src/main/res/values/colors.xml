@@ -12,4 +12,5 @@
     <color name="button_primary">#FF3A43B6</color>
     <color name="background_main">#FFE4F0FB</color>
     <color name="text_primary">#FF1F2024</color>
+    <color name="stroke_main">#E5E7EB</color>
 </resources>

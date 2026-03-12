@@ -1,5 +1,6 @@
 package com.lihan.smartstep.core.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
@@ -9,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 
-fun Context.isNotInPowerManagerWhiteList(): Boolean {
+fun Context.isIgnoringBatteryOptimizations(): Boolean {
     val packageName = this.packageName
     val powerManager= this.getSystemService(Context.POWER_SERVICE) as PowerManager
-    return !powerManager.isIgnoringBatteryOptimizations(packageName)
+    return powerManager.isIgnoringBatteryOptimizations(packageName)
 }
 
 
@@ -24,6 +25,7 @@ fun isNotInPowerManagerWhiteList(): Boolean {
     return !powerManager.isIgnoringBatteryOptimizations(packageName)
 }
 
+@SuppressLint("BatteryLife")
 fun Context.openPowerManagerIntent(){
     try {
         val intent = Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {

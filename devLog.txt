@@ -1,7 +1,15 @@
 
+2026/03/12
+- ForegroundService Fix problem
+- Can use SmartStepTracker hold state
+- import Timber
+- Fix Notification Layout
+- CountingService Fix
+
+
 2026/03/11
-
-
+- built foreground service
+- create smartStepTracker hold data from single class  `SmartStepTracker`
 
 2026/03/10 TUE
 - GetWeek Steps

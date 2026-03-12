@@ -29,6 +29,11 @@ class DefaultSensorManager(
     }
     override fun trackingStep(): Flow<Long> = callbackFlow {
         val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+        if (stepSensor == null){
+            trySend(0L)
+            awaitClose()
+            return@callbackFlow
+        }
         val sensorEventListener = object : SensorEventListener {
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
             override fun onSensorChanged(sensorEvent: SensorEvent?) {

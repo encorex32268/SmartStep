@@ -3,6 +3,7 @@ package com.lihan.smartstep.core.di
 import com.lihan.smartstep.MainViewModel
 import com.lihan.smartstep.SmartStepApplication
 import com.lihan.smartstep.core.data.AppUserInfo
+import com.lihan.smartstep.core.data.SmartStepTracker
 import com.lihan.smartstep.core.data.worker.DailySyncWorkerScheduler
 import com.lihan.smartstep.core.domain.DailySyncScheduler
 import com.lihan.smartstep.core.domain.UserInfoDataStore
@@ -24,6 +25,16 @@ val coreModule = module {
     singleOf(::AppUserInfo).bind<UserInfoDataStore>()
     singleOf(::DailySyncWorkerScheduler).bind<DailySyncScheduler>()
 
+    single{
+        SmartStepTracker(
+            applicationScope = get(),
+            applicationContext = androidApplication().applicationContext,
+            userInfoDataStore = get(),
+            appSensorManager = get()
+        )
+    }
+
     viewModelOf(::ProfileViewModel)
     viewModelOf(::MainViewModel)
+
 }
