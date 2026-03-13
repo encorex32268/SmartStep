@@ -8,7 +8,7 @@ fun DailyStep.toUi(): DailyStepUI {
     return DailyStepUI(
         steps = steps.toString(),
         goalSteps = goal.toString(),
-        date = timestamp.epochMilToDayOfWeekShort(),
-        timestamp = timestamp
+        date = dayTimestamp.epochMilToDayOfWeekShort(),
+        time = time
     )
 }

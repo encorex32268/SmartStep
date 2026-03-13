@@ -54,7 +54,7 @@ fun StepsCard(
     stepsTotal: Long,
     distance: Double,
     calories: Long,
-    timer: Int,
+    timer: Long,
     onPauseClick: () -> Unit,
     onResumeClick: () -> Unit,
     onEditClick: () -> Unit,

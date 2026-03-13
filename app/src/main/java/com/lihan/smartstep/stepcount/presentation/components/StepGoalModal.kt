@@ -79,7 +79,9 @@ fun StepsGoalModal(
                     )
                     WheelPicker(
                         items = items,
-                        onValueChange = {},
+                        onValueChange = {
+                            currentCenterIndex = it
+                        },
                         value = value
                     )
                 }

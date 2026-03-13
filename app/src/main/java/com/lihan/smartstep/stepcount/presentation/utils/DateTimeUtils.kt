@@ -57,8 +57,14 @@ object DateTimeUtils {
         return day.toString()
     }
 
+    /**
+     *  Get Today
+     *  ex: 2026/03/13 0:0:0
+     */
     fun getTodayEpochMilli(): Long {
-        return LocalDateTime.now()
+        val now = LocalDateTime.now()
+        return LocalDateTime
+            .of(now.year,now.monthValue,now.dayOfMonth, 0 , 0)
             .atZone(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()

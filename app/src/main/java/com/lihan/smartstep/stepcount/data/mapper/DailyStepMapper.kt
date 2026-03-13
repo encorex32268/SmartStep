@@ -7,7 +7,8 @@ fun DailyStepEntity.toDomain(): DailyStep {
     return DailyStep(
         goal = goal,
         steps = steps,
-        timestamp = timestamp
+        time = time,
+        dayTimestamp = dayTimestamp
     )
 }
 
@@ -15,6 +16,7 @@ fun DailyStep.toEntity(): DailyStepEntity {
     return DailyStepEntity(
         goal = goal,
         steps = steps,
-        timestamp = timestamp
+        time = time,
+        dayTimestamp = dayTimestamp
     )
 }

@@ -21,19 +21,10 @@ interface DailyStepDao {
     @Upsert
     suspend fun upsert(dailyStepEntity: DailyStepEntity)
 
-    @Query("SELECT * FROM dailystepentity WHERE timestamp <=:endTime AND timestamp >=:startTime")
+    @Query("SELECT * FROM dailystepentity WHERE dayTimestamp <=:endTime AND dayTimestamp >=:startTime")
     fun getDailyStep(
         startTime: Long,
         endTime: Long
     ): Flow<List<DailyStepEntity>>
 
-}
-
-fun Long.localDateTimeToDateString(): String {
-    val zoneId = ZoneId.systemDefault()
-    val targetDate = LocalDateTime.ofInstant(
-        Instant.fromEpochMilliseconds(this).toJavaInstant(),
-        zoneId
-    )
-    return "${targetDate.year}-${targetDate.monthValue}-${targetDate.dayOfMonth}"
 }

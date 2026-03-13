@@ -1,3 +1,5 @@
+@file:OptIn(FlowPreview::class)
+
 package com.lihan.smartstep.core.data.service
 
 import android.annotation.SuppressLint
@@ -15,11 +17,15 @@ import com.lihan.smartstep.core.data.AppUserInfo
 import com.lihan.smartstep.core.data.SmartStepTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import kotlin.time.Duration.Companion.seconds
 
 
 class CountingStepService: Service(){
@@ -90,7 +96,10 @@ class CountingStepService: Service(){
 
         serviceJob?.cancel()
         serviceJob = CoroutineScope(Dispatchers.Default).launch {
-            smartStepTracker.stepDate.collectLatest { data ->
+            smartStepTracker.stepDate
+                .distinctUntilChanged { old, new -> old.steps == new.steps }
+                .sample(1.seconds)
+                .collectLatest { data ->
                 val steps = data.steps.toString()
                 val calories = data.calories.toString()
 

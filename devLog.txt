@@ -1,4 +1,10 @@
 
+2026/03/13
+- Test edit steps , and check data which save to db
+- next is going to check list !
+Today
+- change Entity column name timestamp -> dayTimestamp
+
 2026/03/12
 - ForegroundService Fix problem
 - Can use SmartStepTracker hold state

@@ -31,11 +31,13 @@ class DailySyncWorker(
 
         val goal = userInfoDataStore.getTotalStep().first()
         val steps = userInfoDataStore.getTodaySteps().first()
+        val time = userInfoDataStore.getTodayTimer().first()
 
         val entity =  DailyStepEntity(
-            timestamp = DateTimeUtils.getTodayEpochMilli(),
             goal = goal,
-            steps = steps
+            steps = steps,
+            time = time,
+            dayTimestamp = DateTimeUtils.getTodayEpochMilli()
         )
 
         return try {

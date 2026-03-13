@@ -29,14 +29,14 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 class SmartStepTracker(
-    applicationScope: CoroutineScope,
+    val applicationScope: CoroutineScope,
     private val applicationContext: Context,
     private val userInfoDataStore: UserInfoDataStore,
     private val appSensorManager: AppSensorManager
 ) {
 
     companion object{
-        private val TAG = SmartStepTracker::class.java.simpleName
+        private const val DEFAULT_GOAL_STEPS = 6_000L
     }
     private val _stepData = MutableStateFlow(StepData())
     val stepDate = _stepData.asStateFlow()
@@ -109,7 +109,7 @@ class SmartStepTracker(
             stopService()
             return
         }
-        Timber.d("Start service")
+        Timber.d("Can start service")
 
         val intent = Intent(
             applicationContext, CountingStepService::class.java
@@ -129,6 +129,12 @@ class SmartStepTracker(
         }
 
         applicationContext.startService(intent)
+    }
+
+    fun reset(){
+        _stepData.update {
+            StepData(goalSteps = DEFAULT_GOAL_STEPS)
+        }
     }
 
 
@@ -182,5 +188,11 @@ class SmartStepTracker(
         _isTracking.update { false }
     }
 
+
+    fun updateGoalSteps(goalSteps: Long) {
+        _stepData.update { it.copy(
+            goalSteps = goalSteps
+        ) }
+    }
 
 }

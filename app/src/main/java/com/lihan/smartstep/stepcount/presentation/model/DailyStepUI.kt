@@ -3,7 +3,7 @@ package com.lihan.smartstep.stepcount.presentation.model
 data class DailyStepUI(
     val steps: String,
     val date: String,
-    val timestamp: Long,
+    val time: Long,
     val goalSteps: String
 )
 

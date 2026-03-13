@@ -89,7 +89,7 @@ private fun DailyStepsCardPreview() {
             steps = (index*2000) .toString(),
             date = week.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
             goalSteps = 6000.toString(),
-            timestamp = 0
+            time = 0
         )
     }
 
