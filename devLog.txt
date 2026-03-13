@@ -1,9 +1,15 @@
 
+
+
+
 2026/03/13
 - Test edit steps , and check data which save to db
 - next is going to check list !
 Today
 - change Entity column name timestamp -> dayTimestamp
+- foreground check stop start service,
+- notification deleteIntent contentIntent added
+- change sensor from TYPE_STEP_DETECTOR to TYPE_STEP_COUNTER
 
 2026/03/12
 - ForegroundService Fix problem
@@ -46,12 +52,6 @@ Task List
 3/7 init 1,000
 3/8 7,000  => nowTotal - init  = 6,000 save to db , (2026/03/07,goal:3000,steps:6,000)
 再將獲取 Total init => 7,000 開始
-
-
-
-
-
-
 
 
 2026/03/06 (五)

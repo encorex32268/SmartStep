@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import com.lihan.smartstep.core.data.service.CountingStepService
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.onboarding.presentation.model.Gender
@@ -17,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -55,7 +55,8 @@ class SmartStepTracker(
                 if (isTracking){
                     appSensorManager.trackingStep()
                 }else emptyFlow()
-            }.onEach { step ->
+            }.distinctUntilChanged()
+            .onEach { step ->
                 calculateDataByStep(step)
             }
             .launchIn(applicationScope)
@@ -154,18 +155,16 @@ class SmartStepTracker(
 
     private suspend fun calculateDataByStep(step: Long) {
 
-        val newStep = stepDate.value.steps + step
-
         val height = userInfoDataStore.getHeight().first()
-        val distance = ((height * 0.415) * newStep)/100/1000
+        val distance = ((height * 0.415) * step)/100/1000
 
         val weight = userInfoDataStore.getWeight().first()
         val isMale = userInfoDataStore.getGender().first() == Gender.MALE
         val genderRate = if (isMale) 1f else 0.9f
-        val calories = weight * genderRate * 0.0005 * newStep
+        val calories = weight * genderRate * 0.0005 * step
 
         _stepData.update { it.copy(
-            steps = newStep,
+            steps = step,
             calories = calories.roundToLong(),
             distance = (distance * 10).roundToInt() / 10.0
         ) }
@@ -176,6 +175,10 @@ class SmartStepTracker(
     }
 
     fun stopTracking(){
+        applicationScope.launch {
+            userInfoDataStore.updateTodaySteps(stepDate.value.steps)
+            userInfoDataStore.updateTodayTimer(stepDate.value.countingTimestamp)
+        }
         _isTracking.update { false }
     }
 

@@ -27,7 +27,8 @@ val stepCountModule = module {
     single { get<SmartStepDatabase>().dailyStepDao }.bind<DailyStepDao>()
     single {
         DefaultSensorManager(
-            context = androidContext()
+            context = androidContext(),
+            userInfoDataStore = get()
         )
     }.bind<AppSensorManager>()
 

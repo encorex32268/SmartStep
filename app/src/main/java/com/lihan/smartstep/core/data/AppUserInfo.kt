@@ -32,6 +32,7 @@ class AppUserInfo(
         private val TODAY_TIMER = longPreferencesKey("mill_seconds")
         private val TODAY_STEPS = longPreferencesKey("today_steps")
         private val DAILY_STEPS = stringPreferencesKey("daily_steps")
+        private val INITIAL_STEPS = longPreferencesKey("initial_steps")
     }
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userInfo")
@@ -201,6 +202,20 @@ class AppUserInfo(
     override fun getTodayTimer(): Flow<Long> {
         return context.dataStore.data.map { preferences ->
             preferences[TODAY_TIMER]?:0L
+        }
+    }
+
+    override suspend fun updateInitialSteps(value: Long) {
+        context.dataStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[INITIAL_STEPS] = value
+            }
+        }
+    }
+
+    override fun getInitialSteps(): Flow<Long> {
+        return context.dataStore.data.map { preferences ->
+            preferences[INITIAL_STEPS]?:0L
         }
     }
 }

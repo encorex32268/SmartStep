@@ -39,4 +39,8 @@ interface UserInfoDataStore {
 
     suspend fun updateTodayTimer(millSeconds: Long)
     fun getTodayTimer(): Flow<Long>
+
+    suspend fun updateInitialSteps(value: Long)
+    fun getInitialSteps(): Flow<Long>
+
 }

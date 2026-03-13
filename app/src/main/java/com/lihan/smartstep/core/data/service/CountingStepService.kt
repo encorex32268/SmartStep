@@ -16,6 +16,7 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.SmartStepApplication.Companion.CHANNEL_ID
 import com.lihan.smartstep.core.data.AppUserInfo
 import com.lihan.smartstep.core.data.SmartStepTracker
+import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -34,6 +35,7 @@ class CountingStepService: Service(){
 
     private val smartStepTracker by inject<SmartStepTracker>()
     private val userInfoDataStore by inject<AppUserInfo>()
+    private val repository by inject<SmartStepRepository>()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private var serviceJob: Job? = null
@@ -96,6 +98,7 @@ class CountingStepService: Service(){
             .setDeleteIntent(createDeleteIntent())
             .setContentIntent(createContentIntent())
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setAutoCancel(true)
             .setSortKey("step_tracker")
             .setGroup("step_group")
 

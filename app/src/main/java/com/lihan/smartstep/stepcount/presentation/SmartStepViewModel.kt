@@ -282,8 +282,11 @@ class SmartStepViewModel(
     private fun onResetSteps() {
         viewModelScope.launch {
             smartStepTracker.reset()
+
+            userInfoDataStore.updateInitialSteps(0)
             userInfoDataStore.updateTodayTimer(0)
             userInfoDataStore.updateTodaySteps(0)
+
             _state.update { it.copy(
                 isShowResetStepsDialog = false
             ) }
