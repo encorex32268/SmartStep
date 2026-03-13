@@ -8,4 +8,6 @@ interface SmartStepRepository {
     suspend fun updateDailyStep(dailyStep: DailyStep)
 
     fun getWeekDailySteps(timestamp: Long): Flow<List<DailyStep>>
+
+    fun getDailyStepByDateTimestamp(timestamp: Long): Flow<DailyStep?>
 }

@@ -27,4 +27,10 @@ interface DailyStepDao {
         endTime: Long
     ): Flow<List<DailyStepEntity>>
 
+    @Query("SELECT * FROM dailystepentity WHERE dayTimestamp=:timestamp")
+    fun getDailyStepByDateTimestamp(
+        timestamp: Long
+    ): Flow<DailyStepEntity?>
+
+
 }

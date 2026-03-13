@@ -34,5 +34,7 @@ sealed interface SmartStepAction {
     data object OnStopCounting: SmartStepAction
     data object OnResumeCounting: SmartStepAction
     data object OnEditClick: SmartStepAction
+    data object OnStartService: SmartStepAction
+    data object OnStopService: SmartStepAction
 
 }

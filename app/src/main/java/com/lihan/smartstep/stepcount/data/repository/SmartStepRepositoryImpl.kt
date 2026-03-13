@@ -45,4 +45,8 @@ class SmartStepRepositoryImpl(
             }
     }
 
+    override fun getDailyStepByDateTimestamp(timestamp: Long): Flow<DailyStep?> {
+        return database.dailyStepDao.getDailyStepByDateTimestamp(timestamp).map { it?.toDomain() }
+    }
+
 }

@@ -9,7 +9,7 @@ class NotificationDeleteReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Timber.d("NotificationDeleteReceiver Receiver Stop broadcast")
         val stopIntent = Intent(context, CountingStepService::class.java).apply {
-            action = CountingStepService.STOP
+            action = CountingStepService.DELETE
         }
         context?.startService(stopIntent)
     }

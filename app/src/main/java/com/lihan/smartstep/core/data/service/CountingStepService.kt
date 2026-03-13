@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.lihan.smartstep.MainActivity
 import com.lihan.smartstep.R
 import com.lihan.smartstep.SmartStepApplication.Companion.CHANNEL_ID
 import com.lihan.smartstep.core.data.AppUserInfo
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -47,18 +49,21 @@ class CountingStepService: Service(){
         when(intent?.action){
             START -> start()
             STOP -> stop()
+            DELETE -> delete()
         }
 
         return super.onStartCommand(intent, flags, startId)
 
     }
 
+    private fun delete(){
+        smartStepTracker.stopTracking()
+        stop()
+    }
 
     private fun stop() {
         //save data when service stop
         val stepDate = smartStepTracker.stepDate.value
-
-        smartStepTracker.stopTracking()
 
         serviceSaveDataJob?.cancel()
         serviceSaveDataJob = CoroutineScope(NonCancellable).launch {
@@ -89,6 +94,7 @@ class CountingStepService: Service(){
             .setOngoing(false)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setDeleteIntent(createDeleteIntent())
+            .setContentIntent(createContentIntent())
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSortKey("step_tracker")
             .setGroup("step_group")
@@ -122,15 +128,30 @@ class CountingStepService: Service(){
 
     private fun createDeleteIntent(): PendingIntent {
         val deleteIntent = Intent(this, NotificationDeleteReceiver::class.java)
-        val deletePendingIntent = PendingIntent.getBroadcast(
-            this, 101, deleteIntent, PendingIntent.FLAG_IMMUTABLE
+        return PendingIntent.getBroadcast(
+            this,
+            101,
+            deleteIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
-        return deletePendingIntent
+    }
+
+    private fun createContentIntent(): PendingIntent {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        return PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     companion object{
         const val START = "start_counting"
         const val STOP = "stop_counting"
+        const val DELETE = "delete_intent"
     }
 
 

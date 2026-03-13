@@ -45,6 +45,7 @@ class SmartStepTracker(
     val isTracking = _isTracking.asStateFlow()
 
     init {
+
         applicationScope.launch {
            initialStepData()
         }
@@ -67,19 +68,9 @@ class SmartStepTracker(
                     emptyFlow()
                 }
             }.onEach { duration ->
-
                _stepData.update { it.copy(
                    countingTimestamp = it.countingTimestamp + duration.inWholeMilliseconds
                ) }
-            }.launchIn(applicationScope)
-
-        isTracking
-            .onEach { isTracking ->
-                if (isTracking){
-                    startService()
-                }else{
-                    stopService()
-                }
             }.launchIn(applicationScope)
 
     }

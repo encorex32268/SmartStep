@@ -10,13 +10,11 @@ import com.lihan.smartstep.core.data.SmartStepTracker
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
-import com.lihan.smartstep.stepcount.domain.util.epochMilToDayOfWeekShort
 import com.lihan.smartstep.stepcount.domain.util.epochSecondToDateString
 import com.lihan.smartstep.stepcount.presentation.mapper.toUi
 import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getCustomDayOfWeek
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,9 +29,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.TextStyle
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class SmartStepViewModel(
     private val userInfoDataStore: UserInfoDataStore,
@@ -158,6 +154,7 @@ class SmartStepViewModel(
             SmartStepAction.OnEditClick,
             SmartStepAction.OnEditStepsClick -> {
                 state.value.editStepsDateTextFieldState.clearText()
+                state.value.editStepsStepsTextFieldState.clearText()
                 _state.update { it.copy(
                     isShowEditSteps = true,
                     step = 0L
@@ -211,6 +208,13 @@ class SmartStepViewModel(
             SmartStepAction.OnStopCounting -> {
                 smartStepTracker.stopTracking()
             }
+
+            SmartStepAction.OnStartService -> {
+                smartStepTracker.startService()
+            }
+            SmartStepAction.OnStopService -> {
+                smartStepTracker.stopService()
+            }
         }
     }
 
@@ -230,6 +234,8 @@ class SmartStepViewModel(
                     .toInstant()
                     .toEpochMilli()
 
+                val existsDailyStep= repository.getDailyStepByDateTimestamp(selectDate).first()
+
                 val today = DateTimeUtils.getTodayEpochMilli()
 
                 val isToday = selectDate == today
@@ -242,12 +248,12 @@ class SmartStepViewModel(
                 val steps = if (isToday){
                     state.value.step
                 }else{
-                    0
+                    existsDailyStep?.steps?:0L
                 }
                 val time = if (isToday){
-                    state.value.timer
+                    state.value.time
                 }else{
-                    0L
+                    existsDailyStep?.time?:0L
                 }
 
                 repository.updateDailyStep(
@@ -258,6 +264,10 @@ class SmartStepViewModel(
                         dayTimestamp = selectDate
                     )
                 )
+
+                _state.update { it.copy(
+                    isShowEditSteps = false
+                ) }
 
 
             }catch (e: Exception){
@@ -295,7 +305,7 @@ class SmartStepViewModel(
                 DailyStep(
                     goal = totalStep,
                     steps = state.value.step,
-                    time = state.value.timer,
+                    time = state.value.time,
                     dayTimestamp = DateTimeUtils.getTodayEpochMilli()
                 )
             )
@@ -344,7 +354,7 @@ class SmartStepViewModel(
         smartStepTracker.stepDate
             .onEach { stepDate ->
                 _state.update { it.copy(
-                    timer = stepDate.countingTimestamp.milliseconds.toLong(DurationUnit.MINUTES),
+                    time = stepDate.countingTimestamp.milliseconds.toLong(DurationUnit.MINUTES),
                     totalStep = stepDate.goalSteps,
                     step = stepDate.steps,
                     distance = stepDate.distance,

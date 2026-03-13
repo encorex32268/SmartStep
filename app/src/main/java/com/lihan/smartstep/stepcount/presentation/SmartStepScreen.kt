@@ -188,9 +188,9 @@ fun SmartStepScreen(
 
     LaunchedEffect(isInForeground) {
         if (isInForeground) {
-
+            onAction(SmartStepAction.OnStopService)
         } else {
-
+            onAction(SmartStepAction.OnStartService)
         }
     }
 
@@ -329,7 +329,7 @@ fun SmartStepScreen(
                 stepsTotal = state.totalStep,
                 distance = state.distance,
                 calories = state.calories,
-                timer = state.timer,
+                timer = state.time,
                 isCounting = state.isTrackingStep,
                 onPauseClick = {
                     onAction(SmartStepAction.OnStopCounting)
