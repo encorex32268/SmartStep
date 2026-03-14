@@ -93,7 +93,7 @@
         android:layout_height="10dp"
         android:indeterminate="false"
         android:max="100"
-        android:progress="78"
+        android:progress="0"
         android:progressDrawable="@drawable/progress_bar_states" />
 
 </LinearLayout>

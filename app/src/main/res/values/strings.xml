@@ -58,6 +58,6 @@
     <string name="km">km</string>
     <string name="kcal">kcal</string>
     <string name="min">min</string>
-
+    <string name="attribution_step_label">SmartStep Tracking Service</string>
 
 </resources>

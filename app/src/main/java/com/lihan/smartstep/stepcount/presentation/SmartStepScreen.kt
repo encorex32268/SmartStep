@@ -73,8 +73,10 @@ import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccess
 import com.lihan.smartstep.stepcount.presentation.components.StepResetDialog
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
+import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
 import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
 import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
+import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.isAppInForeground
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.BackgroundSecondary
@@ -84,6 +86,8 @@ import com.lihan.smartstep.ui.theme.TextPrimary
 import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun SmartStepScreenRoot(
@@ -190,7 +194,9 @@ fun SmartStepScreen(
         if (isInForeground) {
             onAction(SmartStepAction.OnStopService)
         } else {
-            onAction(SmartStepAction.OnStartService)
+            if (context.isIgnoringBatteryOptimizations()){
+                onAction(SmartStepAction.OnStartService)
+            }
         }
     }
 
@@ -463,9 +469,19 @@ fun SmartStepScreen(
 @Composable
 private fun SmartStepScreenPreview() {
     SmartStepTheme {
+        val date = getDaysOfWeek().mapIndexed { index, week ->
+            DailyStepUI(
+                steps = (index*2000) .toString(),
+                date = week.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
+                goalSteps = 6000.toString(),
+                time = 0
+            )
+        }
+
         SmartStepScreen(
             state = SmartStepState(
                 step = 1234,
+                dailySteps = date,
                 isShowStepGoal = false,
                 isShowResetStepsDialog = false,
                 isShowEditSteps = false,

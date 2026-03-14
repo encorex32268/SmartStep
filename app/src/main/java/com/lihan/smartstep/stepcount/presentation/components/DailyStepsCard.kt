@@ -25,6 +25,7 @@ import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.formatThousands
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.ButtonSecondary
+import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.medium
 import java.time.DayOfWeek
 import java.time.format.TextStyle
@@ -84,19 +85,21 @@ fun DailyStepsCard(
 @Composable
 private fun DailyStepsCardPreview() {
 
-    val date = getDaysOfWeek().mapIndexed { index, week ->
-        DailyStepUI(
-            steps = (index*2000) .toString(),
-            date = week.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
-            goalSteps = 6000.toString(),
-            time = 0
+    SmartStepTheme {
+        val date = getDaysOfWeek().mapIndexed { index, week ->
+            DailyStepUI(
+                steps = (index*2000) .toString(),
+                date = week.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
+                goalSteps = 6000.toString(),
+                time = 0
+            )
+        }
+        DailyStepsCard(
+            average = 1933,
+            dailySteps = date
         )
     }
 
-    DailyStepsCard(
-        average = 1933,
-        dailySteps = date
-    )
 }
 
 fun getDaysOfWeek(firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<DayOfWeek> {

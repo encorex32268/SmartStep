@@ -210,7 +210,9 @@ class SmartStepViewModel(
             }
 
             SmartStepAction.OnStartService -> {
-                smartStepTracker.startService()
+                if (state.value.isTrackingStep){
+                    smartStepTracker.startService()
+                }
             }
             SmartStepAction.OnStopService -> {
                 smartStepTracker.stopService()
