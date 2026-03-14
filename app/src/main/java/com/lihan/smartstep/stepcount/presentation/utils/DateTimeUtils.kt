@@ -2,10 +2,12 @@ package com.lihan.smartstep.stepcount.presentation.utils
 
 import android.annotation.SuppressLint
 import android.os.Build
+import androidx.compose.ui.text.intl.Locale
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.ZoneId
+import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Date
 
@@ -57,6 +59,18 @@ object DateTimeUtils {
         return day.toString()
     }
 
+    fun getTodayDate(): String {
+        val now = LocalDateTime.now()
+        return "${now.year}/${now.monthValue}/${now.dayOfMonth}"
+
+    }
+
+    fun getTodayDayOfWeekShort(): String{
+        val now = LocalDateTime.now()
+        val dayOfWeek = now.dayOfWeek
+        return DayOfWeek.of(dayOfWeek.value).getDisplayName(TextStyle.SHORT, java.util.Locale.ENGLISH)
+    }
+
     /**
      *  Get Today
      *  ex: 2026/03/13 0:0:0
@@ -71,9 +85,11 @@ object DateTimeUtils {
     }
 
 
-    fun getCustomDayOfWeek(): List<DayOfWeek>{
-        val dayOfWeeks = DayOfWeek.entries
-        return listOf(dayOfWeeks.last()) + dayOfWeeks.subList(0,5)
+
+    fun getDaysOfWeek(firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<DayOfWeek> {
+        val days = DayOfWeek.entries
+        val firstIndex = days.indexOf(firstDay)
+        return days.subList(firstIndex, days.size) + days.subList(0, firstIndex)
     }
 
 }

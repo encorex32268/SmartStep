@@ -12,6 +12,9 @@ import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.stepcount.domain.AppSensorManager
 import com.lihan.smartstep.stepcount.domain.Timer
+import com.lihan.smartstep.stepcount.domain.model.DailyStep
+import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
+import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -32,7 +36,8 @@ class SmartStepTracker(
     val applicationScope: CoroutineScope,
     private val applicationContext: Context,
     private val userInfoDataStore: UserInfoDataStore,
-    private val appSensorManager: AppSensorManager
+    private val appSensorManager: AppSensorManager,
+    private val repository:SmartStepRepository
 ) {
 
     companion object{
@@ -170,6 +175,13 @@ class SmartStepTracker(
         ) }
     }
 
+    suspend fun updateSteps(steps: Long){
+        _stepData.update { it.copy(
+            steps = steps
+        ) }
+        calculateDataByStep(steps)
+    }
+
     fun startTracking() {
         _isTracking.update { true }
     }
@@ -178,6 +190,15 @@ class SmartStepTracker(
         applicationScope.launch {
             userInfoDataStore.updateTodaySteps(stepDate.value.steps)
             userInfoDataStore.updateTodayTimer(stepDate.value.countingTimestamp)
+
+            repository.updateDailyStep(
+                DailyStep(
+                    goal = stepDate.value.goalSteps,
+                    steps = stepDate.value.steps,
+                    time =  stepDate.value.countingTimestamp,
+                    dayTimestamp = DateTimeUtils.getTodayEpochMilli()
+                )
+            )
         }
         _isTracking.update { false }
     }

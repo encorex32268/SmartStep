@@ -18,11 +18,6 @@ class DailySyncWorker(
     appContext,
     workerParameters
 ){
-    companion object {
-        const val TIMESTAMP = "timestamp"
-        const val GOAL_STEPS = "goal_steps"
-        const val STEPS = "steps"
-    }
 
     override suspend fun doWork(): Result {
         if (runAttemptCount > 3){

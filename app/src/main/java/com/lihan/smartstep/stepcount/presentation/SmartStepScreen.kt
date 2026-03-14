@@ -73,10 +73,10 @@ import com.lihan.smartstep.stepcount.presentation.components.MotionSensorsAccess
 import com.lihan.smartstep.stepcount.presentation.components.StepResetDialog
 import com.lihan.smartstep.stepcount.presentation.components.StepsCard
 import com.lihan.smartstep.stepcount.presentation.components.StepsGoalModal
-import com.lihan.smartstep.stepcount.presentation.components.getDaysOfWeek
 import com.lihan.smartstep.stepcount.presentation.drawer.closeDrawerActions
 import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
 import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
+import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getDaysOfWeek
 import com.lihan.smartstep.stepcount.presentation.utils.isAppInForeground
 import com.lihan.smartstep.ui.theme.BackgroundMain
 import com.lihan.smartstep.ui.theme.BackgroundSecondary

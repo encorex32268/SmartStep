@@ -23,6 +23,7 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.modifier.negativePadding
 import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.formatThousands
+import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getDaysOfWeek
 import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.ButtonSecondary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
@@ -102,8 +103,3 @@ private fun DailyStepsCardPreview() {
 
 }
 
-fun getDaysOfWeek(firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<DayOfWeek> {
-    val days = DayOfWeek.entries
-    val firstIndex = days.indexOf(firstDay)
-    return days.subList(firstIndex, days.size) + days.subList(0, firstIndex)
-}

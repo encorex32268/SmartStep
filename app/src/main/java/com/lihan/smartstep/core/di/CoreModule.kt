@@ -30,7 +30,8 @@ val coreModule = module {
             applicationScope = get(),
             applicationContext = androidApplication().applicationContext,
             userInfoDataStore = get(),
-            appSensorManager = get()
+            appSensorManager = get(),
+            repository = get()
         )
     }
 
