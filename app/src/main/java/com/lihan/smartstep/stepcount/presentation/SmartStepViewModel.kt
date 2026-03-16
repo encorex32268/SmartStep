@@ -247,11 +247,11 @@ class SmartStepViewModel(
 
                 val isToday = selectDate == today
 
-
                 if (isToday){
+                    userInfoDataStore.updateInitialSteps(0)
+                    smartStepTracker.updateTodaySteps(steps)
                     userInfoDataStore.updateTodaySteps(steps)
                 }
-
 
                 val time = if (isToday){
                     state.value.time
@@ -259,18 +259,13 @@ class SmartStepViewModel(
                     existsDailyStep?.time?:0L
                 }
 
-                smartStepTracker.updateSteps(steps)
-
-                if (isToday){
-                    userInfoDataStore.updateInitialSteps(0)
-                }
 
                 repository.updateDailyStep(
                     dailyStep = DailyStep(
                         goal = existsDailyStep?.goal?:6_000,
                         steps = steps,
                         time = time,
-                        dayTimestamp = selectDate
+                        dayTimestamp = selectDate,
                     )
                 )
 

@@ -31,7 +31,6 @@ class AppUserInfo(
         private val WEIGHT_UNIT = stringPreferencesKey("weight_unit")
         private val TODAY_TIMER = longPreferencesKey("mill_seconds")
         private val TODAY_STEPS = longPreferencesKey("today_steps")
-        private val DAILY_STEPS = stringPreferencesKey("daily_steps")
         private val INITIAL_STEPS = longPreferencesKey("initial_steps")
     }
 
@@ -171,25 +170,6 @@ class AppUserInfo(
         }
     }
 
-    override suspend fun updateTempDailySteps(dailySteps: List<DailyStep>) {
-        val json = Json.encodeToString(dailySteps)
-        context.dataStore.updateData { preferences ->
-            preferences.toMutablePreferences().also { mutablePreferences ->
-                mutablePreferences[DAILY_STEPS] = json
-            }
-        }
-    }
-
-    override fun getTempDailySteps(): Flow<List<DailyStep>> {
-        return context.dataStore.data.map { preferences ->
-            val json = preferences[DAILY_STEPS]
-            if (json.isNullOrEmpty()) {
-                emptyList()
-            } else {
-                Json.decodeFromString<List<DailyStep>>(json)
-            }
-        }
-    }
 
     override suspend fun updateTodayTimer(millSeconds: Long) {
         context.dataStore.updateData { preferences ->
@@ -216,6 +196,17 @@ class AppUserInfo(
     override fun getInitialSteps(): Flow<Long> {
         return context.dataStore.data.map { preferences ->
             preferences[INITIAL_STEPS]?:0L
+        }
+    }
+
+
+    override suspend fun reset() {
+        context.dataStore.updateData { preferences ->
+            preferences.toMutablePreferences().also { mutablePreferences ->
+                mutablePreferences[TODAY_TIMER] = 0L
+                mutablePreferences[TODAY_STEPS] = 0L
+                mutablePreferences[INITIAL_STEPS] = 0L
+            }
         }
     }
 }

@@ -34,13 +34,12 @@ interface UserInfoDataStore {
     suspend fun updateTodaySteps(value: Long)
     fun getTodaySteps(): Flow<Long>
 
-    suspend fun updateTempDailySteps(dailySteps: List<DailyStep>)
-    fun getTempDailySteps(): Flow<List<DailyStep>>
-
     suspend fun updateTodayTimer(millSeconds: Long)
     fun getTodayTimer(): Flow<Long>
 
     suspend fun updateInitialSteps(value: Long)
     fun getInitialSteps(): Flow<Long>
+
+    suspend fun reset()
 
 }

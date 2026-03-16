@@ -6,7 +6,11 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Build
+import androidx.core.content.ContextCompat.createAttributionContext
+import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.data.service.CountingStepService
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.onboarding.presentation.model.Gender
@@ -43,6 +47,7 @@ class SmartStepTracker(
     companion object{
         private const val DEFAULT_GOAL_STEPS = 6_000L
     }
+
     private val _stepData = MutableStateFlow(StepData())
     val stepDate = _stepData.asStateFlow()
 
@@ -141,6 +146,7 @@ class SmartStepTracker(
         val todaySteps = userInfoDataStore.getTodaySteps().first()
         val timer = userInfoDataStore.getTodayTimer().first()
 
+
         val height = userInfoDataStore.getHeight().first()
         val distance = ((height * 0.415) * todaySteps) / 100 / 1000
 
@@ -160,27 +166,25 @@ class SmartStepTracker(
 
     private suspend fun calculateDataByStep(step: Long) {
 
+        val newSteps = userInfoDataStore.getTodaySteps().first() + step
+
         val height = userInfoDataStore.getHeight().first()
-        val distance = ((height * 0.415) * step)/100/1000
+        val distance = ((height * 0.415) * newSteps)/100/1000
 
         val weight = userInfoDataStore.getWeight().first()
         val isMale = userInfoDataStore.getGender().first() == Gender.MALE
         val genderRate = if (isMale) 1f else 0.9f
-        val calories = weight * genderRate * 0.0005 * step
+        val calories = weight * genderRate * 0.0005 * newSteps
 
         _stepData.update { it.copy(
-            steps = step,
+            steps = newSteps,
             calories = calories.roundToLong(),
             distance = (distance * 10).roundToInt() / 10.0
         ) }
     }
 
-    suspend fun updateSteps(steps: Long){
-        _stepData.update { it.copy(
-            steps = steps
-        ) }
-        calculateDataByStep(steps)
-    }
+
+
 
     fun startTracking() {
         _isTracking.update { true }
@@ -190,13 +194,14 @@ class SmartStepTracker(
         applicationScope.launch {
             userInfoDataStore.updateTodaySteps(stepDate.value.steps)
             userInfoDataStore.updateTodayTimer(stepDate.value.countingTimestamp)
+            userInfoDataStore.updateInitialSteps(0)
 
             repository.updateDailyStep(
                 DailyStep(
                     goal = stepDate.value.goalSteps,
                     steps = stepDate.value.steps,
                     time =  stepDate.value.countingTimestamp,
-                    dayTimestamp = DateTimeUtils.getTodayEpochMilli()
+                    dayTimestamp = DateTimeUtils.getTodayEpochMilli(),
                 )
             )
         }
@@ -207,6 +212,11 @@ class SmartStepTracker(
     fun updateGoalSteps(goalSteps: Long) {
         _stepData.update { it.copy(
             goalSteps = goalSteps
+        ) }
+    }
+    fun updateTodaySteps(todaySteps: Long) {
+        _stepData.update { it.copy(
+            steps = todaySteps
         ) }
     }
 

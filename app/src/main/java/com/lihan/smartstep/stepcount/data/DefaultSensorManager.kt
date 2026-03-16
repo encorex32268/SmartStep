@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat.createAttributionContext
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.stepcount.domain.AppSensorManager
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
@@ -48,35 +49,39 @@ class DefaultSensorManager(
 
         initialSteps = userInfoDataStore.getInitialSteps().first()
 
-
         val sensorEventListener = object : SensorEventListener {
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
             override fun onSensorChanged(sensorEvent: SensorEvent?) {
+                launch {
+                    val detected = (sensorEvent?.values?.getOrNull(0) ?: 0f).roundToLong()
+                    if (detected <= 0L) return@launch
 
-                val detected = (sensorEvent?.values?.getOrNull(0) ?: 0f).roundToLong()
-                if (detected <= 0L) return
+                    if (detected < initialSteps) {
+                        initialSteps = detected
+                        userInfoDataStore.updateInitialSteps(detected) }
 
-                if (detected < initialSteps) {
-                    initialSteps = detected
-                    launch { userInfoDataStore.updateInitialSteps(detected) }
+                    if (initialSteps == 0L) {
+                        lastSentSteps = 0L
+                        initialSteps = detected
+                        launch { userInfoDataStore.updateInitialSteps(detected) }
+                    }
+
+                    val currentSteps = (detected - initialSteps)
+
+                    val finalResult = if (currentSteps < 0) 0L else currentSteps
+
+
+                    if (finalResult - lastSentSteps >= 10) {
+                        if (lastSentSteps != 0L){
+                            trySend(finalResult)
+                        }
+                        lastSentSteps = finalResult
+                    }
+
+                    Timber.d("finalResult: $finalResult , lastSentSteps: $lastSentSteps")
+                    Timber.d("Sensor Raw: $detected, Initial: $initialSteps, Result: ${detected - initialSteps}")
+
                 }
-
-                if (initialSteps == 0L) {
-                    initialSteps = detected
-                    launch { userInfoDataStore.updateInitialSteps(detected) }
-                }
-
-                val currentSteps = (detected - initialSteps)
-
-                val finalResult = if (currentSteps < 0) 0L else currentSteps
-
-                if (finalResult - lastSentSteps >= 10) {
-                    lastSentSteps = finalResult
-                    trySend(finalResult)
-                }
-
-                Timber.d("Sensor Raw: $detected, Initial: $initialSteps, Result: ${detected - initialSteps}")
-
             }
         }
 
@@ -89,7 +94,9 @@ class DefaultSensorManager(
 
 
         awaitClose {
+            Timber.d("Closed Default Sensor Manager")
             sensorManager.unregisterListener(sensorEventListener)
+
         }
     }
 }

@@ -17,12 +17,7 @@ class DailySyncWorkerScheduler(
     override suspend fun triggerSync() {
 
         val workManager = WorkManager.getInstance(context)
-        val workInfoFlow = workManager.getWorkInfosForUniqueWorkFlow("MidnightSync").first()
-
-        //already run
-        if (workInfoFlow.isNotEmpty()){
-            return
-        }
+//        val workInfoFlow = workManager.getWorkInfosForUniqueWorkFlow("MidnightSync").first()
 
         val delay = calculateDelayUntilMidnight()
         val request = PeriodicWorkRequestBuilder<DailySyncWorker>(

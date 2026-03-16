@@ -37,6 +37,7 @@ class DailySyncWorker(
 
         return try {
             database.dailyStepDao.upsert(entity)
+            userInfoDataStore.reset()
             Result.success()
         }catch (e: Exception){
             e.printStackTrace()
