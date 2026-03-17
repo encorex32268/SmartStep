@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.design_system.Clock
 import com.lihan.smartstep.core.presentation.design_system.Direction
 import com.lihan.smartstep.core.presentation.design_system.Pause
@@ -51,6 +52,7 @@ fun StepsCard(
     steps: Long,
     stepsTotal: Long,
     distance: Double,
+    distanceUnit: String,
     calories: Long,
     timer: Long,
     onPauseClick: () -> Unit,
@@ -175,7 +177,7 @@ fun StepsCard(
                     )
                     CounterElement(
                         value = distance.formatToString(),
-                        unit = stringResource(R.string.km)
+                        unit = distanceUnit
                     )
                 }
                 Column(
@@ -229,7 +231,8 @@ private fun StepsCardPreview() {
             onEditClick = {},
             distance = 1.231314,
             calories = 304,
-            timer = 120
+            timer = 120,
+            distanceUnit = stringResource(R.string.mi)
         )
     }
 }

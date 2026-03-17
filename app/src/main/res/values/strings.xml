@@ -59,5 +59,6 @@
     <string name="kcal">kcal</string>
     <string name="min">min</string>
     <string name="attribution_step_label">SmartStep Tracking Service</string>
+    <string name="mi">mi</string>
 
 </resources>

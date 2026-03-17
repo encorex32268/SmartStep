@@ -5,6 +5,7 @@ package com.lihan.smartstep.stepcount.data
 import android.content.Context
 import android.content.Intent
 import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.stepcount.data.service.CountingStepService
 import com.lihan.smartstep.stepcount.domain.model.StepData
@@ -120,7 +121,10 @@ class SmartStepTracker(
 
     private suspend fun getDistance(steps: Long): Double {
         val height = appDataStore.getHeight().first()
-        val distance = ((height * 0.415) * steps) / 100 / 1000
+        val heightUnit = appDataStore.getHeightUnit().first()
+        val isCm = heightUnit is UnitType.Cm
+        val distanceUnitValue = if (isCm) 1000.0 else 1609.3
+        val distance = ((height * 0.415) * steps) / 100 / distanceUnitValue
         return (distance * 10).roundToInt() / 10.0
     }
 

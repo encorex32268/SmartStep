@@ -62,6 +62,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
@@ -331,6 +332,11 @@ fun SmartStepScreen(
                 stepsTotal = state.totalStep,
                 distance = state.distance,
                 calories = state.calories,
+                distanceUnit = if (state.distanceUnit is UnitType.Cm){
+                    stringResource(R.string.km)
+                }else{
+                    stringResource(R.string.mi)
+                },
                 timer = state.time,
                 isCounting = state.isTrackingStep,
                 onPauseClick = {
@@ -481,7 +487,8 @@ private fun SmartStepScreenPreview() {
                 isShowStepGoal = false,
                 isShowResetStepsDialog = false,
                 isShowEditSteps = false,
-                isShowDatePicker = false
+                isShowDatePicker = false,
+                distanceUnit = UnitType.FtIn
             ),
             onAction = {},
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),

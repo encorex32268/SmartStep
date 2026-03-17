@@ -50,6 +50,7 @@ class SmartStepViewModel(
     val state = _state
         .onStart {
         if (!hasLoadedInitialData){
+            getUserInfo()
             initBackgroundAccess()
             observeData()
             observeSmartStepTracker()
@@ -98,6 +99,18 @@ class SmartStepViewModel(
             SmartStepAction.OnMenuClick -> Unit
         }
     }
+
+    private fun getUserInfo(){
+        appDataStore
+            .getHeightUnit()
+            .onEach { unitType ->
+                _state.update { it.copy(
+                    distanceUnit = unitType
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
+
 
     private fun initBackgroundAccess(){
         appDataStore
