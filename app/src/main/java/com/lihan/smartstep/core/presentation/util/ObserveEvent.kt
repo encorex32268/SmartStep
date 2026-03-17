@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.presentation
+package com.lihan.smartstep.core.presentation.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

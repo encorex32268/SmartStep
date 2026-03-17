@@ -15,13 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
-import com.lihan.smartstep.core.presentation.design_system.ArrowsUp
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.GenderDropdownMenu
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.InfoRow
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
 import com.lihan.smartstep.onboarding.presentation.model.Gender
-import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
 
 @Composable
 fun ProfileSetting(

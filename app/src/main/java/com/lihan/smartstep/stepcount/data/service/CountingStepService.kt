@@ -1,6 +1,6 @@
 @file:OptIn(FlowPreview::class)
 
-package com.lihan.smartstep.core.data.service
+package com.lihan.smartstep.stepcount.data.service
 
 import android.annotation.SuppressLint
 import android.app.NotificationManager
@@ -14,11 +14,8 @@ import androidx.core.app.NotificationCompat
 import com.lihan.smartstep.MainActivity
 import com.lihan.smartstep.R
 import com.lihan.smartstep.SmartStepApplication.Companion.CHANNEL_ID
-import com.lihan.smartstep.core.data.AppUserInfo
-import com.lihan.smartstep.core.data.SmartStepTracker
-import com.lihan.smartstep.stepcount.domain.model.DailyStep
-import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
-import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
+import com.lihan.smartstep.core.data.datastore.DefaultAppDataStore
+import com.lihan.smartstep.stepcount.data.SmartStepTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -29,14 +26,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 
 class CountingStepService: Service(){
 
     private val smartStepTracker by inject<SmartStepTracker>()
-    private val userInfoDataStore by inject<AppUserInfo>()
+    private val userInfoDataStore by inject<DefaultAppDataStore>()
 
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }

@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.data
+package com.lihan.smartstep.stepcount.domain.model
 
 data class StepData(
     val goalSteps: Long = 0,

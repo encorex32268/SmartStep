@@ -3,9 +3,9 @@ package com.lihan.smartstep.stepcount.presentation.drawer
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
 import com.lihan.smartstep.stepcount.presentation.SmartStepAction
-import com.lihan.smartstep.ui.theme.ButtonPrimary
-import com.lihan.smartstep.ui.theme.TextPrimary
 
 data class DrawerItem(
     @param:StringRes val id: Int,

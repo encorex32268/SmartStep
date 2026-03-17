@@ -1,11 +1,10 @@
-package com.lihan.smartstep.core.data.worker
+package com.lihan.smartstep.stepcount.data.worker
 
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.lihan.smartstep.core.domain.DailySyncScheduler
-import kotlinx.coroutines.flow.first
+import com.lihan.smartstep.stepcount.domain.worker.DailySyncScheduler
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit

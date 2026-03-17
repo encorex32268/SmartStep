@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
-import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.bodyLargeRegular
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeRegular
 
 @Composable
 fun StepResetDialog(

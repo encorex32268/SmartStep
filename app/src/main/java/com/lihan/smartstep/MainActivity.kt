@@ -22,14 +22,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
 import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.data.mapper.toEntity
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
-import com.lihan.smartstep.ui.theme.BackgroundMain
-import com.lihan.smartstep.ui.theme.SmartStepTheme
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject

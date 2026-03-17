@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
@@ -30,12 +29,11 @@ import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.components.WheelPicker
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
-import com.lihan.smartstep.core.presentation.modifier.negativePadding
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundTertiary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.util.negativePadding
 import com.lihan.smartstep.stepcount.presentation.stepGoalItems
-import com.lihan.smartstep.ui.theme.BackgroundTertiary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
 
 @Composable
 fun StepsGoalModal(

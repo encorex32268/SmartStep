@@ -12,10 +12,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lihan.smartstep.ui.theme.BackgroundWhite20
-import com.lihan.smartstep.ui.theme.ButtonPrimary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextWhite
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundWhite20
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextWhite
 
 @Composable
 fun SmartStepIconButton(

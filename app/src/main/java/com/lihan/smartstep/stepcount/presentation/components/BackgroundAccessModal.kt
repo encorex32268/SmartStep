@@ -30,10 +30,10 @@ import androidx.compose.ui.window.DialogProperties
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
-import com.lihan.smartstep.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.TextSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeMedium
 
 @Composable
 fun BackgroundAccessModal(

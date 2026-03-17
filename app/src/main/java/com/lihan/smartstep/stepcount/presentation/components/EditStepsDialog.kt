@@ -28,10 +28,10 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
 import com.lihan.smartstep.core.presentation.screens.profile.compoments.SmartStepTextField
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
-import com.lihan.smartstep.ui.theme.bodyMediumRegular
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.TextSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyMediumRegular
 
 @Composable
 fun EditStepsDialog(

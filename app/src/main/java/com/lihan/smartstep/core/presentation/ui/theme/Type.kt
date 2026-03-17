@@ -1,4 +1,4 @@
-package com.lihan.smartstep.ui.theme
+package com.lihan.smartstep.core.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

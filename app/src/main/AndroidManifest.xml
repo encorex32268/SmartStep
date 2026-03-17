@@ -39,13 +39,13 @@
 
 
         <service
-            android:name=".core.data.service.CountingStepService"
+            android:name=".stepcount.data.service.CountingStepService"
             android:foregroundServiceType="health"
             android:exported="false"
             />
 
         <receiver
-            android:name=".core.data.service.NotificationDeleteReceiver"
+            android:name=".stepcount.data.service.NotificationDeleteReceiver"
             android:exported="false"
             />
     </application>

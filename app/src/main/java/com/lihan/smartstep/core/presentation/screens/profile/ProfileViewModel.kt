@@ -1,9 +1,8 @@
 package com.lihan.smartstep.core.presentation.screens.profile
 
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lihan.smartstep.core.domain.UserInfoDataStore
+import com.lihan.smartstep.core.domain.AppDataStore
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlinx.coroutines.async
@@ -21,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class ProfileViewModel(
-    private val userInfoDataStore: UserInfoDataStore
+    private val appDataStore: AppDataStore
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -67,11 +66,11 @@ class ProfileViewModel(
     private fun initData(){
         viewModelScope.launch {
             combine(
-                flow = userInfoDataStore.getGender(),
-                flow2 = userInfoDataStore.getHeight(),
-                flow3 = userInfoDataStore.getWeight(),
-                flow4 = userInfoDataStore.getHeightUnit(),
-                flow5 = userInfoDataStore.getWeightUnit()
+                flow = appDataStore.getGender(),
+                flow2 = appDataStore.getHeight(),
+                flow3 = appDataStore.getWeight(),
+                flow4 = appDataStore.getHeightUnit(),
+                flow5 = appDataStore.getWeightUnit()
             ){ gender,height,weight,heightUnitType,weightUnitType ->
 
                 _state.update { it.copy(
@@ -180,12 +179,12 @@ class ProfileViewModel(
             }
 
             listOf(
-                async { userInfoDataStore.updateGender(currentState.gender) },
-                async { userInfoDataStore.updateHeight(currentState.height) },
-                async { userInfoDataStore.updateWeight(weightToSave) },
-                async { userInfoDataStore.updateHeightUnit(currentState.selectHeightUnitType) },
-                async { userInfoDataStore.updateWeightUnit(currentState.selectWeightUnitType) },
-                async { userInfoDataStore.updateIsSetting(true) }
+                async { appDataStore.updateGender(currentState.gender) },
+                async { appDataStore.updateHeight(currentState.height) },
+                async { appDataStore.updateWeight(weightToSave) },
+                async { appDataStore.updateHeightUnit(currentState.selectHeightUnitType) },
+                async { appDataStore.updateWeightUnit(currentState.selectWeightUnitType) },
+                async { appDataStore.updateIsSetting(true) }
             ).awaitAll()
 
             _uiEvent.send(

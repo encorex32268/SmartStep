@@ -62,7 +62,14 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.data.isIgnoringBatteryOptimizations
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.StrokeMain
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.util.ObserveEvent
+import com.lihan.smartstep.stepcount.data.isIgnoringBatteryOptimizations
 import com.lihan.smartstep.stepcount.presentation.components.BackgroundAccessModal
 import com.lihan.smartstep.stepcount.presentation.components.DailyStepsCard
 import com.lihan.smartstep.stepcount.presentation.components.DatePickerDialog
@@ -78,12 +85,6 @@ import com.lihan.smartstep.stepcount.presentation.drawer.drawerItems
 import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getDaysOfWeek
 import com.lihan.smartstep.stepcount.presentation.utils.isAppInForeground
-import com.lihan.smartstep.ui.theme.BackgroundMain
-import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.StrokeMain
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.bodyLargeMedium
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.format.TextStyle
@@ -103,7 +104,11 @@ fun SmartStepScreenRoot(
     val scope = rememberCoroutineScope()
     val showPowerWarning = rememberPowerManagerStatus()
 
-
+    ObserveEvent(viewModel.uiEvent) { uiEvent ->
+        when(uiEvent){
+            SmartStepUiEvent.OnExitApp -> onExit()
+        }
+    }
 
     SmartStepScreen(
         showPowerWarning = showPowerWarning,
@@ -119,11 +124,6 @@ fun SmartStepScreenRoot(
                         drawerState.open()
                     }
                 }
-
-                SmartStepAction.OnExitClick -> {
-                    onExit()
-                }
-
                 SmartStepAction.OnPersonSettingsClick -> {
                     onNavigateToPersonSettings()
                 }
@@ -168,11 +168,7 @@ fun SmartStepScreen(
     val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(
             permission = Manifest.permission.POST_NOTIFICATIONS,
-            onPermissionResult = { granted ->
-                if (granted){
-                    //TODO: Start Service
-                }
-            }
+            onPermissionResult = { granted -> }
         )
     } else {
         null

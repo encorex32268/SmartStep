@@ -11,8 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,15 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.presentation.modifier.negativePadding
-import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.medium
+import com.lihan.smartstep.core.presentation.util.negativePadding
 import com.lihan.smartstep.stepcount.presentation.formatThousands
+import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getDaysOfWeek
-import com.lihan.smartstep.ui.theme.ButtonPrimary
-import com.lihan.smartstep.ui.theme.ButtonSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.medium
-import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
 

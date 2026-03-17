@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.smartstep.R
-import com.lihan.smartstep.core.presentation.ObserveEvent
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileAction
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileScreen
@@ -26,9 +25,10 @@ import com.lihan.smartstep.core.presentation.screens.profile.ProfileSetting
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileState
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileUiEvent
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileViewModel
-import com.lihan.smartstep.ui.theme.BackgroundWhite
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundWhite
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.util.ObserveEvent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

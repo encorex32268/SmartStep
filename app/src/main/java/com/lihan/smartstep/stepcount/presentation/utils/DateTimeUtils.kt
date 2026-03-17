@@ -2,7 +2,6 @@ package com.lihan.smartstep.stepcount.presentation.utils
 
 import android.annotation.SuppressLint
 import android.os.Build
-import androidx.compose.ui.text.intl.Locale
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.YearMonth

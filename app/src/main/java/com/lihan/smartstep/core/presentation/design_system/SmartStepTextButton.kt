@@ -7,9 +7,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.lihan.smartstep.ui.theme.ButtonPrimary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeMedium
 
 @Composable
 fun SmartStepTextButton(

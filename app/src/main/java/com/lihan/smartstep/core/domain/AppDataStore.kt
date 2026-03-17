@@ -2,10 +2,9 @@ package com.lihan.smartstep.core.domain
 
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
-import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import kotlinx.coroutines.flow.Flow
 
-interface UserInfoDataStore {
+interface AppDataStore {
 
     suspend fun updateGender(gender: Gender)
     fun getGender(): Flow<Gender>

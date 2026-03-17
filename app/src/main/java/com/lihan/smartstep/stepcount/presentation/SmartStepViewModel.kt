@@ -6,8 +6,8 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lihan.smartstep.core.data.SmartStepTracker
-import com.lihan.smartstep.core.domain.UserInfoDataStore
+import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.stepcount.data.SmartStepTracker
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
 import com.lihan.smartstep.stepcount.domain.util.epochSecondToDateString
@@ -16,6 +16,7 @@ import com.lihan.smartstep.stepcount.presentation.model.DailyStepUI
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils.getDaysOfWeek
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,12 +36,15 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 
 class SmartStepViewModel(
-    private val userInfoDataStore: UserInfoDataStore,
+    private val appDataStore: AppDataStore,
     private val repository: SmartStepRepository,
     private val smartStepTracker: SmartStepTracker
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private val _uiEvent = Channel<SmartStepUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(SmartStepState())
     val state = _state
@@ -94,298 +99,8 @@ class SmartStepViewModel(
         }
     }
 
-
-    private fun datePickerSaveClick(timestamp: Long) {
-        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(timestamp.epochSecondToDateString())
-        _state.update { it.copy(
-            isShowDatePicker = false
-        ) }
-    }
-
-    private fun showDatePicker() {
-        _state.update { it.copy(
-            isShowDatePicker = true
-        ) }
-    }
-
-    private fun dismissResetStepsDialog() {
-        _state.update { it.copy(
-            isShowResetStepsDialog = false
-        ) }
-    }
-
-    private fun dismissEditStepsDialog() {
-        _state.update { it.copy(
-            isShowEditSteps = false
-        ) }
-    }
-
-    private fun dismissDatePickerDialog() {
-        _state.update { it.copy(
-            isShowDatePicker = false
-        ) }
-    }
-
-    private fun showResetTodayStepsDialog() {
-        _state.update { it.copy(
-            isShowResetStepsDialog = true
-        ) }
-    }
-
-    private fun showEditStepsDialog() {
-        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(
-            DateTimeUtils.getTodayDate()
-        )
-        state.value.editStepsStepsTextFieldState.clearText()
-        _state.update { it.copy(
-            isShowEditSteps = true
-        ) }
-    }
-
-    private fun permissionGranted() {
-        _state.update { it.copy(
-            isShowSensorsModal = false,
-            isShowEnableAccessModal = false
-        ) }
-    }
-
-    private fun showExitDialog() {
-        _state.update { it.copy(
-            isShowExitModal = true
-        ) }
-    }
-
-    private fun dismissExitModal() {
-        _state.update { it.copy(
-            isShowExitModal = false
-        ) }
-    }
-
-    private fun dismissBackgroundAccessModal() {
-        _state.update { it.copy(
-            isShowBackgroundAccessModal = false
-        ) }
-    }
-
-    private fun onResumeGetGranted() {
-        _state.update { it.copy(
-            motionSensorsPermissionGranted = true,
-            isShowSensorsModal = false,
-            isShowEnableAccessModal = false
-        ) }
-    }
-
-    private fun dismissSensorAccessModal() {
-        _state.update { it.copy(
-            isShowSensorsModal = false
-        ) }
-    }
-
-    private fun dismissEnableAccessModal() {
-        _state.update { it.copy(
-            isShowEnableAccessModal = false
-        ) }
-    }
-
-    private fun updateSensorPermission(isGranted: Boolean) {
-        _state.update { it.copy(
-            motionSensorsPermissionGranted = isGranted
-        ) }
-    }
-
-    private fun showSensorsAccessModal() {
-        _state.update { it.copy(
-            isShowSensorsModal = true,
-            isShowEnableAccessModal = false
-        ) }
-    }
-
-    private fun showEnableAccessModal() {
-        _state.update { it.copy(
-            isShowSensorsModal = false,
-            isShowEnableAccessModal = true
-        ) }
-    }
-
-    private fun showBackgroundAccessModalFirstTime() {
-        viewModelScope.launch {
-            val isShownBackgroundAccess = userInfoDataStore.getShownBackgroundAccess().first()
-            if (isShownBackgroundAccess) {
-                return@launch
-            } else {
-                _state.update {
-                    it.copy(
-                        isShowBackgroundAccessModal = true
-                    )
-                }
-                userInfoDataStore.updateIsShownBackgroundAccess(true)
-            }
-        }
-    }
-
-    private fun showBackgroundAccessModal() {
-        viewModelScope.launch {
-            _state.update { it.copy(
-                isShowBackgroundAccessModal = true
-            ) }
-        }
-    }
-
-    private fun exit() {
-        smartStepTracker.stopTracking()
-        _state.update { it.copy(
-            isShowExitModal = false
-        ) }
-    }
-
-    private fun resumeTracking() {
-        smartStepTracker.startTracking()
-    }
-
-    private fun stopService() {
-        smartStepTracker.stopService()
-    }
-
-    private fun startService() {
-        if (state.value.isTrackingStep){
-            smartStepTracker.startService()
-        }
-    }
-
-    private fun stopTracking() {
-
-        viewModelScope.launch {
-            smartStepTracker.stopTracking()
-
-            val stepData = smartStepTracker.stepDate.first()
-
-            userInfoDataStore.updateTodaySteps(stepData.steps)
-            userInfoDataStore.updateTodayTimer(stepData.countingTimestamp)
-            userInfoDataStore.updateInitialSteps(0)
-
-            repository.updateDailyStep(
-                DailyStep(
-                    goal = stepData.goalSteps,
-                    steps = stepData.steps,
-                    time =  stepData.countingTimestamp,
-                    dayTimestamp = DateTimeUtils.getTodayEpochMilli(),
-                )
-            )
-        }
-    }
-
-    private fun onEditStepsSave() {
-        viewModelScope.launch {
-            val stepsSaveDate = state.value.editStepsDateTextFieldState.text.toString()
-            val steps = state.value.editStepsStepsTextFieldState.text.toString().toLongOrNull()?:0L
-            val splitDate = stepsSaveDate.split("/")
-            try {
-                val year = splitDate[0].toInt()
-                val month = splitDate[1].toInt()
-                val date = splitDate[2].toInt()
-
-                val selectDate = LocalDateTime
-                    .of(year,month,date,0,0)
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
-
-                val existsDailyStep= repository.getDailyStepByDateTimestamp(selectDate).first()
-
-                val today = DateTimeUtils.getTodayEpochMilli()
-
-                val isToday = selectDate == today
-
-                if (isToday){
-                    userInfoDataStore.updateInitialSteps(0)
-                    smartStepTracker.updateTodaySteps(steps)
-                    userInfoDataStore.updateTodaySteps(steps)
-                }
-
-                val time = if (isToday){
-                    state.value.time
-                }else{
-                    existsDailyStep?.time?:0L
-                }
-
-
-                repository.updateDailyStep(
-                    dailyStep = DailyStep(
-                        goal = existsDailyStep?.goal?:6_000,
-                        steps = steps,
-                        time = time,
-                        dayTimestamp = selectDate,
-                    )
-                )
-
-                _state.update { it.copy(
-                    isShowEditSteps = false
-                ) }
-
-
-            }catch (e: Exception){
-                e.printStackTrace()
-                return@launch
-            }
-        }
-
-
-    }
-
-    private fun onResetSteps() {
-        viewModelScope.launch {
-            smartStepTracker.reset()
-
-            userInfoDataStore.updateInitialSteps(0)
-            userInfoDataStore.updateTodayTimer(0)
-            userInfoDataStore.updateTodaySteps(0)
-
-            _state.update { it.copy(
-                isShowResetStepsDialog = false
-            ) }
-        }
-    }
-
-    private fun saveStepGoal(value: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(
-                isShowStepGoal = false
-            ) }
-            val totalStep = value.toLongOrNull() ?: return@launch
-
-            smartStepTracker.updateGoalSteps(totalStep)
-
-            userInfoDataStore.updateTotalStep(totalStep)
-
-            repository.updateDailyStep(
-                DailyStep(
-                    goal = totalStep,
-                    steps = state.value.step,
-                    time = state.value.time,
-                    dayTimestamp = DateTimeUtils.getTodayEpochMilli()
-                )
-            )
-        }
-
-
-    }
-
-    private fun showStepGoal() {
-        _state.update { it.copy(
-            isShowStepGoal = true
-        ) }
-    }
-
-    private fun dismissStepGoal() {
-        _state.update { it.copy(
-            isShowStepGoal = false
-        ) }
-    }
-
-
-
     private fun initBackgroundAccess(){
-        userInfoDataStore
+        appDataStore
             .getShownBackgroundAccess()
             .onEach { isShown ->
                 _state.update { it.copy(
@@ -462,6 +177,302 @@ class SmartStepViewModel(
         }.launchIn(viewModelScope)
 
     }
+
+
+    private fun showExitDialog() {
+        _state.update { it.copy(
+            isShowExitModal = true
+        ) }
+    }
+
+    private fun dismissExitModal() {
+        _state.update { it.copy(
+            isShowExitModal = false
+        ) }
+    }
+
+    private fun exit() {
+        smartStepTracker.cleanUp()
+        _state.update { it.copy(
+            isShowExitModal = false
+        ) }
+    }
+
+
+    private fun showDatePicker() {
+        _state.update { it.copy(
+            isShowDatePicker = true
+        ) }
+    }
+    private fun dismissDatePickerDialog() {
+        _state.update { it.copy(
+            isShowDatePicker = false
+        ) }
+    }
+
+    private fun datePickerSaveClick(timestamp: Long) {
+        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(timestamp.epochSecondToDateString())
+        _state.update { it.copy(
+            isShowDatePicker = false
+        ) }
+    }
+
+    private fun showResetTodayStepsDialog() {
+        _state.update { it.copy(
+            isShowResetStepsDialog = true
+        ) }
+    }
+
+    private fun onResetSteps() {
+        viewModelScope.launch {
+            smartStepTracker.reset()
+
+            appDataStore.updateInitialSteps(0)
+            appDataStore.updateTodayTimer(0)
+            appDataStore.updateTodaySteps(0)
+
+            _state.update { it.copy(
+                isShowResetStepsDialog = false
+            ) }
+        }
+    }
+
+
+    private fun dismissResetStepsDialog() {
+        _state.update { it.copy(
+            isShowResetStepsDialog = false
+        ) }
+    }
+
+    private fun showEditStepsDialog() {
+        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(
+            DateTimeUtils.getTodayDate()
+        )
+        state.value.editStepsStepsTextFieldState.clearText()
+        _state.update { it.copy(
+            isShowEditSteps = true
+        ) }
+    }
+
+    private fun dismissEditStepsDialog() {
+        _state.update { it.copy(
+            isShowEditSteps = false
+        ) }
+    }
+
+    private fun onEditStepsSave() {
+        viewModelScope.launch {
+            val stepsSaveDate = state.value.editStepsDateTextFieldState.text.toString()
+            val steps = state.value.editStepsStepsTextFieldState.text.toString().toLongOrNull()?:0L
+            val splitDate = stepsSaveDate.split("/")
+            try {
+                val year = splitDate[0].toInt()
+                val month = splitDate[1].toInt()
+                val date = splitDate[2].toInt()
+
+                val selectDate = LocalDateTime
+                    .of(year,month,date,0,0)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                val existsDailyStep= repository.getDailyStepByDateTimestamp(selectDate).first()
+
+                val today = DateTimeUtils.getTodayEpochMilli()
+
+                val isToday = selectDate == today
+
+                if (isToday){
+                    appDataStore.updateInitialSteps(0)
+                    smartStepTracker.updateTodaySteps(steps)
+                    appDataStore.updateTodaySteps(steps)
+                }
+
+                val time = if (isToday){
+                    state.value.time
+                }else{
+                    existsDailyStep?.time?:0L
+                }
+
+
+                repository.updateDailyStep(
+                    dailyStep = DailyStep(
+                        goal = existsDailyStep?.goal?:6_000,
+                        steps = steps,
+                        time = time,
+                        dayTimestamp = selectDate,
+                    )
+                )
+
+                _state.update { it.copy(
+                    isShowEditSteps = false
+                ) }
+
+
+            }catch (e: Exception){
+                e.printStackTrace()
+                return@launch
+            }
+        }
+
+
+    }
+
+    private fun onResumeGetGranted() {
+        _state.update { it.copy(
+            motionSensorsPermissionGranted = true,
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun permissionGranted() {
+        _state.update { it.copy(
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+
+    private fun showSensorsAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = true,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun dismissSensorAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = false
+        ) }
+    }
+
+    private fun showEnableAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = true
+        ) }
+    }
+
+    private fun dismissEnableAccessModal() {
+        _state.update { it.copy(
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun updateSensorPermission(isGranted: Boolean) {
+        _state.update { it.copy(
+            motionSensorsPermissionGranted = isGranted
+        ) }
+    }
+
+
+    private fun showBackgroundAccessModal() {
+        viewModelScope.launch {
+            _state.update { it.copy(
+                isShowBackgroundAccessModal = true
+            ) }
+        }
+    }
+
+    private fun showBackgroundAccessModalFirstTime() {
+        viewModelScope.launch {
+            val isShownBackgroundAccess = appDataStore.getShownBackgroundAccess().first()
+            if (isShownBackgroundAccess) {
+                return@launch
+            } else {
+                _state.update {
+                    it.copy(
+                        isShowBackgroundAccessModal = true
+                    )
+                }
+                appDataStore.updateIsShownBackgroundAccess(true)
+            }
+        }
+    }
+
+
+    private fun dismissBackgroundAccessModal() {
+        _state.update { it.copy(
+            isShowBackgroundAccessModal = false
+        ) }
+    }
+
+    private fun stopService() {
+        smartStepTracker.stopService()
+    }
+
+    private fun startService() {
+        if (state.value.isTrackingStep){
+            smartStepTracker.startService()
+        }
+    }
+
+    private fun resumeTracking() {
+        smartStepTracker.startTracking()
+    }
+
+    private fun stopTracking() {
+
+        viewModelScope.launch {
+            smartStepTracker.stopTracking()
+
+            val stepData = smartStepTracker.stepDate.first()
+
+            appDataStore.updateTodaySteps(stepData.steps)
+            appDataStore.updateTodayTimer(stepData.countingTimestamp)
+            appDataStore.updateInitialSteps(0)
+
+            repository.updateDailyStep(
+                DailyStep(
+                    goal = stepData.goalSteps,
+                    steps = stepData.steps,
+                    time =  stepData.countingTimestamp,
+                    dayTimestamp = DateTimeUtils.getTodayEpochMilli(),
+                )
+            )
+        }
+    }
+
+
+
+
+    private fun showStepGoal() {
+        _state.update { it.copy(
+            isShowStepGoal = true
+        ) }
+    }
+
+    private fun dismissStepGoal() {
+        _state.update { it.copy(
+            isShowStepGoal = false
+        ) }
+    }
+
+    private fun saveStepGoal(value: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(
+                isShowStepGoal = false
+            ) }
+            val totalStep = value.toLongOrNull() ?: return@launch
+
+            smartStepTracker.updateGoalSteps(totalStep)
+
+            appDataStore.updateTotalStep(totalStep)
+
+            repository.updateDailyStep(
+                DailyStep(
+                    goal = totalStep,
+                    steps = state.value.step,
+                    time = state.value.time,
+                    dayTimestamp = DateTimeUtils.getTodayEpochMilli()
+                )
+            )
+        }
+
+
+    }
+
 
 }
 

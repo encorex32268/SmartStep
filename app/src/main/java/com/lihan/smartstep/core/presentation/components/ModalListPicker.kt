@@ -12,23 +12,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,13 +32,13 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.core.presentation.components.model.UnitType.Companion.isNeedTwoColumn
 import com.lihan.smartstep.core.presentation.design_system.SmartStepTextButton
-import com.lihan.smartstep.core.presentation.modifier.negativePadding
-import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.BackgroundTertiary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
-import com.lihan.smartstep.ui.theme.bodyMediumRegular
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundTertiary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.TextSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyMediumRegular
+import com.lihan.smartstep.core.presentation.util.negativePadding
 
 @Composable
 fun ModalListPicker(

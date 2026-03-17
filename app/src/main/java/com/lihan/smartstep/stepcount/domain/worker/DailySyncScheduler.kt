@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.domain
+package com.lihan.smartstep.stepcount.domain.worker
 
 interface DailySyncScheduler {
     suspend fun triggerSync()

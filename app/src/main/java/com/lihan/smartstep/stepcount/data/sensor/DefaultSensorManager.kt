@@ -1,4 +1,4 @@
-package com.lihan.smartstep.stepcount.data
+package com.lihan.smartstep.stepcount.data.sensor
 
 import android.content.Context
 import android.hardware.Sensor
@@ -6,15 +6,12 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
-import androidx.compose.runtime.snapshotFlow
-import androidx.core.content.ContextCompat.createAttributionContext
-import com.lihan.smartstep.core.domain.UserInfoDataStore
-import com.lihan.smartstep.stepcount.domain.AppSensorManager
+import androidx.core.content.ContextCompat
+import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.stepcount.domain.sensor.StepSensorManager
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,12 +19,12 @@ import kotlin.math.roundToLong
 
 class DefaultSensorManager(
     private val context: Context,
-    private val userInfoDataStore: UserInfoDataStore
-) : AppSensorManager {
+    private val appDataStore: AppDataStore
+) : StepSensorManager {
 
     private val sensorManager: SensorManager by lazy {
         val attributionContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            createAttributionContext(context,"step_tracking")
+            ContextCompat.createAttributionContext(context, "step_tracking")
         } else {
             context
         }
@@ -37,17 +34,15 @@ class DefaultSensorManager(
     private var initialSteps = 0L
     private var lastSentSteps = 0L
 
-
-
     override fun trackingStep(): Flow<Long> = callbackFlow {
         val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        if (stepSensor == null){
+        if (stepSensor == null) {
             trySend(0L)
             awaitClose()
             return@callbackFlow
         }
 
-        initialSteps = userInfoDataStore.getInitialSteps().first()
+        initialSteps = appDataStore.getInitialSteps().first()
 
         val sensorEventListener = object : SensorEventListener {
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
@@ -58,12 +53,13 @@ class DefaultSensorManager(
 
                     if (detected < initialSteps) {
                         initialSteps = detected
-                        userInfoDataStore.updateInitialSteps(detected) }
+                        appDataStore.updateInitialSteps(detected)
+                    }
 
                     if (initialSteps == 0L) {
                         lastSentSteps = 0L
                         initialSteps = detected
-                        launch { userInfoDataStore.updateInitialSteps(detected) }
+                        launch { appDataStore.updateInitialSteps(detected) }
                     }
 
                     val currentSteps = (detected - initialSteps)
@@ -72,14 +68,14 @@ class DefaultSensorManager(
 
 
                     if (finalResult - lastSentSteps >= 10) {
-                        if (lastSentSteps != 0L){
+                        if (lastSentSteps != 0L) {
                             trySend(finalResult)
                         }
                         lastSentSteps = finalResult
                     }
 
-                    Timber.d("finalResult: $finalResult , lastSentSteps: $lastSentSteps")
-                    Timber.d("Sensor Raw: $detected, Initial: $initialSteps, Result: ${detected - initialSteps}")
+                    Timber.Forest.d("finalResult: $finalResult , lastSentSteps: $lastSentSteps")
+                    Timber.Forest.d("Sensor Raw: $detected, Initial: $initialSteps, Result: ${detected - initialSteps}")
 
                 }
             }
@@ -94,7 +90,7 @@ class DefaultSensorManager(
 
 
         awaitClose {
-            Timber.d("Closed Default Sensor Manager")
+            Timber.Forest.d("Closed Default Sensor Manager")
             sensorManager.unregisterListener(sensorEventListener)
 
         }

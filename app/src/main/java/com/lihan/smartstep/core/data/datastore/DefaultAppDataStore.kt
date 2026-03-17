@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.data
+package com.lihan.smartstep.core.data.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -8,17 +8,15 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.lihan.smartstep.core.domain.UserInfoDataStore
+import com.lihan.smartstep.core.domain.AppDataStore
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
-import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 
-class AppUserInfo(
+class DefaultAppDataStore(
     private val context: Context
-): UserInfoDataStore{
+): AppDataStore {
 
     companion object{
         private val GENDER_INT = intPreferencesKey("gender")
@@ -95,7 +93,7 @@ class AppUserInfo(
 
     override fun getHeightUnit(): Flow<UnitType> {
         return context.dataStore.data.map { preferences ->
-            UnitType.fromKey(preferences[HEIGHT_UNIT]?:"CM")
+            UnitType.Companion.fromKey(preferences[HEIGHT_UNIT]?:"CM")
         }
     }
 
@@ -110,7 +108,7 @@ class AppUserInfo(
 
     override fun getWeightUnit(): Flow<UnitType> {
         return context.dataStore.data.map { preferences ->
-            UnitType.fromKey(preferences[WEIGHT_UNIT]?:"KG")
+            UnitType.Companion.fromKey(preferences[WEIGHT_UNIT]?:"KG")
         }
     }
 

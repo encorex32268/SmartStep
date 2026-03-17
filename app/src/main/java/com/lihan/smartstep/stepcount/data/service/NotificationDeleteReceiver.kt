@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.data.service
+package com.lihan.smartstep.stepcount.data.service
 
 import android.content.BroadcastReceiver
 import android.content.Context

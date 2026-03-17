@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.ModalListPicker
 import com.lihan.smartstep.core.presentation.components.model.UnitType
-import com.lihan.smartstep.ui.theme.NeutralLightLightest
-import com.lihan.smartstep.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.NeutralLightLightest
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
 
 @Composable
 fun ProfileScreen(

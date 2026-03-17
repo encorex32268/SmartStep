@@ -1,4 +1,4 @@
-package com.lihan.smartstep.core.presentation.modifier
+package com.lihan.smartstep.core.presentation.util
 
 import android.annotation.SuppressLint
 import androidx.compose.ui.Modifier

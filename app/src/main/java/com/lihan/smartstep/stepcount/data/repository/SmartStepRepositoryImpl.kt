@@ -1,13 +1,11 @@
 package com.lihan.smartstep.stepcount.data.repository
 
-import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.data.mapper.toDomain
 import com.lihan.smartstep.stepcount.data.mapper.toEntity
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 import com.lihan.smartstep.stepcount.domain.repository.SmartStepRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.time.ZoneId
 

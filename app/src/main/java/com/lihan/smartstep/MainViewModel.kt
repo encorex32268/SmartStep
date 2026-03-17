@@ -2,8 +2,8 @@ package com.lihan.smartstep
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lihan.smartstep.core.domain.UserInfoDataStore
-import com.lihan.smartstep.core.data.worker.DailySyncWorkerScheduler
+import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.stepcount.data.worker.DailySyncWorkerScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val userInfoDataStore: UserInfoDataStore,
+    private val appDataStore: AppDataStore,
     private val scheduler: DailySyncWorkerScheduler
 ): ViewModel() {
 
@@ -20,7 +20,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            val isSetProfile = userInfoDataStore.getIsSetting().first()
+            val isSetProfile = appDataStore.getIsSetting().first()
 
             //trigger Worker
             scheduler.triggerSync()

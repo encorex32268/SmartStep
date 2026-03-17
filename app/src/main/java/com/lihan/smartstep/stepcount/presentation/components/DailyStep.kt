@@ -16,13 +16,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lihan.smartstep.ui.theme.AdditionalGreen
-import com.lihan.smartstep.ui.theme.BackgroundWhite
-import com.lihan.smartstep.ui.theme.ButtonSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextWhite
-import com.lihan.smartstep.ui.theme.medium
-import com.lihan.smartstep.ui.theme.regular
+import com.lihan.smartstep.core.presentation.ui.theme.AdditionalGreen
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundWhite
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextWhite
+import com.lihan.smartstep.core.presentation.ui.theme.medium
+import com.lihan.smartstep.core.presentation.ui.theme.regular
 
 @Composable
 fun DailyStep(

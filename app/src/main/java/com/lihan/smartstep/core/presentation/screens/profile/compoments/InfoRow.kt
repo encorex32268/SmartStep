@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,15 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lihan.smartstep.core.presentation.design_system.ArrowsDown
-import com.lihan.smartstep.core.presentation.design_system.ArrowsUp
-import com.lihan.smartstep.ui.theme.BackgroundSecondary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.StrokeMain
-import com.lihan.smartstep.ui.theme.TextPrimary
-import com.lihan.smartstep.ui.theme.TextSecondary
-import com.lihan.smartstep.ui.theme.bodyLargeRegular
-import com.lihan.smartstep.ui.theme.bodySmallRegular
+import com.lihan.smartstep.core.presentation.ui.theme.BackgroundSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.StrokeMain
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.TextSecondary
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeRegular
+import com.lihan.smartstep.core.presentation.ui.theme.bodySmallRegular
 
 @Composable
 fun InfoRow(

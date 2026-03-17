@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lihan.smartstep.ui.theme.ButtonPrimary
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.StrokeMain
-import com.lihan.smartstep.ui.theme.TextWhite
-import com.lihan.smartstep.ui.theme.bodyLargeMedium
+import com.lihan.smartstep.core.presentation.ui.theme.ButtonPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.StrokeMain
+import com.lihan.smartstep.core.presentation.ui.theme.TextWhite
+import com.lihan.smartstep.core.presentation.ui.theme.bodyLargeMedium
 
 @Composable
 fun PrimaryButton(

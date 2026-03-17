@@ -27,8 +27,8 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.components.AdaptiveModal
 import com.lihan.smartstep.core.presentation.design_system.PrimaryButton
 import com.lihan.smartstep.core.presentation.design_system.Road
-import com.lihan.smartstep.ui.theme.SmartStepTheme
-import com.lihan.smartstep.ui.theme.TextPrimary
+import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.ui.theme.TextPrimary
 
 @Composable
 fun MotionSensorsAccessModal(
