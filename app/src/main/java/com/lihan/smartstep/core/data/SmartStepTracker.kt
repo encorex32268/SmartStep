@@ -39,9 +39,8 @@ import kotlin.math.roundToLong
 class SmartStepTracker(
     val applicationScope: CoroutineScope,
     private val applicationContext: Context,
-    private val userInfoDataStore: UserInfoDataStore,
     private val appSensorManager: AppSensorManager,
-    private val repository:SmartStepRepository
+    private val userInfoDataStore: UserInfoDataStore
 ) {
 
     companion object{
@@ -86,6 +85,77 @@ class SmartStepTracker(
 
     }
 
+
+    private suspend fun initialStepData(){
+
+        val todaySteps = userInfoDataStore.getTodaySteps().first()
+
+        val distance = getDistance(todaySteps)
+        val calories = getCalories(todaySteps)
+
+        val timer = userInfoDataStore.getTodayTimer().first()
+        val goalSteps = userInfoDataStore.getTotalStep().first()
+
+        _stepData.update { it.copy(
+            goalSteps = goalSteps,
+            steps = todaySteps,
+            countingTimestamp = timer,
+            calories = calories,
+            distance = distance
+        ) }
+    }
+
+    private suspend fun calculateDataByStep(step: Long) {
+
+        val newSteps = userInfoDataStore.getTodaySteps().first() + step
+
+        val distance = getDistance(newSteps)
+        val calories = getCalories(newSteps)
+
+        _stepData.update { it.copy(
+            steps = newSteps,
+            calories = calories,
+            distance = distance
+        ) }
+    }
+
+    private suspend fun getCalories(steps: Long): Long {
+        val weight = userInfoDataStore.getWeight().first()
+        val isMale = userInfoDataStore.getGender().first() == Gender.MALE
+        val genderRate = if (isMale) 1f else 0.9f
+
+        val calories = weight * genderRate * 0.0005 * steps
+
+        return calories.roundToLong()
+    }
+
+    private suspend fun getDistance(steps: Long): Double {
+        val height = userInfoDataStore.getHeight().first()
+        val distance = ((height * 0.415) * steps) / 100 / 1000
+        return (distance * 10).roundToInt() / 10.0
+    }
+
+
+    fun startTracking() {
+        _isTracking.update { true }
+    }
+
+    fun stopTracking(){
+        _isTracking.update { false }
+    }
+
+
+    fun updateGoalSteps(goalSteps: Long) {
+        _stepData.update { it.copy(
+            goalSteps = goalSteps
+        ) }
+    }
+    fun updateTodaySteps(todaySteps: Long) {
+        _stepData.update { it.copy(
+            steps = todaySteps
+        ) }
+    }
+
     fun startService(){
         val canRunInBackground = applicationContext.isIgnoringBatteryOptimizations()
         val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -103,15 +173,9 @@ class SmartStepTracker(
         val canStartService = canRunInBackground && hasNotificationPermission && hasActivityRecognitionPermission
 
         if (!canStartService) {
-            Timber.d("---Can't start service---")
-            Timber.d("canRunInBackground: $canRunInBackground")
-            Timber.d("hasNotificationPermission: $hasNotificationPermission")
-            Timber.d("hasActivityRecognitionPermission: $hasActivityRecognitionPermission")
-            Timber.d("-------------------------")
             stopService()
             return
         }
-        Timber.d("Can start service")
 
         val intent = Intent(
             applicationContext, CountingStepService::class.java
@@ -137,87 +201,6 @@ class SmartStepTracker(
         _stepData.update {
             StepData(goalSteps = DEFAULT_GOAL_STEPS)
         }
-    }
-
-
-    private suspend fun initialStepData(){
-
-        val goalSteps = userInfoDataStore.getTotalStep().first()
-        val todaySteps = userInfoDataStore.getTodaySteps().first()
-        val timer = userInfoDataStore.getTodayTimer().first()
-
-
-        val height = userInfoDataStore.getHeight().first()
-        val distance = ((height * 0.415) * todaySteps) / 100 / 1000
-
-        val weight = userInfoDataStore.getWeight().first()
-        val isMale = userInfoDataStore.getGender().first() == Gender.MALE
-        val genderRate = if (isMale) 1f else 0.9f
-        val calories = (weight * genderRate * 0.0005 * todaySteps).roundToLong()
-
-        _stepData.update { it.copy(
-            goalSteps = goalSteps,
-            steps = todaySteps,
-            countingTimestamp = timer,
-            calories = calories,
-            distance = distance
-        ) }
-    }
-
-    private suspend fun calculateDataByStep(step: Long) {
-
-        val newSteps = userInfoDataStore.getTodaySteps().first() + step
-
-        val height = userInfoDataStore.getHeight().first()
-        val distance = ((height * 0.415) * newSteps)/100/1000
-
-        val weight = userInfoDataStore.getWeight().first()
-        val isMale = userInfoDataStore.getGender().first() == Gender.MALE
-        val genderRate = if (isMale) 1f else 0.9f
-        val calories = weight * genderRate * 0.0005 * newSteps
-
-        _stepData.update { it.copy(
-            steps = newSteps,
-            calories = calories.roundToLong(),
-            distance = (distance * 10).roundToInt() / 10.0
-        ) }
-    }
-
-
-
-
-    fun startTracking() {
-        _isTracking.update { true }
-    }
-
-    fun stopTracking(){
-        applicationScope.launch {
-            userInfoDataStore.updateTodaySteps(stepDate.value.steps)
-            userInfoDataStore.updateTodayTimer(stepDate.value.countingTimestamp)
-            userInfoDataStore.updateInitialSteps(0)
-
-            repository.updateDailyStep(
-                DailyStep(
-                    goal = stepDate.value.goalSteps,
-                    steps = stepDate.value.steps,
-                    time =  stepDate.value.countingTimestamp,
-                    dayTimestamp = DateTimeUtils.getTodayEpochMilli(),
-                )
-            )
-        }
-        _isTracking.update { false }
-    }
-
-
-    fun updateGoalSteps(goalSteps: Long) {
-        _stepData.update { it.copy(
-            goalSteps = goalSteps
-        ) }
-    }
-    fun updateTodaySteps(todaySteps: Long) {
-        _stepData.update { it.copy(
-            steps = todaySteps
-        ) }
     }
 
 }

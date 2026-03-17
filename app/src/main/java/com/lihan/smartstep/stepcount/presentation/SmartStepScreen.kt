@@ -338,10 +338,10 @@ fun SmartStepScreen(
                 timer = state.time,
                 isCounting = state.isTrackingStep,
                 onPauseClick = {
-                    onAction(SmartStepAction.OnStopCounting)
+                    onAction(SmartStepAction.OnStopTracking)
                 },
-                onResumeClick = {
-                    onAction(SmartStepAction.OnResumeCounting)
+                onStartClick = {
+                    onAction(SmartStepAction.OnStartTracking)
                 },
                 onEditClick = {
                     onAction(SmartStepAction.OnEditClick)

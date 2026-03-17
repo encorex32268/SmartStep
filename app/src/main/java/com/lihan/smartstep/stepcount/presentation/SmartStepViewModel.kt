@@ -3,7 +3,6 @@
 package com.lihan.smartstep.stepcount.presentation
 
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.foundation.text.input.placeCursorAtEnd
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +27,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.TextStyle
@@ -61,167 +59,218 @@ class SmartStepViewModel(
 
     fun onAction(action: SmartStepAction){
         when(action){
-            SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             SmartStepAction.OnStepGoalClick -> showStepGoal()
-            SmartStepAction.OnExitOkClick -> {
-                smartStepTracker.stopTracking()
-                _state.update { it.copy(
-                    isShowExitModal = false
-                ) }
-            }
-            SmartStepAction.OnMenuClick -> Unit
-            SmartStepAction.OnPersonSettingsClick -> Unit
-            SmartStepAction.OnShowBackgroundAccessModal -> {
-                viewModelScope.launch {
-                    _state.update { it.copy(
-                        isShowBackgroundAccessModal = true
-                    ) }
-                }
-            }
-            SmartStepAction.OnShowBackgroundAccessModalFirstTime ->{
-                viewModelScope.launch {
-                    val isShownBackgroundAccess = userInfoDataStore.getShownBackgroundAccess().first()
-                    if (isShownBackgroundAccess) {
-                        return@launch
-                    } else {
-                        _state.update {
-                            it.copy(
-                                isShowBackgroundAccessModal = true
-                            )
-                        }
-                        userInfoDataStore.updateIsShownBackgroundAccess(true)
-                    }
-                }
-            }
-            SmartStepAction.OnShowEnableAccessModal -> {
-                _state.update { it.copy(
-                    isShowSensorsModal = false,
-                    isShowEnableAccessModal = true
-                ) }
-            }
-            SmartStepAction.OnShowSensorsAccessModal -> {
-                _state.update { it.copy(
-                    isShowSensorsModal = true,
-                    isShowEnableAccessModal = false
-                ) }
-            }
-            is SmartStepAction.OnUpdatePermission -> {
-                _state.update { it.copy(
-                    motionSensorsPermissionGranted = action.isGranted,
-
-                ) }
-            }
-
-            SmartStepAction.OnDismissEnableAccessModal -> {
-                _state.update { it.copy(
-                    isShowEnableAccessModal = false
-                ) }
-            }
-            SmartStepAction.OnDismissSensorsAccessModal ->{
-                _state.update { it.copy(
-                    isShowSensorsModal = false
-                ) }
-            }
-
-            SmartStepAction.OnResumeGetGranted -> {
-                _state.update { it.copy(
-                    motionSensorsPermissionGranted = true,
-                    isShowSensorsModal = false,
-                    isShowEnableAccessModal = false
-                ) }
-            }
-
-            SmartStepAction.OnDismissBackgroundAccessModal -> {
-                _state.update { it.copy(
-                    isShowBackgroundAccessModal = false
-                ) }
-            }
-
+            SmartStepAction.OnDismissStepGoal -> dismissStepGoal()
             is SmartStepAction.OnStepGoalSaveClick -> saveStepGoal(action.value)
-            SmartStepAction.OnDismissExitModal -> {
-                _state.update { it.copy(
-                    isShowExitModal = false
-                ) }
-            }
-            SmartStepAction.OnExitClick -> {
-                _state.update { it.copy(
-                    isShowExitModal = true
-                ) }
-            }
-
-            SmartStepAction.OnPermissionGranted -> {
-                _state.update { it.copy(
-                    isShowSensorsModal = false,
-                    isShowEnableAccessModal = false
-                ) }
-            }
+            SmartStepAction.OnExitClick -> showExitDialog()
+            SmartStepAction.OnExitOkClick -> exit()
+            SmartStepAction.OnDismissExitModal -> dismissExitModal()
+            SmartStepAction.OnShowBackgroundAccessModalFirstTime -> showBackgroundAccessModalFirstTime()
+            SmartStepAction.OnShowBackgroundAccessModal -> showBackgroundAccessModal()
+            SmartStepAction.OnDismissBackgroundAccessModal -> dismissBackgroundAccessModal()
+            SmartStepAction.OnShowEnableAccessModal -> showEnableAccessModal()
+            SmartStepAction.OnDismissEnableAccessModal -> dismissEnableAccessModal()
+            SmartStepAction.OnShowSensorsAccessModal -> showSensorsAccessModal()
+            SmartStepAction.OnDismissSensorsAccessModal -> dismissSensorAccessModal()
             SmartStepAction.OnEditClick,
-            SmartStepAction.OnEditStepsClick -> {
-                state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(
-                    DateTimeUtils.getTodayDate()
-                )
-                state.value.editStepsStepsTextFieldState.clearText()
-                _state.update { it.copy(
-                    isShowEditSteps = true
-                ) }
-            }
-            SmartStepAction.OnResetTodayStepsClick ->{
-                _state.update { it.copy(
-                    isShowResetStepsDialog = true
-                ) }
-            }
-
-            SmartStepAction.OnDismissDatePickerDialog -> {
-                _state.update { it.copy(
-                    isShowDatePicker = false
-                ) }
-            }
-            SmartStepAction.OnDismissEditStepsDialog -> {
-                _state.update { it.copy(
-                    isShowEditSteps = false
-                ) }
-            }
-            SmartStepAction.OnDismissResetStepsDialog -> {
-                _state.update { it.copy(
-                    isShowResetStepsDialog = false
-                ) }
-            }
+            SmartStepAction.OnEditStepsClick -> showEditStepsDialog()
+            SmartStepAction.OnDismissEditStepsDialog -> dismissEditStepsDialog()
             SmartStepAction.OnEditStepsSaveClick -> onEditStepsSave()
+            SmartStepAction.OnResumeGetGranted -> onResumeGetGranted()
+            SmartStepAction.OnPermissionGranted -> permissionGranted()
+            is SmartStepAction.OnUpdatePermission -> updateSensorPermission(action.isGranted)
+            SmartStepAction.OnShowDatePicker -> showDatePicker()
+            SmartStepAction.OnDismissDatePickerDialog -> dismissDatePickerDialog()
+            is SmartStepAction.OnDatePickerSaveClick -> datePickerSaveClick(action.timestamp)
+            SmartStepAction.OnResetTodayStepsClick -> showResetTodayStepsDialog()
+            SmartStepAction.OnDismissResetStepsDialog -> dismissResetStepsDialog()
             SmartStepAction.OnResetStepClick -> onResetSteps()
-            SmartStepAction.OnShowDatePicker -> {
-                _state.update { it.copy(
-                    isShowDatePicker = true
-                ) }
-            }
+            SmartStepAction.OnStartTracking ->resumeTracking()
+            SmartStepAction.OnStopTracking -> stopTracking()
+            SmartStepAction.OnStartService -> startService()
+            SmartStepAction.OnStopService -> stopService()
+            SmartStepAction.OnPersonSettingsClick -> Unit
+            SmartStepAction.OnMenuClick -> Unit
+        }
+    }
 
-            is SmartStepAction.OnDatePickerSaveClick -> {
-                state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(action.timestamp.epochSecondToDateString())
-                _state.update { it.copy(
-                    isShowDatePicker = false
-                ) }
-            }
-            SmartStepAction.OnDismissDatePicker -> {
-                state.value.editStepsDateTextFieldState.clearText()
-                _state.update { it.copy(
-                    isShowDatePicker = false
-                ) }
-            }
 
-            SmartStepAction.OnResumeCounting ->{
-                smartStepTracker.startTracking()
-            }
-            SmartStepAction.OnStopCounting -> {
-                smartStepTracker.stopTracking()
-            }
+    private fun datePickerSaveClick(timestamp: Long) {
+        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(timestamp.epochSecondToDateString())
+        _state.update { it.copy(
+            isShowDatePicker = false
+        ) }
+    }
 
-            SmartStepAction.OnStartService -> {
-                if (state.value.isTrackingStep){
-                    smartStepTracker.startService()
+    private fun showDatePicker() {
+        _state.update { it.copy(
+            isShowDatePicker = true
+        ) }
+    }
+
+    private fun dismissResetStepsDialog() {
+        _state.update { it.copy(
+            isShowResetStepsDialog = false
+        ) }
+    }
+
+    private fun dismissEditStepsDialog() {
+        _state.update { it.copy(
+            isShowEditSteps = false
+        ) }
+    }
+
+    private fun dismissDatePickerDialog() {
+        _state.update { it.copy(
+            isShowDatePicker = false
+        ) }
+    }
+
+    private fun showResetTodayStepsDialog() {
+        _state.update { it.copy(
+            isShowResetStepsDialog = true
+        ) }
+    }
+
+    private fun showEditStepsDialog() {
+        state.value.editStepsDateTextFieldState.setTextAndPlaceCursorAtEnd(
+            DateTimeUtils.getTodayDate()
+        )
+        state.value.editStepsStepsTextFieldState.clearText()
+        _state.update { it.copy(
+            isShowEditSteps = true
+        ) }
+    }
+
+    private fun permissionGranted() {
+        _state.update { it.copy(
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun showExitDialog() {
+        _state.update { it.copy(
+            isShowExitModal = true
+        ) }
+    }
+
+    private fun dismissExitModal() {
+        _state.update { it.copy(
+            isShowExitModal = false
+        ) }
+    }
+
+    private fun dismissBackgroundAccessModal() {
+        _state.update { it.copy(
+            isShowBackgroundAccessModal = false
+        ) }
+    }
+
+    private fun onResumeGetGranted() {
+        _state.update { it.copy(
+            motionSensorsPermissionGranted = true,
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun dismissSensorAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = false
+        ) }
+    }
+
+    private fun dismissEnableAccessModal() {
+        _state.update { it.copy(
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun updateSensorPermission(isGranted: Boolean) {
+        _state.update { it.copy(
+            motionSensorsPermissionGranted = isGranted
+        ) }
+    }
+
+    private fun showSensorsAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = true,
+            isShowEnableAccessModal = false
+        ) }
+    }
+
+    private fun showEnableAccessModal() {
+        _state.update { it.copy(
+            isShowSensorsModal = false,
+            isShowEnableAccessModal = true
+        ) }
+    }
+
+    private fun showBackgroundAccessModalFirstTime() {
+        viewModelScope.launch {
+            val isShownBackgroundAccess = userInfoDataStore.getShownBackgroundAccess().first()
+            if (isShownBackgroundAccess) {
+                return@launch
+            } else {
+                _state.update {
+                    it.copy(
+                        isShowBackgroundAccessModal = true
+                    )
                 }
+                userInfoDataStore.updateIsShownBackgroundAccess(true)
             }
-            SmartStepAction.OnStopService -> {
-                smartStepTracker.stopService()
-            }
+        }
+    }
+
+    private fun showBackgroundAccessModal() {
+        viewModelScope.launch {
+            _state.update { it.copy(
+                isShowBackgroundAccessModal = true
+            ) }
+        }
+    }
+
+    private fun exit() {
+        smartStepTracker.stopTracking()
+        _state.update { it.copy(
+            isShowExitModal = false
+        ) }
+    }
+
+    private fun resumeTracking() {
+        smartStepTracker.startTracking()
+    }
+
+    private fun stopService() {
+        smartStepTracker.stopService()
+    }
+
+    private fun startService() {
+        if (state.value.isTrackingStep){
+            smartStepTracker.startService()
+        }
+    }
+
+    private fun stopTracking() {
+
+        viewModelScope.launch {
+            smartStepTracker.stopTracking()
+
+            val stepData = smartStepTracker.stepDate.first()
+
+            userInfoDataStore.updateTodaySteps(stepData.steps)
+            userInfoDataStore.updateTodayTimer(stepData.countingTimestamp)
+            userInfoDataStore.updateInitialSteps(0)
+
+            repository.updateDailyStep(
+                DailyStep(
+                    goal = stepData.goalSteps,
+                    steps = stepData.steps,
+                    time =  stepData.countingTimestamp,
+                    dayTimestamp = DateTimeUtils.getTodayEpochMilli(),
+                )
+            )
         }
     }
 
@@ -410,10 +459,7 @@ class SmartStepViewModel(
                 dailySteps = newDailySteps
             ) }
 
-
         }.launchIn(viewModelScope)
-
-
 
     }
 

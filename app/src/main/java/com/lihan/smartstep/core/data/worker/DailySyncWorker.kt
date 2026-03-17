@@ -3,6 +3,7 @@ package com.lihan.smartstep.core.data.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.lihan.smartstep.core.data.SmartStepTracker
 import com.lihan.smartstep.core.domain.UserInfoDataStore
 import com.lihan.smartstep.stepcount.data.local.DailyStepEntity
 import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
@@ -13,7 +14,8 @@ class DailySyncWorker(
     appContext: Context,
     val workerParameters: WorkerParameters,
     val database: SmartStepDatabase,
-    val userInfoDataStore: UserInfoDataStore
+    val userInfoDataStore: UserInfoDataStore,
+    val smartStepTracker: SmartStepTracker
 ): CoroutineWorker(
     appContext,
     workerParameters
@@ -24,9 +26,11 @@ class DailySyncWorker(
             return Result.failure()
         }
 
+        val stepsDate = smartStepTracker.stepDate.first()
         val goal = userInfoDataStore.getTotalStep().first()
-        val steps = userInfoDataStore.getTodaySteps().first()
-        val time = userInfoDataStore.getTodayTimer().first()
+
+        val steps = stepsDate.steps
+        val time = stepsDate.countingTimestamp
 
         val entity =  DailyStepEntity(
             goal = goal,
@@ -38,6 +42,7 @@ class DailySyncWorker(
         return try {
             database.dailyStepDao.upsert(entity)
             userInfoDataStore.reset()
+            smartStepTracker.reset()
             Result.success()
         }catch (e: Exception){
             e.printStackTrace()

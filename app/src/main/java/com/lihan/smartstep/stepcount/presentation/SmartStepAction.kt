@@ -29,10 +29,9 @@ sealed interface SmartStepAction {
     data object OnDismissEditStepsDialog: SmartStepAction
     data object OnEditStepsSaveClick: SmartStepAction
     data object OnShowDatePicker: SmartStepAction
-    data object OnDismissDatePicker: SmartStepAction
     data class OnDatePickerSaveClick(val timestamp: Long): SmartStepAction
-    data object OnStopCounting: SmartStepAction
-    data object OnResumeCounting: SmartStepAction
+    data object OnStopTracking: SmartStepAction
+    data object OnStartTracking: SmartStepAction
     data object OnEditClick: SmartStepAction
     data object OnStartService: SmartStepAction
     data object OnStopService: SmartStepAction

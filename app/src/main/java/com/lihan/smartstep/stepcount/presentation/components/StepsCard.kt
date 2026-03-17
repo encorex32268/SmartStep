@@ -44,8 +44,6 @@ import com.lihan.smartstep.ui.theme.ButtonPrimary
 import com.lihan.smartstep.ui.theme.SmartStepTheme
 import com.lihan.smartstep.ui.theme.TextWhite
 import com.lihan.smartstep.ui.theme.titleAccent
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun StepsCard(
@@ -56,7 +54,7 @@ fun StepsCard(
     calories: Long,
     timer: Long,
     onPauseClick: () -> Unit,
-    onResumeClick: () -> Unit,
+    onStartClick: () -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -97,7 +95,7 @@ fun StepsCard(
                         if (isCounting){
                             onPauseClick()
                         }else{
-                            onResumeClick()
+                            onStartClick()
                         }
                     }
                 )
@@ -227,7 +225,7 @@ private fun StepsCardPreview() {
             steps = 5423,
             stepsTotal = 6000,
             onPauseClick = {},
-            onResumeClick = {},
+            onStartClick = {},
             onEditClick = {},
             distance = 1.231314,
             calories = 304,
