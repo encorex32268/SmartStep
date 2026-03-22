@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SmartStep</string>
     <string name="cancel">Cancel</string>
@@ -63,13 +64,7 @@
     <string name="more">More</string>
     <string name="more_arrow_right">more_arrow_right</string>
     <string name="try_again">Try again</string>
-    <string name="try_again_refresh">try_again_refresh</string>
-    <string name="ai_coach_disconnecting">📡 Connect to the internet to get AI insights.</string>
     <string name="ai_coach">AI coach</string>
     <string name="ai_coach_arrow_left">arrow_left</string>
-    <string name="ai_robot">ai_robot</string>
     <string name="ai_coach_quick_suggestions">Quick suggestions</string>
-    <string name="ask_me_anything">Ask me anything...</string>
-    <string name="suggestion_send">Suggestion send</string>
-
 </resources>
