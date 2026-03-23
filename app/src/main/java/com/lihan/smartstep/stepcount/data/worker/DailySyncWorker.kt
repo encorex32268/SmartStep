@@ -5,8 +5,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.lihan.smartstep.core.domain.AppDataStore
 import com.lihan.smartstep.stepcount.data.SmartStepTracker
-import com.lihan.smartstep.stepcount.data.local.DailyStepEntity
-import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
+import com.lihan.smartstep.core.data.datastore.local.DailyStepEntity
+import com.lihan.smartstep.core.data.datastore.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.presentation.utils.DateTimeUtils
 import kotlinx.coroutines.flow.first
 

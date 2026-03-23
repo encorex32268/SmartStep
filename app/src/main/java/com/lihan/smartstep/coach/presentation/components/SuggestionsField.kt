@@ -74,7 +74,8 @@ fun SuggestionsField(
     Column(
         modifier = modifier
             .background(BackgroundWhite)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         HorizontalDivider(
@@ -88,9 +89,11 @@ fun SuggestionsField(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable{
-                        onQuickSuggestionClick()
-                    },
+                    .clickable(
+                        interactionSource = null,
+                        indication = null,
+                        onClick = onQuickSuggestionClick
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -130,8 +133,10 @@ fun SuggestionsField(
                             ){
                                 Text(
                                     text = suggestion,
-                                    style = MaterialTheme.typography.medium,
-                                    color = TextPrimary
+                                    style = MaterialTheme.typography.medium.copy(
+                                        fontSize = 16.sp,
+                                        color = TextPrimary
+                                    )
                                 )
                             }
                         }
@@ -198,6 +203,7 @@ fun SuggestionsField(
             }
 
         }
+        Spacer(Modifier.height(16.dp))
     }
 
 }

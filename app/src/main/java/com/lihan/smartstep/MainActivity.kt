@@ -5,36 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lihan.smartstep.coach.presentation.AICoachScreenRoot
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.onboarding.presentation.OnboardingProfileScreenRoot
-import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
-import com.lihan.smartstep.stepcount.data.mapper.toEntity
-import com.lihan.smartstep.stepcount.domain.model.DailyStep
+import com.lihan.smartstep.core.data.datastore.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.presentation.SmartStepScreenRoot
 import com.lihan.smartstep.stepcount.presentation.personalsettings.PersonalSettingsScreenRoot
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 sealed interface Route{
 
@@ -49,6 +39,9 @@ sealed interface Route{
 
     @Serializable
     data object Test: Route
+
+    @Serializable
+    data object AICoach: Route
 
 }
 
@@ -82,7 +75,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             modifier = Modifier.fillMaxSize(),
                             navController = navController,
-                            startDestination = startDestination
+                            startDestination = Route.AICoach
                         ){
                             composable<Route.OnboardingProfileSetting>{
                                 OnboardingProfileScreenRoot(
@@ -115,42 +108,10 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable<Route.Test>{
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ){
-                                    Button(
-                                        onClick = {
-                                            lifecycleScope.launch {
-                                                val startDay = LocalDateTime.of(2026,3,1,0,0)
-                                                (0..11).map { day ->
-                                                    val goal = (day+1) *1000L
-                                                    smartStepDatabase.dailyStepDao.upsert(
-                                                        DailyStep(
-                                                            goal = goal,
-                                                            steps = goal - 500,
-                                                            time = 10_000,
-                                                            dayTimestamp = startDay
-                                                                .plusDays(day.toLong())
-                                                                .atZone(ZoneId.systemDefault())
-                                                                .toInstant()
-                                                                .toEpochMilli(),
-                                                        ).toEntity()
-                                                    )
-                                                }
-
-                                            }
-
-
-                                        }
-                                    ) {
-                                        Text(
-                                            text = "Create Mock Data"
-                                        )
-                                    }
-                                }
+                            composable<Route.AICoach>{
+                                AICoachScreenRoot(
+                                    onBack = {}
+                                )
                             }
                         }
 

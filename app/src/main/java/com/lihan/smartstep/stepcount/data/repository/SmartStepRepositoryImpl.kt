@@ -1,6 +1,6 @@
 package com.lihan.smartstep.stepcount.data.repository
 
-import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
+import com.lihan.smartstep.core.data.datastore.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.data.mapper.toDomain
 import com.lihan.smartstep.stepcount.data.mapper.toEntity
 import com.lihan.smartstep.stepcount.domain.model.DailyStep

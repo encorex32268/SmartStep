@@ -1,6 +1,6 @@
 package com.lihan.smartstep.stepcount.data.mapper
 
-import com.lihan.smartstep.stepcount.data.local.DailyStepEntity
+import com.lihan.smartstep.core.data.datastore.local.DailyStepEntity
 import com.lihan.smartstep.stepcount.domain.model.DailyStep
 
 fun DailyStepEntity.toDomain(): DailyStep {

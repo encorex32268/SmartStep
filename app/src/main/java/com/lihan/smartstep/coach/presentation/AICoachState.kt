@@ -8,6 +8,8 @@ data class AICoachState(
     val items: List<MessageUi> = emptyList(),
     val isAiThinking: Boolean = false,
     val isExpandSuggestion: Boolean = false,
-    val suggestionTextField: TextFieldState = TextFieldState(),
-    val suggestions: List<String> = emptyList(),
-)
+    val suggestionTextField: TextFieldState = TextFieldState()
+){
+    val isTextFieldEnabled: Boolean
+        get() = !isLoading && !isAiThinking
+}

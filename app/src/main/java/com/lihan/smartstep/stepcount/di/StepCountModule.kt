@@ -4,8 +4,8 @@ import androidx.room.Room
 import com.lihan.smartstep.core.data.datastore.DefaultAppDataStore
 import com.lihan.smartstep.core.domain.AppDataStore
 import com.lihan.smartstep.stepcount.data.SmartStepTracker
-import com.lihan.smartstep.stepcount.data.local.DailyStepDao
-import com.lihan.smartstep.stepcount.data.local.SmartStepDatabase
+import com.lihan.smartstep.core.data.datastore.local.DailyStepDao
+import com.lihan.smartstep.core.data.datastore.local.SmartStepDatabase
 import com.lihan.smartstep.stepcount.data.repository.SmartStepRepositoryImpl
 import com.lihan.smartstep.stepcount.data.sensor.DefaultSensorManager
 import com.lihan.smartstep.stepcount.data.worker.DailySyncWorkerScheduler

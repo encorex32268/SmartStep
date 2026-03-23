@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalTime::class)
 
-package com.lihan.smartstep.stepcount.data.local
+package com.lihan.smartstep.core.data.datastore.local
 
 import androidx.room.Dao
 import androidx.room.Query

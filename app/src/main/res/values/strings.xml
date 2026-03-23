@@ -72,4 +72,10 @@
     <string name="ask_me_anything">Ask me anything...</string>
     <string name="suggestion_send">Suggestion send</string>
 
+    <string-array name="suggestions">
+        <item>Recommend workout</item>
+        <item>Explain today’s trend</item>
+        <item>How to reach today’s goal ?</item>
+    </string-array>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.lihan.smartstep.stepcount.data.local
+package com.lihan.smartstep.core.data.datastore.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.lihan.smartstep.coach.di.coachModule
 import com.lihan.smartstep.core.di.coreModule
 import com.lihan.smartstep.stepcount.di.stepCountModule
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +29,8 @@ class SmartStepApplication: Application() {
             modules(
                 listOf(
                     coreModule,
-                    stepCountModule
+                    stepCountModule,
+                    coachModule
                 )
             )
         }
