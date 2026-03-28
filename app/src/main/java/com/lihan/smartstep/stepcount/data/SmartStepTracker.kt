@@ -5,6 +5,7 @@ package com.lihan.smartstep.stepcount.data
 import android.content.Context
 import android.content.Intent
 import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.core.domain.FileLogger
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import com.lihan.smartstep.stepcount.data.service.CountingStepService
@@ -14,6 +15,7 @@ import com.lihan.smartstep.stepcount.domain.util.Timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -21,6 +23,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -30,7 +34,8 @@ class SmartStepTracker(
     val applicationScope: CoroutineScope,
     private val applicationContext: Context,
     private val userStepSensorManager: StepSensorManager,
-    private val appDataStore: AppDataStore
+    private val appDataStore: AppDataStore,
+    private val logger: FileLogger
 ) {
 
     companion object{
@@ -38,16 +43,12 @@ class SmartStepTracker(
     }
 
     private val _stepData = MutableStateFlow(StepData())
-    val stepDate = _stepData.asStateFlow()
+    val stepData = _stepData.asStateFlow()
 
     private val _isTracking = MutableStateFlow(false)
     val isTracking = _isTracking.asStateFlow()
 
     init {
-
-        applicationScope.launch {
-           initialStepData()
-        }
 
         isTracking
             .flatMapLatest { isTracking ->
@@ -76,7 +77,7 @@ class SmartStepTracker(
     }
 
 
-    private suspend fun initialStepData(){
+    suspend fun initialStepData(){
 
         val todaySteps = appDataStore.getTodaySteps().first()
 
@@ -180,14 +181,24 @@ class SmartStepTracker(
         _stepData.update {
             StepData(goalSteps = DEFAULT_GOAL_STEPS)
         }
+        applicationScope.launch {
+            logger.writeText("Reset --- Today StepData Start")
+            logger.writeText("${_stepData.value}")
+            logger.writeText("Reset --- Today StepData End")
+        }
     }
 
     fun cleanUp(){
-        stopTracking()
-        stopService()
-        _stepData.update {
-            StepData(goalSteps = DEFAULT_GOAL_STEPS)
+        applicationScope.launch {
+            appDataStore.apply {
+                updateTodayTimer(stepData.value.countingTimestamp)
+                updateTodaySteps(stepData.value.steps)
+                updateGoalSteps(stepData.value.goalSteps)
+            }
+            stopTracking()
+            stopService()
         }
+
     }
 
 }

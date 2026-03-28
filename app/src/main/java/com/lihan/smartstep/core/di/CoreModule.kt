@@ -2,10 +2,13 @@ package com.lihan.smartstep.core.di
 
 import com.lihan.smartstep.MainViewModel
 import com.lihan.smartstep.SmartStepApplication
+import com.lihan.smartstep.core.data.datastore.LocalFileLogger
+import com.lihan.smartstep.core.domain.FileLogger
 import com.lihan.smartstep.core.presentation.screens.profile.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val coreModule = module {
@@ -13,6 +16,7 @@ val coreModule = module {
     single<CoroutineScope>{
         (androidApplication() as SmartStepApplication).applicationScope
     }
+    single { LocalFileLogger(get()) }.bind<FileLogger>()
 
     viewModelOf(::ProfileViewModel)
     viewModelOf(::MainViewModel)

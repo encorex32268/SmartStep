@@ -55,6 +55,9 @@ class SmartStepViewModel(
             observeData()
             observeSmartStepTracker()
             observeSmartStepTrackerStepDate()
+            viewModelScope.launch {
+                smartStepTracker.initialStepData()
+            }
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -135,7 +138,7 @@ class SmartStepViewModel(
 
 
     private fun observeSmartStepTrackerStepDate() {
-        smartStepTracker.stepDate
+        smartStepTracker.stepData
             .onEach { stepDate ->
                 _state.update { it.copy(
                     time = stepDate.countingTimestamp.milliseconds.toLong(DurationUnit.MINUTES),
@@ -209,6 +212,9 @@ class SmartStepViewModel(
         _state.update { it.copy(
             isShowExitModal = false
         ) }
+        viewModelScope.launch {
+            _uiEvent.send(SmartStepUiEvent.OnExitApp)
+        }
     }
 
 
@@ -412,7 +418,9 @@ class SmartStepViewModel(
     }
 
     private fun stopService() {
-        smartStepTracker.stopService()
+        if (state.value.isTrackingStep){
+            smartStepTracker.stopService()
+        }
     }
 
     private fun startService() {
@@ -430,7 +438,7 @@ class SmartStepViewModel(
         viewModelScope.launch {
             smartStepTracker.stopTracking()
 
-            val stepData = smartStepTracker.stepDate.first()
+            val stepData = smartStepTracker.stepData.first()
 
             appDataStore.updateTodaySteps(stepData.steps)
             appDataStore.updateTodayTimer(stepData.countingTimestamp)

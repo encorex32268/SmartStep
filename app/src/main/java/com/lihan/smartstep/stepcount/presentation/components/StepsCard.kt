@@ -132,10 +132,15 @@ fun StepsCard(
                     .background(color = BackgroundWhite20),
                 contentAlignment = Alignment.CenterStart
             ){
+                val progressValue = if (stepsTotal > 0) {
+                    (steps.toFloat() / stepsTotal.toFloat()).coerceIn(0f, 1f)
+                } else {
+                    0f
+                }
                 Slider(
                     modifier = Modifier
                         .padding(bottom = 0.5.dp),
-                    value = (steps.toFloat() / stepsTotal.toFloat()),
+                    value = progressValue,
                     onValueChange = {},
                     track = {
                         SliderDefaults.Track(

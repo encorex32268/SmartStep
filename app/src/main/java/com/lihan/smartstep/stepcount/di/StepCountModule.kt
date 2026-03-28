@@ -51,7 +51,8 @@ val stepCountModule = module {
             applicationScope = get(),
             applicationContext = androidApplication().applicationContext,
             appDataStore = get(),
-            userStepSensorManager = get()
+            userStepSensorManager = get(),
+            logger = get()
         )
     }
 

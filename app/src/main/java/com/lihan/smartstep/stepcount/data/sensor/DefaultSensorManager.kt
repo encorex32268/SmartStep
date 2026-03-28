@@ -90,7 +90,7 @@ class DefaultSensorManager(
 
 
         awaitClose {
-            Timber.Forest.d("Closed Default Sensor Manager")
+            Timber.d("Closed Default Sensor Manager")
             sensorManager.unregisterListener(sensorEventListener)
 
         }

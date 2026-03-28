@@ -4,17 +4,19 @@ import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.lihan.smartstep.core.domain.FileLogger
 import com.lihan.smartstep.stepcount.domain.worker.DailySyncScheduler
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 class DailySyncWorkerScheduler(
-    private val context: Context
+    private val context: Context,
+    private val logger: FileLogger
 ): DailySyncScheduler {
 
     override suspend fun triggerSync() {
-
+        logger.writeText("TriggerSync ---")
         val workManager = WorkManager.getInstance(context)
 
         val delay = calculateDelayUntilMidnight()
@@ -24,6 +26,9 @@ class DailySyncWorkerScheduler(
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .addTag("daily_sync")
             .build()
+
+        //remove before request
+        workManager.cancelAllWorkByTag("daily_sync")
 
         workManager
             .enqueueUniquePeriodicWork(

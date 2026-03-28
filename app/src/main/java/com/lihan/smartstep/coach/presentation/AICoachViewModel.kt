@@ -74,7 +74,6 @@ class AICoachViewModel(
                 isAiThinking = false,
                 items = newItems
             ) }
-            println("Result is: ${result}" )
         }
     }
 

@@ -9,13 +9,15 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.lihan.smartstep.core.domain.AppDataStore
+import com.lihan.smartstep.core.domain.FileLogger
 import com.lihan.smartstep.core.presentation.components.model.UnitType
 import com.lihan.smartstep.onboarding.presentation.model.Gender
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DefaultAppDataStore(
-    private val context: Context
+    private val context: Context,
+    private val logger: FileLogger
 ): AppDataStore {
 
     companion object{
@@ -206,5 +208,6 @@ class DefaultAppDataStore(
                 mutablePreferences[INITIAL_STEPS] = 0L
             }
         }
+        logger.writeText("Reset --- Today record")
     }
 }

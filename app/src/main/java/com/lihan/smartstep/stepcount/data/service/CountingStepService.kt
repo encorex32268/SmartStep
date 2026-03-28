@@ -32,13 +32,9 @@ import kotlin.time.Duration.Companion.seconds
 class CountingStepService: Service(){
 
     private val smartStepTracker by inject<SmartStepTracker>()
-    private val userInfoDataStore by inject<DefaultAppDataStore>()
-
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private var serviceJob: Job? = null
-    private var serviceSaveDataJob: Job? = null
-
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -58,20 +54,10 @@ class CountingStepService: Service(){
 
     private fun delete(){
         smartStepTracker.stopTracking()
-        stop()
+        stopSelf()
     }
 
     private fun stop() {
-        //save data when service stop
-        val stepDate = smartStepTracker.stepDate.value
-
-        serviceSaveDataJob?.cancel()
-        serviceSaveDataJob = CoroutineScope(NonCancellable).launch {
-            userInfoDataStore.apply {
-                updateTodayTimer(stepDate.countingTimestamp)
-                updateTodaySteps(stepDate.steps)
-            }
-        }
         stopSelf()
     }
 
@@ -103,7 +89,7 @@ class CountingStepService: Service(){
 
         serviceJob?.cancel()
         serviceJob = CoroutineScope(Dispatchers.Default).launch {
-            smartStepTracker.stepDate
+            smartStepTracker.stepData
                 .distinctUntilChanged { old, new -> old.steps == new.steps }
                 .sample(1.seconds)
                 .collectLatest { data ->
