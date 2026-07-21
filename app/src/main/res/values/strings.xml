@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">SmartStep</string>
+    <string name="my_profile">My profile</string>
+    <string name="skip">Skip</string>
+    <string name="my_profile_information">This information helps calculate your activity more accurately.</string>
+    <string name="gender">Gender</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="start">Start</string>
+    <string name="Ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="height_description">Used to calculate distance</string>
+    <string name="height_cm">%1$s cm</string>
+    <string name="weight_description">Used to calculate calories</string>
+    <string name="weight_kg">%1$s kg</string>
+    <string name="weight_lbs">%1$s lbs</string>
+
 </resources>
