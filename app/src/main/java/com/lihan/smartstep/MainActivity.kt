@@ -17,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.profile_setup.presentation.ProfileSetupRoot
+import com.lihan.smartstep.profile_setup.presentation.ProfileSetupScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,17 +36,8 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             SmartStepTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ){
-                        Text(
-                            text = "SmartStep"
-                        )
-                    }
-                }
+
+                ProfileSetupRoot()
             }
         }
     }
