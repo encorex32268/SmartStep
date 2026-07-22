@@ -80,7 +80,7 @@ data class WheelPickerData(
                         val inch = currentHeightItems.getOrNull(1)?.value
                         "$feet'$inch\"".feetInchesToCm()?:currentHeightValue
                     }else{
-                        currentHeightItems.getOrNull(0)?.value ?: currentHeightValue
+                        currentHeightValue
                     }
                     buildHeightCmWheelPickerDataList(value)
                 }
