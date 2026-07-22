@@ -9,8 +9,8 @@ import com.lihan.smartstep.core.data.model.WeightUnit
 import com.lihan.smartstep.core.data.model.WeightUnit.Companion.formattedName
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.presentation.components.WheelPickerData
-import com.lihan.smartstep.core.presentation.components.isSingleWheelPicker
 import com.lihan.smartstep.profile_setup.presentation.model.feetInchesToCm
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +31,9 @@ class ProfileSetupViewModel(
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private val _uiEvent = Channel<ProfileSetupEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(ProfileSetupState())
     val state = _state
@@ -105,14 +109,22 @@ class ProfileSetupViewModel(
             }
             ProfileSetupAction.OnHeightDialogOkClick -> heightDialogConfirm()
             is ProfileSetupAction.OnHeightOptionClick -> heightOptionClick(action.index)
-            ProfileSetupAction.OnSkipClick -> skipSetting()
             ProfileSetupAction.OnWeightDialogOkClick -> weightDialogConfirm()
             is ProfileSetupAction.OnWeightOptionClick -> weightOptionClick(action.index)
             is ProfileSetupAction.OnHeightValue1Change -> heightValue1Change(action.value)
             is ProfileSetupAction.OnHeightValue2Change -> heightValue2Change(action.value)
             is ProfileSetupAction.OnWeightValueChange -> weightValueChange(action.value)
+            ProfileSetupAction.OnSkipClick,
+            ProfileSetupAction.OnStartClick -> navigateToDashboard()
         }
     }
+
+    private fun navigateToDashboard(){
+        viewModelScope.launch {
+            _uiEvent.send(ProfileSetupEvent.OnNavigateToDashboard)
+        }
+    }
+
 
     private fun heightValue1Change(value: String){
         val currentState = state.value
@@ -229,13 +241,6 @@ class ProfileSetupViewModel(
             isShowWeightDialog = false
         ) }
     }
-
-    private fun skipSetting() {
-
-    }
-
-
-
 
     private fun initData(){
         dataStore

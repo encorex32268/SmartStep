@@ -42,15 +42,24 @@ import com.lihan.smartstep.core.presentation.components.SettingsWheelPicker
 import com.lihan.smartstep.core.presentation.components.SingleValueWheelPicker
 import com.lihan.smartstep.core.presentation.design_system.buttons.ButtonType
 import com.lihan.smartstep.core.presentation.design_system.buttons.SmartStepButton
+import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundWhite
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.util.ObserveAsEvents
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileSetupRoot(
+    onNavigateToDashboard: () -> Unit,
     viewModel: ProfileSetupViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.uiEvent){ event ->
+        when(event){
+            ProfileSetupEvent.OnNavigateToDashboard -> onNavigateToDashboard()
+        }
+    }
 
     ProfileSetupScreen(
         state = state,
@@ -68,15 +77,8 @@ fun ProfileSetupScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.my_profile),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Medium
-                        )
-                    )
-                },
+            SmartStepTopbar(
+                title = stringResource(R.string.my_profile),
                 actions = {
                     SmartStepButton(
                         text = stringResource(R.string.skip),
@@ -143,14 +145,20 @@ fun ProfileSetupScreen(
                 )
                 SettingsField(
                     title = stringResource(R.string.height),
-                    value = state.displayHeightString,
+                    value = when(state.heightUnitOption){
+                        HeightUnit.Cm -> stringResource(R.string.height_cm,state.displayHeightString)
+                        HeightUnit.FtIn -> state.displayHeightString
+                    },
                     onFieldClick = {
                         onAction(ProfileSetupAction.OnShowHeightDialog)
                     }
                 )
                 SettingsField(
                     title = stringResource(R.string.weight),
-                    value = state.displayWeightString,
+                    value = when(state.weightUnitOption){
+                        WeightUnit.Kg -> stringResource(R.string.weight_kg,state.displayWeightString)
+                        WeightUnit.Lbs -> stringResource(R.string.weight_lbs,state.displayWeightString)
+                    },
                     onFieldClick = {
                         onAction(ProfileSetupAction.OnShowWeightDialog)
                     }
@@ -158,7 +166,9 @@ fun ProfileSetupScreen(
             }
             Spacer(Modifier.weight(1f))
             SmartStepButton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 text = stringResource(R.string.start),
                 onClick = {
 

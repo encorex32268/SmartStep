@@ -16,5 +16,6 @@ sealed interface ProfileSetupAction {
     data class OnHeightValue1Change(val value: String): ProfileSetupAction
     data class OnHeightValue2Change(val value: String): ProfileSetupAction
     data class OnWeightValueChange(val value: String): ProfileSetupAction
+    data object OnStartClick: ProfileSetupAction
 
 }
