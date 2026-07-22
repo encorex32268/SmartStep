@@ -14,5 +14,6 @@
     <string name="weight_description">Used to calculate calories</string>
     <string name="weight_kg">%1$s kg</string>
     <string name="weight_lbs">%1$s lbs</string>
+    <string name="dashboard_title">Smart Step</string>
 
 </resources>
