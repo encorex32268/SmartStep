@@ -2,6 +2,7 @@ package com.lihan.smartstep
 
 import android.app.Application
 import com.lihan.smartstep.core.di.coreModule
+import com.lihan.smartstep.dashboard.di.dashboardModule
 import com.lihan.smartstep.profile_setup.di.profileSetupModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,7 +18,8 @@ class SmartStepApplication: Application() {
             modules(
                 listOf(
                     coreModule,
-                    profileSetupModule
+                    profileSetupModule,
+                    dashboardModule
                 )
             )
         }

@@ -15,10 +15,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.lihan.smartstep.core.presentation.ui.theme.BackgroundMain
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.dashboard.presentation.DashboardRoot
 import com.lihan.smartstep.profile_setup.presentation.ProfileSetupRoot
 import com.lihan.smartstep.profile_setup.presentation.ProfileSetupScreen
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface Route {
+
+    @Serializable
+    data object ProfileSetup: Route
+
+    @Serializable
+    data object Dashboard: Route
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,9 +50,33 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
+            val navController = rememberNavController()
             SmartStepTheme {
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.Dashboard
+                ){
+                    composable<Route.ProfileSetup>{
+                        ProfileSetupRoot(
+                            onNavigateToDashboard = {
+                                navController.navigate(Route.Dashboard){
+                                    launchSingleTop = true
+                                    popUpTo<Route.Dashboard>{
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        )
+                    }
 
-                ProfileSetupRoot()
+                    composable<Route.Dashboard>{
+                        DashboardRoot()
+                    }
+
+
+
+                }
+
             }
         }
     }
