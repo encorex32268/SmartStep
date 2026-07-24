@@ -64,21 +64,22 @@ fun StepCounterCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(8.dp)
+            Surface(
+                modifier = Modifier.size(44.dp),
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ){
+                    Icon(
+                        imageVector = AppIcons.Sneakers,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
-                    .size(38.dp),
-                contentAlignment = Alignment.Center
-            ){
-                Icon(
-                    imageVector = AppIcons.Sneakers,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                }
             }
+
             Spacer(Modifier.height(16.dp))
             Text(
                 text = currentSteps.toString(),
