@@ -1,4 +1,4 @@
-package com.lihan.smartstep
+package com.lihan.smartstep.app
 
 import android.app.Application
 import com.lihan.smartstep.core.di.coreModule
