@@ -15,5 +15,23 @@
     <string name="weight_kg">%1$s kg</string>
     <string name="weight_lbs">%1$s lbs</string>
     <string name="dashboard_title">Smart Step</string>
+    <string name="motion_sensors_allow_description">To count your steps, \nSmart Step needs access to your motion sensors.</string>
+    <string name="allow_access">Allow access</string>
+    <string name="enable_access_manually">Enable access manually</string>
+    <string name="enable_access_manually_description">To track your steps, please enable t he\npermission in your device settings.</string>
+    <string name="enable_access_manually_step1">1. Open Permissions</string>
+    <string name="enable_access_manually_step2">2. Tap Physical activity</string>
+    <string name="enable_access_manually_step3">3. Select Allow</string>
+    <string name="open_settings">Open settings</string>
+    <string name="button_continue">Continue</string>
+    <string name="background_access_recommended">Background access recommended</string>
+    <string name="background_access_recommended_description">Background access helps Smart Step track your activity more reliably.</string>
+    <string name="step_goal">Step Goal</string>
+    <string name="personal_settings">Personal Settings</string>
+    <string name="exit">Exit</string>
+    <string name="fix_stop_counting_steps_issue">Fix the “Stop Counting Steps” issue</string>
+    <string name="exit_information">The app will fully close and will\nnot run in the background.</string>
+    <string name="ok">Ok</string>
+    <string name="save">Save</string>
 
 </resources>

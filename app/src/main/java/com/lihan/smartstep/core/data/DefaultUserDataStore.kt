@@ -3,6 +3,7 @@ package com.lihan.smartstep.core.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -24,6 +25,8 @@ class DefaultUserDataStore(
 
     companion object{
         private val USER_DATA_KEY = stringPreferencesKey("user_data")
+        private val BACKGROUND_ACCESS_KEY = booleanPreferencesKey("isShownBackgroundAccess")
+        private val STEP_GOAL_KEY = longPreferencesKey("step_goal")
     }
 
     override suspend fun setUserData(data: UserData) {
@@ -46,6 +49,28 @@ class DefaultUserDataStore(
                     weightUnit = "kg"
                 )
             }
+        }
+
+    override suspend fun setIsShownBackgroundAccess(value: Boolean) {
+       context.datastore.edit { preferences ->
+           preferences[BACKGROUND_ACCESS_KEY] = value
+       }
+    }
+
+    override val isShownBackgroundAccess: Flow<Boolean>
+        get() = context.datastore.data.map { preferences ->
+            preferences[BACKGROUND_ACCESS_KEY]?:false
+        }
+
+    override suspend fun setStepGoal(step: Long) {
+        context.datastore.edit { preferences ->
+            preferences[STEP_GOAL_KEY] = step
+        }
+    }
+
+    override val stepGoal: Flow<Long>
+        get() = context.datastore.data.map { preferences ->
+            preferences[STEP_GOAL_KEY]?:2000
         }
 
 }
