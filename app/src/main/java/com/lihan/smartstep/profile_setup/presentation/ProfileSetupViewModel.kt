@@ -1,12 +1,15 @@
 package com.lihan.smartstep.profile_setup.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.lihan.smartstep.core.data.model.Gender
 import com.lihan.smartstep.core.data.model.HeightUnit
 import com.lihan.smartstep.core.data.model.HeightUnit.Companion.formattedName
 import com.lihan.smartstep.core.data.model.WeightUnit
 import com.lihan.smartstep.core.data.model.WeightUnit.Companion.formattedName
+import com.lihan.smartstep.core.domain.Route
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.presentation.components.WheelPickerData
 import com.lihan.smartstep.profile_setup.presentation.model.feetInchesToCm
@@ -116,12 +119,18 @@ class ProfileSetupViewModel(
             is ProfileSetupAction.OnWeightValueChange -> weightValueChange(action.value)
             ProfileSetupAction.OnSkipClick,
             ProfileSetupAction.OnStartClick -> navigateToDashboard()
+            ProfileSetupAction.OnSaveClick -> navigateUp()
         }
     }
 
     private fun navigateToDashboard(){
         viewModelScope.launch {
             _uiEvent.send(ProfileSetupEvent.OnNavigateToDashboard)
+        }
+    }
+    private fun navigateUp(){
+        viewModelScope.launch {
+            _uiEvent.send(ProfileSetupEvent.OnNavigateUp)
         }
     }
 

@@ -39,7 +39,7 @@ import com.lihan.smartstep.core.presentation.components.ProfileWheelPickerDialog
 import com.lihan.smartstep.core.presentation.components.SettingsDropdown
 import com.lihan.smartstep.core.presentation.components.SettingsField
 import com.lihan.smartstep.core.presentation.components.SettingsWheelPicker
-import com.lihan.smartstep.core.presentation.components.SingleValueWheelPicker
+import com.lihan.smartstep.core.presentation.components.WheelPickerData
 import com.lihan.smartstep.core.presentation.design_system.buttons.ButtonType
 import com.lihan.smartstep.core.presentation.design_system.buttons.SmartStepButton
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
@@ -50,18 +50,22 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileSetupRoot(
+    isFromDashboard: Boolean,
+    onNavigateUp: () -> Unit,
     onNavigateToDashboard: () -> Unit,
     viewModel: ProfileSetupViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ObserveAsEvents(viewModel.uiEvent){ event ->
-        when(event){
+    ObserveAsEvents(viewModel.uiEvent) { event ->
+        when (event) {
             ProfileSetupEvent.OnNavigateToDashboard -> onNavigateToDashboard()
+            ProfileSetupEvent.OnNavigateUp -> onNavigateUp()
         }
     }
 
     ProfileSetupScreen(
+        isFromDashboard = isFromDashboard,
         state = state,
         onAction = viewModel::onAction
     )
@@ -69,6 +73,7 @@ fun ProfileSetupRoot(
 
 @Composable
 fun ProfileSetupScreen(
+    isFromDashboard: Boolean,
     state: ProfileSetupState,
     onAction: (ProfileSetupAction) -> Unit,
 ) {
@@ -80,13 +85,15 @@ fun ProfileSetupScreen(
             SmartStepTopbar(
                 title = stringResource(R.string.my_profile),
                 actions = {
-                    SmartStepButton(
-                        text = stringResource(R.string.skip),
-                        type = ButtonType.Text,
-                        onClick = {
-                            onAction(ProfileSetupAction.OnSkipClick)
-                        }
-                    )
+                    if (!isFromDashboard) {
+                        SmartStepButton(
+                            text = stringResource(R.string.skip),
+                            type = ButtonType.Text,
+                            onClick = {
+                                onAction(ProfileSetupAction.OnSkipClick)
+                            }
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BackgroundWhite,
@@ -103,13 +110,23 @@ fun ProfileSetupScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(Modifier.height(32.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.my_profile_information),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
-            )
+            if (!isFromDashboard) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.my_profile_information),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.personal_settings),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+            }
             Spacer(Modifier.height(16.dp))
             Column(
                 modifier = Modifier
@@ -145,8 +162,12 @@ fun ProfileSetupScreen(
                 )
                 SettingsField(
                     title = stringResource(R.string.height),
-                    value = when(state.heightUnitOption){
-                        HeightUnit.Cm -> stringResource(R.string.height_cm,state.displayHeightString)
+                    value = when (state.heightUnitOption) {
+                        HeightUnit.Cm -> stringResource(
+                            R.string.height_cm,
+                            state.displayHeightString
+                        )
+
                         HeightUnit.FtIn -> state.displayHeightString
                     },
                     onFieldClick = {
@@ -155,9 +176,16 @@ fun ProfileSetupScreen(
                 )
                 SettingsField(
                     title = stringResource(R.string.weight),
-                    value = when(state.weightUnitOption){
-                        WeightUnit.Kg -> stringResource(R.string.weight_kg,state.displayWeightString)
-                        WeightUnit.Lbs -> stringResource(R.string.weight_lbs,state.displayWeightString)
+                    value = when (state.weightUnitOption) {
+                        WeightUnit.Kg -> stringResource(
+                            R.string.weight_kg,
+                            state.displayWeightString
+                        )
+
+                        WeightUnit.Lbs -> stringResource(
+                            R.string.weight_lbs,
+                            state.displayWeightString
+                        )
                     },
                     onFieldClick = {
                         onAction(ProfileSetupAction.OnShowWeightDialog)
@@ -169,9 +197,15 @@ fun ProfileSetupScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                text = stringResource(R.string.start),
+                text = if (isFromDashboard){
+                    stringResource(R.string.save)
+                }else stringResource(R.string.start),
                 onClick = {
-
+                    if (isFromDashboard){
+                        onAction(ProfileSetupAction.OnSaveClick)
+                    }else{
+                        onAction(ProfileSetupAction.OnStartClick)
+                    }
                 }
             )
 
@@ -180,7 +214,7 @@ fun ProfileSetupScreen(
 
     }
 
-    if (state.isShowHeightDialog){
+    if (state.isShowHeightDialog) {
         ProfileWheelPickerDialog(
             title = stringResource(R.string.height),
             description = stringResource(R.string.height_description),
@@ -209,7 +243,7 @@ fun ProfileSetupScreen(
         )
     }
 
-    if (state.isShowWeightDialog){
+    if (state.isShowWeightDialog) {
         ProfileWheelPickerDialog(
             title = stringResource(R.string.weight),
             description = stringResource(R.string.weight_description),
@@ -236,7 +270,6 @@ fun ProfileSetupScreen(
     }
 
 
-
 }
 
 @Preview
@@ -244,8 +277,23 @@ fun ProfileSetupScreen(
 private fun Preview() {
     SmartStepTheme {
         ProfileSetupScreen(
+            isFromDashboard = true,
             state = ProfileSetupState(
-                isShowHeightDialog = true
+                isShowHeightDialog = false,
+                weightItems = WheelPickerData.buildWeightWheelPickerDataListByUnit(
+                    unit = WeightUnit.Kg, "65", currentWeightItems = listOf(
+                        WheelPickerData
+                            (value = "65", items = WheelPickerData.KgRange)
+                    )
+                ),
+                heightItems = WheelPickerData.buildHeightWheelPickerDataListByUnit(
+                    currentHeightValue = "175",
+                    currentHeightItems = listOf(
+                        WheelPickerData
+                            (value = "175", items = WheelPickerData.CmRange)
+                    ),
+                    unit = HeightUnit.Cm
+                ),
             ),
             onAction = {}
         )
