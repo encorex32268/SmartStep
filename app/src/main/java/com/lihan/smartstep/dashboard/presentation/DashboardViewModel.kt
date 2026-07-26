@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.dashboard.domain.AppPowerManager
 import com.lihan.smartstep.dashboard.presentation.components.DrawerType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,95 +45,110 @@ class DashboardViewModel(
 
     fun onAction(action: DashboardAction) {
         when (action) {
-            DashboardAction.OnShowAllowAccessBottomSheet -> {
-                _state.update {
-                    it.copy(
-                        isShowAllowAccessBottomSheet = true
-                    )
-                }
+            DashboardAction.OnShowAllowAccessBottomSheet -> showAllowAccessBottomSheet()
+            DashboardAction.OnShowEnableAccessManuallyBottomSheet -> showEnableAccessManuallyBottomSheet()
+            DashboardAction.OnShowBackgroundAccessBottomSheet -> showBackgroundAccessBottomSheet()
+            DashboardAction.OnBackgroundAccessContinueClick -> backgroundAccessContinue()
+            is DashboardAction.OnDrawerItemClick -> drawerItemClick(action.type)
+            DashboardAction.OnDismissExitDialog -> dismissExitDialog()
+            DashboardAction.OnShowStepGoalBottomSheet -> showStepGoalBottomSheet()
+            DashboardAction.OnDismissStepGoalBottomSheet -> dismissStepGoalBottomSheet()
+            is DashboardAction.OnStepGoalBottomSheetSaveClick -> saveStepGoal(action.step)
+            DashboardAction.OnExitOKClick -> Unit
+        }
+    }
+
+    private fun saveStepGoal(step: String) {
+        viewModelScope.launch {
+            userDataStore.setStepGoal(step = step.toLongOrNull()?:2000)
+            _state.update { it.copy(
+                isShowStepGoalBottomSheet = false
+            ) }
+        }
+    }
+
+    private fun dismissStepGoalBottomSheet() {
+        _state.update { it.copy(
+            isShowStepGoalBottomSheet = false
+        ) }
+    }
+
+    private fun showStepGoalBottomSheet(){
+        _state.update { it.copy(
+            isShowStepGoalBottomSheet = true
+        ) }
+    }
+
+    private fun dismissExitDialog(){
+        _state.update { it.copy(
+            isShowExitDialog = false
+        ) }
+    }
+
+    private fun backgroundAccessContinue() {
+        _state.update { it.copy(
+           isShowBackgroundAccessBottomSheet = false
+        ) }
+    }
+
+    private fun showEnableAccessManuallyBottomSheet(){
+        _state.update { it.copy(
+            isShowAllowAccessBottomSheet = false,
+            isShowEnableAccessManuallyBottomSheet = true
+        ) }
+    }
+
+    private fun showAllowAccessBottomSheet(){
+        _state.update { it.copy(
+            isShowAllowAccessBottomSheet = true
+        ) }
+    }
+
+    private fun showBackgroundAccessBottomSheet(){
+        viewModelScope.launch {
+            val isShownBackgroundAccess = userDataStore.isShownBackgroundAccess.first()
+            if (isShownBackgroundAccess) return@launch
+            _state.update {
+                it.copy(
+                    isShowBackgroundAccessBottomSheet = true
+                )
             }
+            userDataStore.setIsShownBackgroundAccess(true)
+        }
+    }
 
-            DashboardAction.OnShowEnableAccessManuallyBottomSheet -> {
-                _state.update {
-                    it.copy(
-                        isShowAllowAccessBottomSheet = false,
-                        isShowEnableAccessManuallyBottomSheet = true
-                    )
-                }
-            }
-
-            DashboardAction.OnShowBackgroundAccessBottomSheet -> {
-                viewModelScope.launch {
-                    val isShownBackgroundAccess = userDataStore.isShownBackgroundAccess.first()
-                    if (isShownBackgroundAccess) return@launch
-                    _state.update {
-                        it.copy(
-                            isShowBackgroundAccessBottomSheet = true
-                        )
-                    }
-                    userDataStore.setIsShownBackgroundAccess(true)
-                }
-            }
-
-            DashboardAction.OnBackgroundAccessContinueClick -> {
-                _state.update {
-                    it.copy(
-                        isShowBackgroundAccessBottomSheet = false
-                    )
-                }
-            }
-
-            is DashboardAction.OnDrawerItemClick -> {
-                when(action.type){
-                    DrawerType.FixIssue -> {
-                        _state.update { it.copy(
-                            isShowBackgroundAccessBottomSheet = true
-                        ) }
-                    }
-                    DrawerType.StepGoal -> {
-                        _state.update { it.copy(
-                            isShowStepGoalBottomSheet = true
-                        ) }
-                    }
-                    DrawerType.Exit -> {
-                        _state.update { it.copy(
-                            isShowExitDialog = true
-                        ) }
-                    }
-
-                    DrawerType.PersonalSettings -> {
-                        viewModelScope.launch {
-                            _uiEvent.send(DashboardEvent.NavigateToProfileSettings)
-                        }
-                    }
-                }
-            }
-
-            DashboardAction.OnDismissExitDialog -> {
+    private fun drawerItemClick(type: DrawerType) {
+        when(type){
+            DrawerType.FixIssue -> {
                 _state.update { it.copy(
-                    isShowExitDialog = false
+                    isShowBackgroundAccessBottomSheet = true
                 ) }
             }
-            DashboardAction.OnExitOKClick -> Unit
-            DashboardAction.OnShowStepGoalBottomSheet -> {
+            DrawerType.StepGoal -> {
                 _state.update { it.copy(
                     isShowStepGoalBottomSheet = true
                 ) }
             }
-
-            DashboardAction.OnDismissStepGoalBottomSheet -> {
+            DrawerType.Exit -> {
                 _state.update { it.copy(
-                    isShowStepGoalBottomSheet = false
+                    isShowExitDialog = true
                 ) }
             }
-            is DashboardAction.OnStepGoalBottomSheetSaveClick ->{
+
+            DrawerType.PersonalSettings -> {
                 viewModelScope.launch {
-                    val currentStepGoal = action.step
-                    userDataStore.setStepGoal(step = currentStepGoal.toLongOrNull()?:2000)
-                    _state.update { it.copy(
-                        isShowStepGoalBottomSheet = false
-                    ) }
+                    _uiEvent.send(DashboardEvent.NavigateToProfileSettings)
                 }
+            }
+            DrawerType.EditSteps -> {
+                _state.update { it.copy(
+                    isShowEditSteps = true
+                ) }
+            }
+            DrawerType.RestTodaySteps -> {
+                _state.update { it.copy(
+                    isShowResetDialog = true
+                ) }
             }
         }
     }
@@ -161,7 +177,6 @@ class DashboardViewModel(
         userDataStore
             .stepGoal
             .onEach {  stepGoal ->
-                println("StepGoal: $stepGoal")
                 _state.update { it.copy(
                     stepGoalPickerData = it.stepGoalPickerData.copy(
                         value = stepGoal.toString()

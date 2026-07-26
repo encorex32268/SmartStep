@@ -14,5 +14,8 @@ data class DashboardState(
     val stepGoalPickerData: WheelPickerData = WheelPickerData(
         value = stepGoal,
         items = (1000..40000 step 1000).sortedDescending().map { it.toString() }
-    )
+    ),
+    val isShowEditSteps: Boolean = false,
+    val isShowDatePicker: Boolean = false,
+    val isShowResetDialog: Boolean = false
 )

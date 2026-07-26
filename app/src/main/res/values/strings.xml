@@ -33,5 +33,11 @@
     <string name="exit_information">The app will fully close and will\nnot run in the background.</string>
     <string name="ok">Ok</string>
     <string name="save">Save</string>
+    <string name="edit_steps">Edit Steps</string>
+    <string name="reset_today_steps">Reset Today\'s Steps</string>
+    <string name="reset_today_steps_information">Are you sure you want to reset today ’s steps?</string>
+    <string name="reset">Reset</string>
+    <string name="date">Date</string>
+    <string name="edit_steps_information"><![CDATA[Calories, distance & duration will\nbe recalculated accordingly.]]></string>
 
 </resources>

@@ -5,7 +5,7 @@ import androidx.compose.ui.res.stringResource
 import com.lihan.smartstep.R
 
 enum class DrawerType {
-    FixIssue,StepGoal,PersonalSettings,Exit
+    FixIssue,StepGoal,PersonalSettings,EditSteps,RestTodaySteps,Exit,
 }
 
 @Composable
@@ -15,5 +15,7 @@ fun DrawerType.toStringResource(): String {
         DrawerType.StepGoal -> stringResource(R.string.step_goal)
         DrawerType.PersonalSettings -> stringResource(R.string.personal_settings)
         DrawerType.Exit -> stringResource(R.string.exit)
+        DrawerType.EditSteps -> stringResource(R.string.edit_steps)
+        DrawerType.RestTodaySteps -> stringResource(R.string.reset_today_steps)
     }
 }
