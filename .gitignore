@@ -2,13 +2,20 @@
 .gradle/
 build/
 /*/build/
+**/build/
 local.properties
 .navigation/
+.gradle-instrumentation/
 
 # Built artifacts
 bin/
 gen/
 out/
+*.apk
+*.aar
+*.aab
+*.dex
+*.class
 
 # Android Studio / IntelliJ IDEA
 .idea/
@@ -34,3 +41,7 @@ google-services.json
 Thumbs.db
 *.bak
 *.tmp
+
+# Profiling & Log files
+*.log
+
