@@ -60,7 +60,7 @@ fun SmartStepButton(
             ) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.bodyMedium.copy(
+                    style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Medium
                     ),
                 )
