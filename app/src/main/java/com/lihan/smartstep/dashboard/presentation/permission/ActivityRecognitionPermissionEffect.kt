@@ -31,7 +31,9 @@ import com.lihan.smartstep.dashboard.presentation.util.openSettings
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ActivityRecognitionPermissionEffect(
-    state: DashboardState,
+    isShowAllowAccessBottomSheet: Boolean,
+    isShowEnableAccessManuallyBottomSheet: Boolean,
+    isShowBackgroundAccessBottomSheet: Boolean,
     onShowBackgroundAccess: () -> Unit,
     onBackgroundAccessContinueClick: () -> Unit,
     onShouldShowRationale: () -> Unit,
@@ -74,7 +76,7 @@ fun ActivityRecognitionPermissionEffect(
             hasPermission-> onShowBackgroundAccess()
         }
     }
-    if (state.isShowAllowAccessBottomSheet){
+    if (isShowAllowAccessBottomSheet){
         SmartStepModalBottomSheet(
             onDismissRequest = {},
             dragHandle = null,
@@ -88,7 +90,7 @@ fun ActivityRecognitionPermissionEffect(
         )
     }
 
-    if (state.isShowEnableAccessManuallyBottomSheet){
+    if (isShowEnableAccessManuallyBottomSheet){
         SmartStepModalBottomSheet(
             dragHandle = null,
             onDismissRequest = {},
@@ -102,7 +104,7 @@ fun ActivityRecognitionPermissionEffect(
         )
     }
 
-    if (state.isShowBackgroundAccessBottomSheet){
+    if (isShowBackgroundAccessBottomSheet){
         SmartStepModalBottomSheet(
             onDismissRequest = {},
             properties = ModalBottomSheetProperties(),
