@@ -39,5 +39,6 @@
     <string name="reset">Reset</string>
     <string name="date">Date</string>
     <string name="edit_steps_information"><![CDATA[Calories, distance & duration will\nbe recalculated accordingly.]]></string>
+    <string name="steps">Steps</string>
 
 </resources>
