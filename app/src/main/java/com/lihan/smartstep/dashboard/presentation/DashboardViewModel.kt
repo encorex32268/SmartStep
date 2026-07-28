@@ -55,7 +55,64 @@ class DashboardViewModel(
             DashboardAction.OnDismissStepGoalBottomSheet -> dismissStepGoalBottomSheet()
             is DashboardAction.OnStepGoalBottomSheetSaveClick -> saveStepGoal(action.step)
             DashboardAction.OnExitOKClick -> Unit
+            DashboardAction.OnDatePickerCancelClick -> dismissDatePickerDialog()
+            is DashboardAction.OnDatePickerSaveClick -> updateEditStepsDate(action.time)
+            DashboardAction.OnEditStepsCancelClick -> dismissEditStepsDialog()
+            DashboardAction.OnEditStepsFieldClick -> showDatePickerDialog()
+            DashboardAction.OnEditStepsSaveClick -> saveEditSteps()
+            DashboardAction.OnResetTodayCancelClick -> dismissResetTodayDialog()
+            DashboardAction.OnResetTodayResetClick -> resetTodaySteps()
         }
+    }
+
+    private fun resetTodaySteps(){
+        //TODO: Reset today's steps
+        _state.update { it.copy(
+            isShowResetDialog = false
+        ) }
+    }
+
+    private fun dismissResetTodayDialog(){
+        _state.update { it.copy(
+            isShowResetDialog = false
+        ) }
+    }
+
+    private fun saveEditSteps(){
+        val currentState = state.value
+        val editDate = currentState.dateTime
+        val editSteps = currentState.editStepsTextFieldState.text.toString()
+        //TODO: Update db
+
+        _state.update { it.copy(
+            isShowEditStepsDialog = false
+        ) }
+    }
+
+
+    private fun dismissEditStepsDialog(){
+        _state.update { it.copy(
+            isShowEditStepsDialog = false
+        ) }
+    }
+
+    private fun updateEditStepsDate(time: Long){
+        _state.update { it.copy(
+            dateTime = time,
+            isShowDatePickerDialog = false
+        ) }
+    }
+
+    private fun showDatePickerDialog(){
+        _state.update { it.copy(
+            isShowDatePickerDialog = true
+        )}
+    }
+
+    private fun dismissDatePickerDialog(){
+        _state.update { it.copy(
+            isShowDatePickerDialog = false
+        )}
     }
 
     private fun saveStepGoal(step: String) {
@@ -142,7 +199,7 @@ class DashboardViewModel(
             }
             DrawerType.EditSteps -> {
                 _state.update { it.copy(
-                    isShowEditSteps = true
+                    isShowEditStepsDialog = true
                 ) }
             }
             DrawerType.RestTodaySteps -> {

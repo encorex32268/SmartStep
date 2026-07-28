@@ -14,6 +14,11 @@ sealed interface DashboardAction {
     data object OnShowStepGoalBottomSheet: DashboardAction
     data class OnStepGoalBottomSheetSaveClick(val step: String): DashboardAction
     data object OnDismissStepGoalBottomSheet: DashboardAction
-
-
+    data object OnEditStepsSaveClick: DashboardAction
+    data object OnEditStepsCancelClick: DashboardAction
+    data object OnEditStepsFieldClick: DashboardAction
+    data object OnDatePickerCancelClick: DashboardAction
+    data class OnDatePickerSaveClick(val time: Long): DashboardAction
+    data object OnResetTodayCancelClick: DashboardAction
+    data object OnResetTodayResetClick: DashboardAction
 }

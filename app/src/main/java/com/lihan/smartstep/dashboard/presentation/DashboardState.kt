@@ -1,7 +1,9 @@
 package com.lihan.smartstep.dashboard.presentation
 
+import androidx.compose.foundation.text.input.TextFieldState
 import com.lihan.smartstep.core.presentation.components.WheelPickerData
 import com.lihan.smartstep.dashboard.presentation.components.DrawerType
+import kotlin.time.Clock
 
 data class DashboardState(
     val drawerItems: List<DrawerType> = emptyList(),
@@ -15,7 +17,9 @@ data class DashboardState(
         value = stepGoal,
         items = (1000..40000 step 1000).sortedDescending().map { it.toString() }
     ),
-    val isShowEditSteps: Boolean = false,
-    val isShowDatePicker: Boolean = false,
-    val isShowResetDialog: Boolean = false
+    val isShowResetDialog: Boolean = false,
+    val isShowEditStepsDialog: Boolean = false,
+    val dateTime: Long = Clock.System.now().toEpochMilliseconds(),
+    val editStepsTextFieldState: TextFieldState = TextFieldState("0"),
+    val isShowDatePickerDialog: Boolean = false,
 )

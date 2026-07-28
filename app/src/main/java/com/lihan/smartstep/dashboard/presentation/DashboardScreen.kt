@@ -30,11 +30,13 @@ import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.design_system.bottomsheet.SmartStepModalBottomSheet
 import com.lihan.smartstep.dashboard.presentation.components.AppDrawer
-import com.lihan.smartstep.dashboard.presentation.components.DrawerType
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.presentation.util.ObserveAsEvents
+import com.lihan.smartstep.dashboard.presentation.components.DatePickerDialog
+import com.lihan.smartstep.dashboard.presentation.components.EditStepsDialog
 import com.lihan.smartstep.dashboard.presentation.components.ExitInformationDialog
+import com.lihan.smartstep.dashboard.presentation.components.ResetTodayStepDialog
 import com.lihan.smartstep.dashboard.presentation.components.StepCounterCard
 import com.lihan.smartstep.dashboard.presentation.components.StepGoalBottomSheet
 import com.lihan.smartstep.dashboard.presentation.permission.ActivityRecognitionPermissionEffect
@@ -75,7 +77,9 @@ fun DashboardScreen(
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         ActivityRecognitionPermissionEffect(
-            state = state,
+            isShowBackgroundAccessBottomSheet = state.isShowBackgroundAccessBottomSheet,
+            isShowAllowAccessBottomSheet = state.isShowAllowAccessBottomSheet,
+            isShowEnableAccessManuallyBottomSheet = state.isShowEnableAccessManuallyBottomSheet,
             onNotGranted = {
                 onAction(DashboardAction.OnShowAllowAccessBottomSheet)
             },
@@ -182,6 +186,45 @@ fun DashboardScreen(
                                 onAction(DashboardAction.OnDismissStepGoalBottomSheet)
                             }
                         )
+                    }
+                )
+            }
+            if (state.isShowEditStepsDialog){
+                EditStepsDialog(
+                    dateTime = state.dateTime,
+                    stepsTextFieldState = state.editStepsTextFieldState,
+                    onSave = {
+                        onAction(DashboardAction.OnEditStepsSaveClick)
+                    },
+                    onDone = {
+                        //remove focus & hide keyboard
+                    },
+                    onCancel = {
+                        onAction(DashboardAction.OnEditStepsCancelClick)
+                    },
+                    onDateFieldClick = {
+                        onAction(DashboardAction.OnEditStepsFieldClick)
+                    }
+                )
+                if (state.isShowDatePickerDialog){
+                    DatePickerDialog(
+                        initialEpochMillis = state.dateTime,
+                        onSave = { newTimeLong ->
+                            onAction(DashboardAction.OnDatePickerSaveClick(newTimeLong))
+                        },
+                        onCancel = {
+                            onAction(DashboardAction.OnDatePickerCancelClick)
+                        }
+                    )
+                }
+            }
+            if (state.isShowResetDialog){
+                ResetTodayStepDialog(
+                    onCancel = {
+                        onAction(DashboardAction.OnResetTodayCancelClick)
+                    },
+                    onReset = {
+                        onAction(DashboardAction.OnResetTodayResetClick)
                     }
                 )
             }

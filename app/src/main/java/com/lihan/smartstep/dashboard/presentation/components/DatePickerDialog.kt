@@ -32,10 +32,11 @@ import kotlin.time.Clock
 fun DatePickerDialog(
     onSave: (Long) -> Unit,
     onCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    initialEpochMillis: Long = Clock.System.now().toEpochMilliseconds()
 ) {
     val datePickerState = rememberDatePickerState(
-        initialEpochMillis = Clock.System.now().toEpochMilliseconds()
+        initialEpochMillis = initialEpochMillis
     )
 
     Dialog(
