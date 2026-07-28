@@ -13,4 +13,7 @@ sealed interface Route {
     @Serializable
     data object Dashboard: Route
 
+    @Serializable
+    data object Catalog: Route
+
 }

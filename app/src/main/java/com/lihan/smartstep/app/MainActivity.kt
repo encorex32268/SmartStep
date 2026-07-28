@@ -6,7 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
@@ -43,7 +47,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize(),
                     navController = navController,
-                    startDestination = Route.ProfileSetup(isFromDashboard = false)
+//                    startDestination = Route.ProfileSetup(isFromDashboard = false)
+                    startDestination = Route.Dashboard
                 ){
                     composable<Route.ProfileSetup>{
                         val isFromDashboard = it.toRoute<Route.ProfileSetup>().isFromDashboard
@@ -71,6 +76,16 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Route.ProfileSetup(isFromDashboard = true))
                             }
                         )
+                    }
+
+                    composable<Route.Catalog>{
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .safeDrawingPadding()
+                        ){
+                            CatalogScreen()
+                        }
                     }
                 }
             }
