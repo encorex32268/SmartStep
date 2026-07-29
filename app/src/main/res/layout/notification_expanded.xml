@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="4dp">
 
     <!-- 左側：完整的數據 + 進度條 (保持原本 Collapsed 的結構) -->
     <LinearLayout
@@ -30,7 +31,9 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/sneakers"
-                    android:tint="@color/primary" />
+                    android:tint="@color/primary"
+                    tools:ignore="UseAppTint"
+                    />
 
                 <TextView
                     android:id="@+id/tv_steps_exp"
@@ -60,7 +63,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/weight"
-                    android:tint="@color/primary" />
+                    android:tint="@color/primary"
+                    tools:ignore="UseAppTint" />
 
                 <TextView
                     android:id="@+id/tv_calories_exp"

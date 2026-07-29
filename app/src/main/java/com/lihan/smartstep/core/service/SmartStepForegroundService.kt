@@ -9,10 +9,13 @@ import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.lihan.smartstep.R
+import com.lihan.smartstep.core.data.hasActivityRecognitionPermission
 import java.text.NumberFormat
 import kotlin.math.roundToInt
 
 class SmartStepForegroundService: Service() {
+
+
 
     override fun onBind(p0: Intent?): IBinder? = null
 

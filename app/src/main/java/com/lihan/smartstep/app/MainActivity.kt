@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.lihan.smartstep.core.data.hasActivityRecognitionPermission
 import com.lihan.smartstep.core.domain.Route
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.service.SmartStepForegroundService
@@ -30,6 +31,8 @@ import com.lihan.smartstep.profile_setup.presentation.ProfileSetupRoot
 class MainActivity : ComponentActivity() {
 
     override fun onPause() {
+        super.onPause()
+        if (!this@MainActivity.hasActivityRecognitionPermission) return
         val intent = Intent(this@MainActivity, SmartStepForegroundService::class.java).apply {
             action = SmartStepForegroundService.ACTION_START
             putExtra(SmartStepForegroundService.STEPS_KEY,1011)
@@ -90,16 +93,6 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Route.ProfileSetup(isFromDashboard = true))
                             }
                         )
-                    }
-
-                    composable<Route.Catalog>{
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .safeDrawingPadding()
-                        ){
-                            CatalogScreen()
-                        }
                     }
                 }
             }
