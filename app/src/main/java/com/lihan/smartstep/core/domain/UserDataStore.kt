@@ -11,7 +11,12 @@ interface UserDataStore {
     suspend fun setIsShownBackgroundAccess(value: Boolean)
     val isShownBackgroundAccess: Flow<Boolean>
 
-    suspend fun setStepGoal(step: Long)
-    val stepGoal: Flow<Long>
+    suspend fun setStepGoal(steps: Int)
+    val stepGoal: Flow<Int>
 
+    suspend fun setTodaySteps(steps: Int)
+    val todaySteps: Flow<Int>
+
+    suspend fun setIsTracking(value: Boolean)
+    val isTracking: Flow<Boolean>
 }

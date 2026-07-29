@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -26,7 +28,9 @@ class DefaultUserDataStore(
     companion object{
         private val USER_DATA_KEY = stringPreferencesKey("user_data")
         private val BACKGROUND_ACCESS_KEY = booleanPreferencesKey("isShownBackgroundAccess")
-        private val STEP_GOAL_KEY = longPreferencesKey("step_goal")
+        private val STEP_GOAL_KEY = intPreferencesKey("step_goal")
+        private val TODAY_STEPS_KEY = intPreferencesKey("today_steps")
+        private val IS_TRACKING_KEY = booleanPreferencesKey("isTracking")
     }
 
     override suspend fun setUserData(data: UserData) {
@@ -62,15 +66,37 @@ class DefaultUserDataStore(
             preferences[BACKGROUND_ACCESS_KEY]?:false
         }
 
-    override suspend fun setStepGoal(step: Long) {
+    override suspend fun setStepGoal(steps: Int) {
         context.datastore.edit { preferences ->
-            preferences[STEP_GOAL_KEY] = step
+            preferences[STEP_GOAL_KEY] = steps
         }
     }
 
-    override val stepGoal: Flow<Long>
+    override val stepGoal: Flow<Int>
         get() = context.datastore.data.map { preferences ->
             preferences[STEP_GOAL_KEY]?:2000
+        }
+
+    override suspend fun setTodaySteps(steps: Int) {
+        context.datastore.edit { preferences ->
+            preferences[TODAY_STEPS_KEY] = steps
+        }
+    }
+
+    override val todaySteps: Flow<Int>
+        get() = context.datastore.data.map { preferences ->
+            preferences[TODAY_STEPS_KEY]?:0
+        }
+
+    override suspend fun setIsTracking(value: Boolean) {
+        context.datastore.edit { preferences ->
+            preferences[IS_TRACKING_KEY] = value
+        }
+    }
+
+    override val isTracking: Flow<Boolean>
+        get() = context.datastore.data.map { preferences ->
+            preferences[IS_TRACKING_KEY]?:false
         }
 
 }
