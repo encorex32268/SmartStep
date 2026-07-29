@@ -21,5 +21,6 @@ val BackgroundWhite = Color(0xFFFFFFFF)
 
 // Stroke Colors
 val StrokeMain = Color(0xFFE5E7EB)
+val ProgressGreen = Color(0xFF0DC600)
 
 

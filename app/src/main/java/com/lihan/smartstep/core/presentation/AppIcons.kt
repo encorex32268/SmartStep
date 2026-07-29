@@ -59,6 +59,10 @@ object AppIcons {
         @Composable
         get() = ImageVector.vectorResource(R.drawable.pause)
 
+    val Play: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.play)
+
     val SendMessage: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.send_message)
