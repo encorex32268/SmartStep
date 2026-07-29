@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- 左側：完整的數據 + 進度條 (保持原本 Collapsed 的結構) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/sneakers"
+                    android:tint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tv_steps_exp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:lineHeight="24sp"
+                    android:text="7,842"
+                    android:textColor="@color/notification_steps_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="1dp"
+                android:layout_height="16dp"
+                android:src="@android:color/darker_gray" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/weight"
+                    android:tint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tv_calories_exp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:lineHeight="24sp"
+                    android:text="342"
+                    android:textColor="@color/notification_steps_text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <ProgressBar
+            android:id="@+id/progress_bar_exp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:paddingHorizontal="8dp"
+            android:progress="25"
+            android:progressDrawable="@drawable/custom_progress_bar" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btn_action_exp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/custom_background_circle_primary"
+        android:src="@drawable/arrow_right"
+        android:tint="@color/white" />
+
+</LinearLayout>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/sneakers"
+                android:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/tv_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="7,842"
+                android:textSize="16sp"
+                android:lineHeight="24sp"
+                android:textColor="@color/notification_steps_text"
+                android:fontFamily="@font/inter_medium"
+                />
+        </LinearLayout>
+
+        <!-- 分隔線 -->
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="16dp"
+            android:src="@android:color/darker_gray" />
+
+        <!-- 數據區域 2 (卡路里/卡路里 Icon) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/weight"
+                android:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/tv_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="342"
+                android:textSize="16sp"
+                android:lineHeight="24sp"
+                android:textColor="@color/notification_steps_text"
+                android:fontFamily="@font/inter_medium"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:paddingHorizontal="8dp"
+        android:progress="25"
+        android:progressDrawable="@drawable/custom_progress_bar"
+        />
+
+
+
+
+</LinearLayout>

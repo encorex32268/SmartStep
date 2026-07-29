@@ -5,6 +5,12 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+
     <application
         android:name=".app.SmartStepApplication"
         android:allowBackup="true"
@@ -26,6 +32,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".core.service.SmartStepForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="health" />
+
     </application>
 
 </manifest>
