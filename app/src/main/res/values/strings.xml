@@ -40,5 +40,8 @@
     <string name="date">Date</string>
     <string name="edit_steps_information"><![CDATA[Calories, distance & duration will\nbe recalculated accordingly.]]></string>
     <string name="steps">Steps</string>
+    <string name="daily_average_steps">Daily Average: %1$s steps</string>
+    <string name="paused">Paused</string>
+    <string name="goldsteps">/%1$d Steps</string>
 
 </resources>

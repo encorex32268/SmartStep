@@ -153,7 +153,8 @@ fun DashboardScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     StepCounterCard(
-                        currentSteps = 5000
+                        currentSteps = 5000,
+                        isTracking = false
                     )
                 }
 
