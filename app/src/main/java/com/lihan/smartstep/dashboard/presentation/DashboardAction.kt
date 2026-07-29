@@ -21,4 +21,6 @@ sealed interface DashboardAction {
     data class OnDatePickerSaveClick(val time: Long): DashboardAction
     data object OnResetTodayCancelClick: DashboardAction
     data object OnResetTodayResetClick: DashboardAction
+    data object OnStartTracking: DashboardAction
+    data object OnStopTracking: DashboardAction
 }

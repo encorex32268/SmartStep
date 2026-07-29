@@ -153,8 +153,17 @@ fun DashboardScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     StepCounterCard(
-                        currentSteps = 5000,
-                        isTracking = false
+                        currentSteps = state.steps,
+                        isTracking = state.isTracking,
+                        distance = state.distance,
+                        kcal = state.kcal,
+                        time = state.timeString,
+                        onStopTracking = {
+                            onAction(DashboardAction.OnStopTracking)
+                        },
+                        onStartTracking = {
+                            onAction(DashboardAction.OnStartTracking)
+                        }
                     )
                 }
 
@@ -241,9 +250,7 @@ fun DashboardScreen(
 private fun Preview() {
     SmartStepTheme {
         DashboardScreen(
-            state = DashboardState(
-                isShowExitDialog = true
-            ),
+            state = DashboardState(),
             onAction = {}
         )
     }

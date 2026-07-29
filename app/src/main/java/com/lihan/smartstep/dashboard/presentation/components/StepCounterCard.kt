@@ -54,7 +54,12 @@ import com.lihan.smartstep.core.presentation.util.toNumberString
 @Composable
 fun StepCounterCard(
     isTracking: Boolean,
-    currentSteps: Long,
+    currentSteps: Int,
+    distance: String,
+    kcal: Int,
+    time: String,
+    onStopTracking: () -> Unit,
+    onStartTracking: () -> Unit,
     modifier: Modifier = Modifier,
     goalSteps: Long = 6000
 ) {
@@ -101,7 +106,14 @@ fun StepCounterCard(
                 SmartStepIconButton(
                     imageVector = if (isTracking){ AppIcons.Pause } else { AppIcons.Play },
                     contentDescription = null,
-                    shape = CircleShape
+                    shape = CircleShape,
+                    onClick = {
+                        if (isTracking){
+                            onStopTracking()
+                        }else{
+                            onStartTracking()
+                        }
+                    }
                 )
             }
 
@@ -179,7 +191,7 @@ fun StepCounterCard(
                         contentDescription = null
                     )
                     UnitText(
-                        text = "3.2",
+                        text = distance,
                         unit = "km"
                     )
                 }
@@ -193,7 +205,7 @@ fun StepCounterCard(
                         contentDescription = null,
                     )
                     UnitText(
-                        text = "215",
+                        text = kcal.toNumberString(),
                         unit = "kcal"
                     )
                 }
@@ -207,7 +219,7 @@ fun StepCounterCard(
                         contentDescription = null,
                     )
                     UnitText(
-                        text = "42",
+                        text = time,
                         unit = "min"
                     )
                 }
@@ -226,7 +238,12 @@ private fun StepCounterCardPreview() {
     SmartStepTheme {
         StepCounterCard(
             currentSteps = 4523,
-            isTracking = false
+            isTracking = false,
+            onStopTracking = {},
+            onStartTracking = {},
+            distance = "4.7",
+            kcal = 1230,
+            time = "42"
         )
     }
 }
