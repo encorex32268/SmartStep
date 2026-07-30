@@ -46,6 +46,9 @@ class StepsSensorManager(
             .todaySteps
             .onEach { todaySteps ->
                 baseAccumulatedSteps = todaySteps
+                if (sessionStartSensorValue == null) {
+                    _currentSteps.value = todaySteps
+                }
             }
             .launchIn(coroutineScope)
 
@@ -56,7 +59,7 @@ class StepsSensorManager(
         if (!context.hasActivityRecognitionPermission) return
         println("SensorManager: registerListener")
         sessionStartSensorValue = null
-        _currentSteps.update { 0 }
+        _currentSteps.update { baseAccumulatedSteps }
 
         stepSensor?.let { sensor ->
             sensorManager?.registerListener(
@@ -71,11 +74,10 @@ class StepsSensorManager(
         println("SensorManager: unregisterListener")
         sensorManager?.unregisterListener(this@StepsSensorManager)
 
-        val sessionSteps = _currentSteps.value
-        if (sessionSteps > 0) {
+        val totalTodaySteps = _currentSteps.value
+        if (totalTodaySteps > baseAccumulatedSteps) {
             coroutineScope.launch {
-                userDataStore.setTodaySteps(baseAccumulatedSteps + sessionSteps)
-                _currentSteps.update { 0 }
+                userDataStore.setTodaySteps(totalTodaySteps)
             }
         }
         sessionStartSensorValue = null
@@ -100,12 +102,11 @@ class StepsSensorManager(
         // mean phone reboot.
         if (totalStepSinceBoot < startValue) {
             sessionStartSensorValue = totalStepSinceBoot
-            _currentSteps.update { 0 }
             return
         }
 
         val stepsInThisSession = (totalStepSinceBoot - startValue).roundToInt()
 
-        _currentSteps.update { stepsInThisSession }
+        _currentSteps.update { baseAccumulatedSteps + stepsInThisSession  }
     }
 }

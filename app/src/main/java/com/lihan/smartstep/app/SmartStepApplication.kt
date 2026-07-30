@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import com.lihan.smartstep.core.di.coreModule
 import com.lihan.smartstep.core.service.SmartStepForegroundService.Companion.CHANNEL_ID
+import com.lihan.smartstep.core.worker.SaveDailyStepsScheduler
 import com.lihan.smartstep.dashboard.di.dashboardModule
 import com.lihan.smartstep.profile_setup.di.profileSetupModule
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +19,8 @@ class SmartStepApplication: Application() {
         super.onCreate()
 
         createNotificationChannel()
+
+        SaveDailyStepsScheduler.scheduleWork(this)
 
         startKoin {
             androidContext(this@SmartStepApplication)
