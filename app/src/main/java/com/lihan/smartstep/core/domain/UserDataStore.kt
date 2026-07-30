@@ -19,4 +19,9 @@ interface UserDataStore {
 
     suspend fun setIsTracking(value: Boolean)
     val isTracking: Flow<Boolean>
+
+    suspend fun setTrackingTime(time: Long)
+    val trackingTime: Flow<Long>
+
+    suspend fun cleanStepsData()
 }

@@ -31,6 +31,7 @@ class DefaultUserDataStore(
         private val STEP_GOAL_KEY = intPreferencesKey("step_goal")
         private val TODAY_STEPS_KEY = intPreferencesKey("today_steps")
         private val IS_TRACKING_KEY = booleanPreferencesKey("isTracking")
+        private val TRACKING_TIME_KEY = longPreferencesKey("tracking_time")
     }
 
     override suspend fun setUserData(data: UserData) {
@@ -98,5 +99,23 @@ class DefaultUserDataStore(
         get() = context.datastore.data.map { preferences ->
             preferences[IS_TRACKING_KEY]?:false
         }
+
+    override suspend fun setTrackingTime(time: Long) {
+        context.datastore.edit { preferences ->
+            preferences[TRACKING_TIME_KEY] = time
+        }
+    }
+
+    override val trackingTime: Flow<Long>
+        get() = context.datastore.data.map { preferences ->
+            preferences[TRACKING_TIME_KEY] ?: 0L
+        }
+
+    override suspend fun cleanStepsData() {
+        context.datastore.edit { preferences ->
+            preferences[TRACKING_TIME_KEY] = 0
+            preferences[TODAY_STEPS_KEY] = 0
+        }
+    }
 
 }

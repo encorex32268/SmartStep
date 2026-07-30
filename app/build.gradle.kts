@@ -78,4 +78,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(libs.android.work.runitme.ktx)
 }
