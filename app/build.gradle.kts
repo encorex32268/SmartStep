@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.secrets.gradle)
 }
 
 android {
@@ -21,8 +22,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -41,8 +40,10 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
+
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
@@ -81,4 +82,5 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.android.work.runitme.ktx)
+    implementation(libs.google.generativeai)
 }

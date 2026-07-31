@@ -19,8 +19,11 @@ kotlinxSerialization = "1.11.0"
 ksp = "2.3.5"
 datastore = "1.2.1"
 workManager = "2.11.2"
+generativeAi = "0.9.0"
+secretsGradle = "2.0.1"
 
 [libraries]
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -71,9 +74,15 @@ desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref 
 #worker
 android-work-runitme-ktx = { module = "androidx.work:work-runtime-ktx" , version.ref = "workManager"}
 
+
+google-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeAi" }
+
+
 [plugins]
+
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-secrets-gradle = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin" , version.ref = "secretsGradle"}
