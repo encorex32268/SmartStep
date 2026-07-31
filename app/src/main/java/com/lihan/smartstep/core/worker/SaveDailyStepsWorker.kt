@@ -1,6 +1,7 @@
 package com.lihan.smartstep.core.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.lihan.smartstep.core.domain.DailyStepsRepository
@@ -22,6 +23,7 @@ class SaveDailyStepsWorker(
     override suspend fun doWork(): Result {
 
         val createAt = LocalDate.now()
+            .minusDays(1)
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()
@@ -36,15 +38,17 @@ class SaveDailyStepsWorker(
             spentTime = trackingTime
         )
 
+        Log.d(SaveDailyStepsScheduler.WORK_NAME, "doWork: dailyStep: $dailyStep")
         return try {
             stepsRepository.upsert(dailyStep)
 
             userDataStore.cleanStepsData()
-
+            Log.d(SaveDailyStepsScheduler.WORK_NAME, "doWork: success")
             Result.success()
         }catch (e: Exception){
             e.printStackTrace()
 //            saveToFile(dailyStep)
+            Log.d(SaveDailyStepsScheduler.WORK_NAME, "doWork: retry")
             Result.retry()
         }
     }
