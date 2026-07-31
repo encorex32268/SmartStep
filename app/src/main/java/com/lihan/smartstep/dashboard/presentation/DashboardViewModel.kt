@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 
 package com.lihan.smartstep.dashboard.presentation
 
@@ -7,21 +7,32 @@ import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.data.model.Gender
 import com.lihan.smartstep.core.data.model.UserData
 import com.lihan.smartstep.core.domain.AppSensorManager
+import com.lihan.smartstep.core.domain.DailyStepsRepository
+import com.lihan.smartstep.core.domain.UnitCalculator
 import com.lihan.smartstep.core.domain.UserDataStore
+import com.lihan.smartstep.core.domain.model.DailyStep
+import com.lihan.smartstep.core.domain.model.formattedString
+import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
 import com.lihan.smartstep.core.domain.util.TimerFlow
 import com.lihan.smartstep.dashboard.domain.AppPowerManager
 import com.lihan.smartstep.dashboard.presentation.components.DrawerType
+import com.lihan.smartstep.dashboard.presentation.model.DailyStepUi
+import com.lihan.smartstep.dashboard.presentation.model.toUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -30,16 +41,28 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.TextStyle
+import java.util.Collections.rotate
+import java.util.Locale
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
+import kotlin.time.Instant
+import kotlin.time.toDuration
 
 class DashboardViewModel(
     private val userDataStore: UserDataStore,
     private val appPowerManager: AppPowerManager,
-    private val appSensorManager: AppSensorManager
+    private val appSensorManager: AppSensorManager,
+    private val dailyStepsRepository: DailyStepsRepository,
+    private val getStepMetricsUseCase: GetStepMetricsUseCase
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
-    private var userData: UserData? = null
+
     private val _uiEvent = Channel<DashboardEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -61,6 +84,7 @@ class DashboardViewModel(
 
     init {
         initDashboardStatus()
+        initDailyStepsStatus()
     }
 
     fun onAction(action: DashboardAction) {
@@ -129,15 +153,21 @@ class DashboardViewModel(
     }
 
     private fun saveEditSteps() {
-        val currentState = state.value
-        val editDate = currentState.dateTime
-        val editSteps = currentState.editStepsTextFieldState.text.toString()
-        //TODO: Update db
+        viewModelScope.launch {
+            val currentState = state.value
+            val editDate = currentState.dateTime //startOfDayTime
+            val editSteps = currentState.editStepsTextFieldState.text.toString()
 
-        _state.update {
-            it.copy(
-                isShowEditStepsDialog = false
+            dailyStepsRepository.updateStepsByDate(
+                dateTime = editDate,
+                steps = editSteps.toIntOrNull() ?: 0
             )
+
+            _state.update {
+                it.copy(
+                    isShowEditStepsDialog = false
+                )
+            }
         }
     }
 
@@ -337,98 +367,121 @@ class DashboardViewModel(
 
         _state.map { it.isTracking }
             .distinctUntilChanged()
+            .drop(1)
             .onEach { isTracking ->
                 if (isTracking) {
                     appSensorManager.registerListener()
                 } else {
+                    val currentTime = _state.value.time
+                    userDataStore.setTrackingTime(currentTime.inWholeMilliseconds)
                     appSensorManager.unregisterListener()
                 }
             }.launchIn(viewModelScope)
 
-        TimerFlow
-            .timeAndEmit()
-            .flatMapLatest {
-                if (state.value.isTracking){
-                    flow { emit(it) }
-                }else emptyFlow()
-            }
-            .onEach { duration ->
-                _state.update { it.copy(
-                    time = it.time + duration
-                ) }
-            }
-            .launchIn(viewModelScope)
 
-
-        combine(
-            userDataStore.todaySteps,
-            appSensorManager.stepsFlow
-        ) { todaySteps, perSteps ->
-            todaySteps + perSteps
-        }.flatMapLatest {
-            if (state.value.isTracking) {
-                flow { emit(it) }
-            } else {
-                emptyFlow()
-            }
-        }.onEach { currentSteps ->
-            _state.update {
-                it.copy(
-                    steps = currentSteps
-                )
-            }
-        }.launchIn(viewModelScope)
-
-
-        _state.map { it.steps }
-            .distinctUntilChanged()
-            .flatMapLatest {
-                if (userData != null) {
-                    flow { emit(it) }
-                } else emptyFlow()
-            }
-            .onEach { steps ->
-                val height = userData?.height?.toIntOrNull()?:175
-                val weight = userData?.weight?.toIntOrNull()?:65
-                val genderFactor = if (userData?.gender == Gender.Male.name){
-                    1.0
-                }else{
-                    0.9
+        getStepMetricsUseCase()
+            .flatMapLatest { stepMetrics ->
+                if (state.value.isTracking) {
+                    flowOf(stepMetrics)
+                } else {
+                    emptyFlow()
                 }
-                val distance = "%.1f".format(
-                    (steps * (height / 100f))/1000
-                )
-                val kcalPerStep = (weight * 0.005 * genderFactor).roundToInt()
-                val kcal = kcalPerStep * steps
-
+            }
+            .debounce(300.milliseconds)
+            .onEach { stepMetrics ->
+                println("Step: ${stepMetrics}")
+                println("Kcal: ${stepMetrics.kcal}")
                 _state.update {
                     it.copy(
-                        distance = distance,
-                        kcal = kcal
+                        time = it.time + stepMetrics.time,
+                        steps = stepMetrics.steps,
+                        distance = stepMetrics.distance.formattedString(),
+                        kcal = stepMetrics.kcal,
+                        stepGoal = stepMetrics.stepGoal
                     )
                 }
-
-
             }.launchIn(viewModelScope)
+
     }
 
 
     private fun initDashboardStatus() {
         viewModelScope.launch {
-            userData = userDataStore.userData.first()
             val isTracking = userDataStore.isTracking.first()
-            val todaySteps = userDataStore.todaySteps.first()
-            val stepGoal = userDataStore.stepGoal.first()
+            val savedTimeMillis = userDataStore.trackingTime.first()
+            val stepMetrics = getStepMetricsUseCase().first()
+            val todaySteps = stepMetrics.steps
+            val stepGoal = stepMetrics.stepGoal
+
             _state.update {
                 it.copy(
                     isTracking = isTracking,
                     steps = todaySteps,
-                    stepGoal = stepGoal
+                    stepGoal = stepGoal,
+                    distance = stepMetrics.distance.formattedString(),
+                    kcal = stepMetrics.kcal,
+                    time = savedTimeMillis.milliseconds,
                 )
             }
         }
+    }
+
+    private fun initDailyStepsStatus(){
+        combine(
+            dailyStepsRepository.getWeekDailyStepsList(),
+            appSensorManager.stepsFlow,
+            userDataStore.stepGoal,
+        ){ dailySteps , steps , stepGoal ->
+
+            dailySteps.toDailyStepUiList(
+                todaySteps = steps,
+                todayStepsGoal = stepGoal
+            )
+
+        }.onEach { dailyStepUis ->
+            _state.update {
+                it.copy(
+                    dailySteps = dailyStepUis
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
 
 
+    private fun List<DailyStep>.toDailyStepUiList(
+        todaySteps: Int,
+        todayStepsGoal: Int
+    ): List<DailyStepUi> {
+        val today = DayOfWeek.from(LocalDateTime.now()).value
+        val dayOfWeeksStartFromSun = DayOfWeek.entries.toMutableList().apply { rotate(this, 1) }
+        return dayOfWeeksStartFromSun.map { dayOfWeek ->
+            val dayName = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
+            if (dayOfWeek.value == today) {
+                DailyStepUi(
+                    day = dayName,
+                    steps = todaySteps,
+                    stepsGoal = todayStepsGoal
+                )
+            } else {
+                val dailyStep = this.find { dailyStep ->
+                    val instant = java.time.Instant.ofEpochMilli(dailyStep.createAt)
+                    DayOfWeek.from(instant).value == dayOfWeek.value
+                }
+                if (dailyStep == null) {
+                    DailyStepUi(
+                        day = dayName,
+                        steps = 0,
+                        stepsGoal = 0
+                    )
+                } else {
+                    DailyStepUi(
+                        day = dayName,
+                        steps = dailyStep.steps,
+                        stepsGoal = dailyStep.stepsGoal
+                    )
+                }
+            }
+        }
     }
 
 }

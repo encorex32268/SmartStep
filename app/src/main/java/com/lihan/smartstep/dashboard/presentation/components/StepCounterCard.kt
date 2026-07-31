@@ -58,10 +58,10 @@ fun StepCounterCard(
     distance: String,
     kcal: Int,
     time: String,
+    goalSteps: Int,
     onStopTracking: () -> Unit,
     onStartTracking: () -> Unit,
-    modifier: Modifier = Modifier,
-    goalSteps: Long = 6000
+    modifier: Modifier = Modifier
 ) {
     val progressAnimate by animateFloatAsState(
         targetValue = currentSteps / goalSteps.toFloat(),
@@ -243,7 +243,8 @@ private fun StepCounterCardPreview() {
             onStartTracking = {},
             distance = "4.7",
             kcal = 1230,
-            time = "42"
+            time = "42",
+            goalSteps = 2000
         )
     }
 }

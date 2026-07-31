@@ -45,7 +45,7 @@
         <ImageView
             android:layout_width="1dp"
             android:layout_height="16dp"
-            android:src="@android:color/darker_gray" />
+            android:src="@color/notification_divider" />
 
         <!-- 數據區域 2 (卡路里/卡路里 Icon) -->
         <LinearLayout

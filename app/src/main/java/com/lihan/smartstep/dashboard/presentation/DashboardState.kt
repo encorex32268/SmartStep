@@ -3,6 +3,7 @@ package com.lihan.smartstep.dashboard.presentation
 import androidx.compose.foundation.text.input.TextFieldState
 import com.lihan.smartstep.core.presentation.components.WheelPickerData
 import com.lihan.smartstep.dashboard.presentation.components.DrawerType
+import com.lihan.smartstep.dashboard.presentation.model.DailyStepUi
 import kotlin.time.Clock
 import kotlin.time.Duration
 
@@ -27,7 +28,8 @@ data class DashboardState(
     val isShowDatePickerDialog: Boolean = false,
     val distance: String = "0.0",
     val kcal: Int = 0,
-    val time: Duration = Duration.ZERO
+    val time: Duration = Duration.ZERO,
+    val dailySteps: List<DailyStepUi> = emptyList()
 ){
     val timeString: String
         get() = time.toComponents { minutes, _, _ ->

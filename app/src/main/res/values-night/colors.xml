@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="splash_background">#121826</color>
+    <color name="notification_steps_text">#F3F4F6</color>
+    <color name="notification_divider">#374151</color>
+    <color name="primary">#6366F1</color>
+    <color name="progress_bar_background">#374151</color>
+</resources>

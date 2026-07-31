@@ -3,8 +3,11 @@
 package com.lihan.smartstep.dashboard.presentation
 
 import android.os.Build
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +36,7 @@ import com.lihan.smartstep.dashboard.presentation.components.AppDrawer
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.presentation.util.ObserveAsEvents
+import com.lihan.smartstep.dashboard.presentation.components.DailyStepsCard
 import com.lihan.smartstep.dashboard.presentation.components.DatePickerDialog
 import com.lihan.smartstep.dashboard.presentation.components.EditStepsDialog
 import com.lihan.smartstep.dashboard.presentation.components.ExitInformationDialog
@@ -145,17 +149,19 @@ fun DashboardScreen(
                 containerColor = MaterialTheme.colorScheme.background
             ) { paddingValues ->
 
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
                         .padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     StepCounterCard(
                         currentSteps = state.steps,
                         isTracking = state.isTracking,
                         distance = state.distance,
+                        goalSteps = state.stepGoal,
                         kcal = state.kcal,
                         time = state.timeString,
                         onStopTracking = {
@@ -165,6 +171,11 @@ fun DashboardScreen(
                             onAction(DashboardAction.OnStartTracking)
                         }
                     )
+                    DailyStepsCard(
+                        dailySteps = state.dailySteps,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                 }
 
             }

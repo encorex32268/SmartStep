@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="splash_background">#E4F0FB</color>
     <color name="notification_steps_text">#1F2024</color>
+    <color name="notification_divider">#E0E0E0</color>
     <color name="primary">#3A43B6</color>
     <color name="progress_bar_background">#E5E7EB</color>
 </resources>

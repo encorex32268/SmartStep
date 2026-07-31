@@ -1,5 +1,6 @@
 package com.lihan.smartstep.dashboard.presentation.model
 
+import com.lihan.smartstep.core.domain.model.DailyStep
 import java.text.NumberFormat
 
 data class DailyStepUi(
@@ -16,4 +17,12 @@ data class DailyStepUi(
     val displaySteps: String
         get() = NumberFormat.getNumberInstance().format(steps)
 
+}
+
+fun DailyStep.toUi(): DailyStepUi {
+    return DailyStepUi(
+        steps = steps,
+        stepsGoal = stepsGoal,
+        day = ""
+    )
 }
