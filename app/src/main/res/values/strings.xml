@@ -43,5 +43,12 @@
     <string name="daily_average_steps">Daily Average: %1$s steps</string>
     <string name="paused">Paused</string>
     <string name="goldsteps">/%1$d Steps</string>
+    <string name="more">More</string>
+    <string name="ai_coach">AI Coach</string>
+    <string name="recommend_workout">Recommend workout</string>
+    <string name="explain_today_trend">Explain today’s trend</string>
+    <string name="how_to_reach_today_goal">How to reach today’s goal ?</string>
+    <string name="ai_ask_place_holder">Ask me anything...</string>
+    <string name="quick_suggestions">Quick suggestions</string>
 
 </resources>

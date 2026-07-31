@@ -21,7 +21,7 @@ import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 
 enum class IconButtonSize(val size: Dp){
-    SMALL(38.dp),MEDIUM(44.dp)
+    EXTRA_SMALL(32.dp),SMALL(38.dp),MEDIUM(44.dp)
 }
 
 @Composable
@@ -32,7 +32,8 @@ fun SmartStepIconButton(
     iconButtonSize: IconButtonSize = IconButtonSize.SMALL,
     onClick: (() -> Unit)?=null,
     shape: Shape = RoundedCornerShape(8.dp),
-    tintColor: Color = MaterialTheme.colorScheme.onPrimary
+    tintColor: Color = MaterialTheme.colorScheme.onPrimary,
+    containerColor: Color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
 ) {
     IconButton(
         modifier = modifier.size(iconButtonSize.size),
@@ -41,7 +42,7 @@ fun SmartStepIconButton(
         },
         shape = shape,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+            containerColor = containerColor
         )
     ){
         Icon(

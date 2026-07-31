@@ -26,15 +26,17 @@ enum class ButtonType {
 @Composable
 fun SmartStepButton(
     text: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)?=null,
     type: ButtonType = ButtonType.Fill
 ) {
     when(type){
         ButtonType.Fill -> {
             Button(
                 modifier = modifier,
-                onClick = onClick,
+                onClick = {
+                    onClick?.invoke()
+                },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -52,7 +54,9 @@ fun SmartStepButton(
         ButtonType.Text -> {
             TextButton(
                 modifier = modifier,
-                onClick = onClick,
+                onClick = {
+                    onClick?.invoke()
+                },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = Color.Transparent,
                     contentColor = MaterialTheme.colorScheme.primary
