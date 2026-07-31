@@ -98,7 +98,6 @@ class DashboardViewModel(
             DashboardAction.OnShowStepGoalBottomSheet -> showStepGoalBottomSheet()
             DashboardAction.OnDismissStepGoalBottomSheet -> dismissStepGoalBottomSheet()
             is DashboardAction.OnStepGoalBottomSheetSaveClick -> saveStepGoal(action.step)
-            DashboardAction.OnExitOKClick -> Unit
             DashboardAction.OnDatePickerCancelClick -> dismissDatePickerDialog()
             is DashboardAction.OnDatePickerSaveClick -> updateEditStepsDate(action.time)
             DashboardAction.OnEditStepsCancelClick -> dismissEditStepsDialog()
@@ -108,6 +107,8 @@ class DashboardViewModel(
             DashboardAction.OnResetTodayResetClick -> resetTodaySteps()
             DashboardAction.OnStartTracking -> startTracking()
             DashboardAction.OnStopTracking -> stopTracking()
+            DashboardAction.OnExitOKClick -> Unit
+            DashboardAction.OnMoreClick -> Unit
         }
     }
 

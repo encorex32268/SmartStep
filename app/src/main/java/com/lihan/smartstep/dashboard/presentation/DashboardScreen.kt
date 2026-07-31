@@ -36,6 +36,7 @@ import com.lihan.smartstep.dashboard.presentation.components.AppDrawer
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.presentation.util.ObserveAsEvents
+import com.lihan.smartstep.dashboard.presentation.components.AICoachCard
 import com.lihan.smartstep.dashboard.presentation.components.DailyStepsCard
 import com.lihan.smartstep.dashboard.presentation.components.DatePickerDialog
 import com.lihan.smartstep.dashboard.presentation.components.EditStepsDialog
@@ -51,6 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DashboardRoot(
     onExitApp: () -> Unit,
     onNavigateToProfileSettings: () -> Unit,
+    onNavigateToAICoach: () -> Unit,
     viewModel: DashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +68,7 @@ fun DashboardRoot(
         onAction = { action ->
             when(action){
                 DashboardAction.OnExitOKClick -> onExitApp()
+                DashboardAction.OnMoreClick -> onNavigateToAICoach()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -174,6 +177,12 @@ fun DashboardScreen(
                     DailyStepsCard(
                         dailySteps = state.dailySteps,
                         modifier = Modifier.fillMaxWidth()
+                    )
+                    AICoachCard(
+                        aiSuggestion = "",
+                        onMore = {
+                            onAction(DashboardAction.OnMoreClick)
+                        }
                     )
 
                 }
