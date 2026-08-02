@@ -86,4 +86,8 @@ object AppIcons {
     val Robot: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.robot)
+
+    val Refresh: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.refresh)
 }

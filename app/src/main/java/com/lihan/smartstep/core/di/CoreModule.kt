@@ -1,6 +1,7 @@
 package com.lihan.smartstep.core.di
 
 import androidx.room.Room
+import com.lihan.smartstep.core.data.DefaultNetworkMirror
 import com.lihan.smartstep.core.data.DefaultUserDataStore
 import com.lihan.smartstep.core.data.LocalDailyStepsRepository
 import com.lihan.smartstep.core.data.StepsSensorManager
@@ -8,6 +9,7 @@ import com.lihan.smartstep.core.database.DailyStepsDao
 import com.lihan.smartstep.core.database.SmartStepDatabase
 import com.lihan.smartstep.core.domain.AppSensorManager
 import com.lihan.smartstep.core.domain.DailyStepsRepository
+import com.lihan.smartstep.core.domain.NetworkMirror
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
 import com.lihan.smartstep.dashboard.data.DefaultAppPowerManager
@@ -43,4 +45,6 @@ val coreModule = module {
     singleOf(::LocalDailyStepsRepository).bind<DailyStepsRepository>()
     singleOf(::GetStepMetricsUseCase)
     workerOf(::SaveDailyStepsWorker)
+
+    singleOf(::DefaultNetworkMirror).bind<NetworkMirror>()
 }
