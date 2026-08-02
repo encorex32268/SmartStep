@@ -113,7 +113,7 @@ class DefaultUserDataStore(
 
     override suspend fun cleanStepsData() {
         context.datastore.edit { preferences ->
-            preferences[TRACKING_TIME_KEY] = 0
+            preferences[TRACKING_TIME_KEY] = 0L
             preferences[TODAY_STEPS_KEY] = 0
         }
     }

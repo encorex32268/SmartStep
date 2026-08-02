@@ -9,15 +9,10 @@ object UnitCalculator {
         steps: Int,
         weightKg: Int,
         genderName: String,
-    ): Int{
-        val genderFactor = if (genderName == Gender.Male.name){
-            1.0
-        }else{
-            0.9
-        }
-        val kcalPerStep = (weightKg * 0.005 * genderFactor).roundToInt()
-
-        return kcalPerStep * steps
+    ): Int {
+        val genderFactor = if (genderName == Gender.Male.name) 1.0 else 0.9
+        val totalKcal = steps * weightKg * 0.005 * genderFactor
+        return totalKcal.roundToInt()
     }
 
     fun calculateDistance(
