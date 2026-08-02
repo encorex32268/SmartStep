@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     navController = navController,
 //                    startDestination = Route.ProfileSetup(isFromDashboard = false)
-                    startDestination = Route.AICoach
+                    startDestination = Route.Dashboard
                 ){
                     composable<Route.ProfileSetup>{
                         val isFromDashboard = it.toRoute<Route.ProfileSetup>().isFromDashboard
@@ -116,7 +116,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable<Route.AICoach>{
-                        AICoachRoot()
+                        AICoachRoot(
+                            onBack = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
                 }
             }
