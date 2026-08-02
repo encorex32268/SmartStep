@@ -2,6 +2,7 @@ package com.lihan.smartstep.dashboard.presentation.aicoach.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,27 +47,24 @@ import com.lihan.smartstep.dashboard.presentation.aicoach.quickSuggestions
 @Composable
 fun MessageSendBar(
     textFieldState: TextFieldState,
+    isShowSuggestions: Boolean,
     onSend: () ->Unit,
+    onShowSuggestions: () ->Unit,
     onSelectedSuggestion: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-    var isShowSuggestions by remember { mutableStateOf(false) }
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = {
-                        isShowSuggestions = !isShowSuggestions
-                    }),
+                    .clickable(onClick = onShowSuggestions, interactionSource = null),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -80,32 +78,46 @@ fun MessageSendBar(
             }
             AnimatedVisibility(isShowSuggestions) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    quickSuggestions.forEach { textResId ->
-                        val suggestion = stringResource(textResId)
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp, horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.surface,
-                            contentColor = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(10.dp),
-                            onClick = {
-                                onSelectedSuggestion(suggestion)
+                    Spacer(Modifier.height(16.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        quickSuggestions.forEach { textResId ->
+                            val suggestion = stringResource(textResId)
+                            Surface(
+                                color = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                                shape = RoundedCornerShape(10.dp),
+                                onClick = {
+                                    onSelectedSuggestion(suggestion)
+                                },
+                                border = BorderStroke(
+                                    width = 1.dp,
+                                    color = StrokeMain
+                                ),
+
+                                ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                                ){
+                                    Text(
+                                        text = suggestion,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
                             }
-                        ) {
-                            Text(
-                                text = suggestion,
-                                style = MaterialTheme.typography.titleMedium
-                            )
                         }
                     }
                 }
             }
 
         }
+        Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -132,7 +144,7 @@ fun MessageSendBar(
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground
                 ),
-                modifier = modifier
+                modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
@@ -173,7 +185,9 @@ private fun MessageSendBarPreview() {
             MessageSendBar(
                 textFieldState = TextFieldState(),
                 onSend = {},
-                onSelectedSuggestion = {}
+                onSelectedSuggestion = {},
+                onShowSuggestions = {},
+                isShowSuggestions = true
             )
         }
     }

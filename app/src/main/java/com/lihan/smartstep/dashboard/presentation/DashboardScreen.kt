@@ -179,14 +179,16 @@ fun DashboardScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     AICoachCard(
-                        aiSuggestion = "",
+                        aiSuggestion = state.aiCoachTip,
                         onMore = {
                             onAction(DashboardAction.OnMoreClick)
-                        }
+                        },
+                        onTryAgain = {
+                            onAction(DashboardAction.OnTryAgainClick)
+                        },
+                        isNetworkError = state.isNetworkError
                     )
-
                 }
-
             }
             if (state.isShowExitDialog){
                 ExitInformationDialog(

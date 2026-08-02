@@ -41,8 +41,7 @@ fun MessageItem(
             Sender.AI -> {
                 Row(
                     modifier = modifier
-                        .align(Alignment.TopStart)
-                        .fillMaxWidth(),
+                        .align(Alignment.TopStart),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SmartStepIconButton(
@@ -54,15 +53,14 @@ fun MessageItem(
                         tintColor = BackgroundWhite
                     )
                     Surface(
-                        modifier = Modifier.fillMaxWidth(),
                         border = BorderStroke(1.dp,StrokeMain),
-                        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 24.dp, bottomStart = 24.dp, bottomEnd = 24.dp ),
+                        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp ),
                         color = BackgroundWhite,
                         contentColor = MaterialTheme.colorScheme.onBackground
                     ) {
                         SelectionContainer {
                             Text(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                modifier = Modifier.padding(16.dp),
                                 text = message
                             )
                         }
@@ -73,15 +71,14 @@ fun MessageItem(
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .widthIn(max = 275.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 8.dp, bottomStart = 24.dp, bottomEnd = 24.dp ),
+                        .widthIn(max = 275.dp),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 8.dp, bottomStart = 16.dp, bottomEnd = 16.dp ),
                     color = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     SelectionContainer {
                         Text(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier.padding(16.dp),
                             text = message
                         )
 

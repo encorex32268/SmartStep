@@ -50,5 +50,8 @@
     <string name="how_to_reach_today_goal">How to reach today’s goal ?</string>
     <string name="ai_ask_place_holder">Ask me anything...</string>
     <string name="quick_suggestions">Quick suggestions</string>
+    <string name="ai_greeting">Hello! I\'m your AI fitness coach. I\'ve noticed your activity levels are a bit lower than usual today. I\'m here to help you get back on track and answer any questions you might have about your fitness journey.</string>
+    <string name="ai_coach_network_error">📡 Connect to the internet to get AI insights.</string>
+    <string name="ai_coach_try_again">Try again</string>
 
 </resources>

@@ -54,17 +54,22 @@ class GeminiAICoach: AICoach {
         stepGoal: Int,
         spentTimeMinutes: Int,
         distanceKm: Double,
-        caloriesBurned: Int
+        caloriesBurned: Int,
+        otherRule: String,
     ): String {
+//        - 運動時間：$spentTimeMinutes 分鐘
         val contextData = """
             【使用者當前活動數據】
             - 當前步數：$currentSteps 步
             - 目標步數：$stepGoal 步
-            - 運動時間：$spentTimeMinutes 分鐘
+           
             - 步行距離：$distanceKm 公里
             - 消耗熱量：$caloriesBurned 大卡
             
             使用者訊息：$userMessage
+            
+            $otherRule
+            
         """.trimIndent()
 
         return safeGenerateContent { model ->

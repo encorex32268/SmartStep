@@ -24,4 +24,5 @@ sealed interface DashboardAction {
     data object OnStartTracking: DashboardAction
     data object OnStopTracking: DashboardAction
     data object OnMoreClick: DashboardAction
+    data object OnTryAgainClick: DashboardAction
 }

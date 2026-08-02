@@ -8,7 +8,8 @@ interface AICoach {
         stepGoal: Int,
         spentTimeMinutes: Int,
         distanceKm: Double,
-        caloriesBurned: Int
+        caloriesBurned: Int,
+        otherRule: String = ""
     ): String
 
 }
@@ -40,5 +41,15 @@ object AICoachConfig {
         4. 話題邊界限制：
            - 專注於健走、步數目標、日常活動、基礎體適能與健康習慣。
            - 若使用者詢問與運動健康無關的話題，請禮貌且親切地將話題引導回健走與活動規劃。
+    """.trimIndent()
+
+    val TIP_PROMPT = """
+        
+        【回應規範 (Rules)】
+        1. 只能產生「一則簡短的文字訊息 (one short textual message)」30字以內。
+        2. 必須根據當前步數、每日目標、距離、卡路里 來解讀使用者的活動狀態。
+        3. 語氣必須具備激勵性 (motivational) 或分析性 (analytical)
+       
+        
     """.trimIndent()
 }

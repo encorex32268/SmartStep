@@ -29,7 +29,9 @@ data class DashboardState(
     val distance: String = "0.0",
     val kcal: Int = 0,
     val time: Duration = Duration.ZERO,
-    val dailySteps: List<DailyStepUi> = emptyList()
+    val dailySteps: List<DailyStepUi> = emptyList(),
+    val aiCoachTip: String = "",
+    val isNetworkError: Boolean = false,
 ){
     val timeString: String
         get() = time.toComponents { minutes, _, _ ->

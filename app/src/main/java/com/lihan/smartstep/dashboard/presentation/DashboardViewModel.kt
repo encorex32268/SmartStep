@@ -8,12 +8,15 @@ import com.lihan.smartstep.core.data.model.Gender
 import com.lihan.smartstep.core.data.model.UserData
 import com.lihan.smartstep.core.domain.AppSensorManager
 import com.lihan.smartstep.core.domain.DailyStepsRepository
+import com.lihan.smartstep.core.domain.NetworkMirror
 import com.lihan.smartstep.core.domain.UnitCalculator
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.domain.model.DailyStep
 import com.lihan.smartstep.core.domain.model.formattedString
 import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
 import com.lihan.smartstep.core.domain.util.TimerFlow
+import com.lihan.smartstep.dashboard.domain.AICoach
+import com.lihan.smartstep.dashboard.domain.AICoachConfig
 import com.lihan.smartstep.dashboard.domain.AppPowerManager
 import com.lihan.smartstep.dashboard.presentation.components.DrawerType
 import com.lihan.smartstep.dashboard.presentation.model.DailyStepUi
@@ -22,6 +25,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -58,10 +62,14 @@ class DashboardViewModel(
     private val appPowerManager: AppPowerManager,
     private val appSensorManager: AppSensorManager,
     private val dailyStepsRepository: DailyStepsRepository,
-    private val getStepMetricsUseCase: GetStepMetricsUseCase
+    private val getStepMetricsUseCase: GetStepMetricsUseCase,
+    private val aiCoach: AICoach,
+    private val networkMirror: NetworkMirror
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
+
+    private var aiCoachTipJob: Job?=null
 
     private val _uiEvent = Channel<DashboardEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -73,6 +81,7 @@ class DashboardViewModel(
                 observeLifecycle()
                 observeUserStepGoal()
                 observeSteps()
+                observeNetwork()
                 hasLoadedInitialData = true
             }
         }
@@ -85,6 +94,7 @@ class DashboardViewModel(
     init {
         initDashboardStatus()
         initDailyStepsStatus()
+        initAICoachTip()
     }
 
     fun onAction(action: DashboardAction) {
@@ -109,6 +119,7 @@ class DashboardViewModel(
             DashboardAction.OnStopTracking -> stopTracking()
             DashboardAction.OnExitOKClick -> Unit
             DashboardAction.OnMoreClick -> Unit
+            DashboardAction.OnTryAgainClick -> initAICoachTip()
         }
     }
 
@@ -390,8 +401,6 @@ class DashboardViewModel(
             }
             .debounce(300.milliseconds)
             .onEach { stepMetrics ->
-                println("Step: ${stepMetrics}")
-                println("Kcal: ${stepMetrics.kcal}")
                 _state.update {
                     it.copy(
                         time = it.time + stepMetrics.time,
@@ -485,4 +494,35 @@ class DashboardViewModel(
         }
     }
 
+    private fun initAICoachTip(){
+        //Avoid more times click at the same time.
+        aiCoachTipJob?.cancel()
+        aiCoachTipJob = viewModelScope.launch {
+            delay(300.milliseconds)
+            val currentState = state.value
+            val result = aiCoach
+                .generateCoachResponseWithStepData(
+                    userMessage = "",
+                    currentSteps = currentState.steps,
+                    stepGoal = currentState.stepGoal,
+                    spentTimeMinutes = currentState.time.inWholeMinutes.toInt(),
+                    distanceKm = currentState.distance.toDoubleOrNull()?:0.0,
+                    caloriesBurned = currentState.kcal,
+                    otherRule = AICoachConfig.TIP_PROMPT
+                )
+            _state.update { it.copy(
+                aiCoachTip = result
+            ) }
+        }
+    }
+
+    private fun observeNetwork(){
+        networkMirror
+            .isConnecting
+            .onEach {  isConnecting ->
+                _state.update { it.copy(
+                    isNetworkError = !isConnecting
+                ) }
+            }.launchIn(viewModelScope)
+    }
 }

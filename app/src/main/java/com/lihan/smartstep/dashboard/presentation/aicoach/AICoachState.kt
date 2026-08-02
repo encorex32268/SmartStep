@@ -1,12 +1,15 @@
 package com.lihan.smartstep.dashboard.presentation.aicoach
 
 
+import androidx.compose.foundation.text.input.TextFieldState
 import com.lihan.smartstep.R
 import com.lihan.smartstep.dashboard.domain.Message
 
 data class AICoachState(
+    val messageTextFieldState: TextFieldState = TextFieldState(),
     val messages: List<Message> = emptyList(),
     val isThinking: Boolean = false,
+    val isShowSuggestions: Boolean = false,
 )
 
 val quickSuggestions: List<Int>

@@ -9,17 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.htmlEncode
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.design_system.buttons.ButtonType
@@ -31,7 +36,9 @@ import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 @Composable
 fun AICoachCard(
     aiSuggestion: String,
+    onTryAgain: () -> Unit,
     onMore: () -> Unit,
+    isNetworkError: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -62,24 +69,42 @@ fun AICoachCard(
                 Row(
                     modifier = Modifier
                         .padding(end = 16.dp)
-                        .clickable(onClick = onMore),
+                        .clickable(
+                            onClick = {
+                                if (isNetworkError){
+                                    onTryAgain()
+                                }else {
+                                    onMore()
+                                }
+                            },
+                            interactionSource = null
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    SmartStepButton(
-                        text = stringResource(R.string.more),
-                        onClick = {},
-                        type = ButtonType.Text
+
+                    Text(
+                        text = if (isNetworkError){
+                            stringResource(R.string.ai_coach_try_again)
+                        }else stringResource(R.string.more),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
                     )
                     Icon(
-                        imageVector = AppIcons.ArrowRight,
+                        imageVector = if (isNetworkError){
+                            AppIcons.Refresh
+                        }else AppIcons.ArrowRight,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
             Text(
-                text = aiSuggestion,
+                text = if (isNetworkError){
+                    stringResource(R.string.ai_coach_network_error)
+                }else aiSuggestion.htmlEncode(),
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
@@ -96,7 +121,9 @@ private fun AICoachCardPreview() {
     SmartStepTheme {
         AICoachCard(
             aiSuggestion = "You are slight ly behind today ’s pace — 1.2k steps needed.",
-            onMore = {}
+            onMore = {},
+            isNetworkError = true,
+            onTryAgain = {}
         )
     }
 }
