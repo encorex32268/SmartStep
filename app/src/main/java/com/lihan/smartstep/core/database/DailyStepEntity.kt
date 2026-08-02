@@ -1,10 +1,13 @@
 package com.lihan.smartstep.core.database
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.lihan.smartstep.core.domain.model.DailyStep
 
-@Entity
+@Entity(
+    indices = [Index(value = ["createAt"], unique = true)]
+)
 data class DailyStepEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int?=null,

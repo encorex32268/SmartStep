@@ -12,7 +12,6 @@ data class DailyStep(
 
 fun DailyStep.toDailyStepsEntity(): DailyStepEntity {
     return DailyStepEntity(
-        id = id,
         createAt = createAt,
         steps = steps,
         stepGoal = stepsGoal,
