@@ -6,8 +6,9 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
 
 object SaveDailyStepsScheduler {
 
@@ -30,8 +31,9 @@ object SaveDailyStepsScheduler {
 
 
     private fun calculateMidnight(): java.time.Duration {
-        val now = LocalDateTime.now()
-        val nextMidnight = LocalDate.now().plusDays(1).atStartOfDay()
+        val zone = ZoneId.systemDefault()
+        val now = ZonedDateTime.now(zone)
+        val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay(zone)
 
         return java.time.Duration.between(now, nextMidnight)
     }

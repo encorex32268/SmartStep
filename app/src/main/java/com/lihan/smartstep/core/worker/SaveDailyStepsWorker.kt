@@ -13,6 +13,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class SaveDailyStepsWorker(
@@ -24,9 +25,18 @@ class SaveDailyStepsWorker(
 ): CoroutineWorker(appContext, workerParameters){
 
     override suspend fun doWork(): Result {
+        val now = ZonedDateTime.now(ZoneId.systemDefault())
 
-        val createAt = LocalDate.now()
-            .minusDays(1)
+        // WorkManager 可能在午夜前 (例如 20:00~23:59) 提前被喚醒，
+        // 此時當天的步數屬於 TODAY (now.toLocalDate())。
+        // 若在跨日後 (例如 00:00~12:00) 被觸發，則紀錄屬於 YESTERDAY (now.toLocalDate().minusDays(1))。
+        val targetDate = if (now.hour >= 20) {
+            now.toLocalDate()
+        } else {
+            now.toLocalDate().minusDays(1)
+        }
+
+        val createAt = targetDate
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()
@@ -61,7 +71,7 @@ class SaveDailyStepsWorker(
         try {
             val fileDir = appContext.filesDir
             val file = File(fileDir, "daily_steps_log.txt")
-            val timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val timestamp = ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
             file.appendText("[$timestamp] $message\n")
         } catch (e: Exception) {
             e.printStackTrace()
