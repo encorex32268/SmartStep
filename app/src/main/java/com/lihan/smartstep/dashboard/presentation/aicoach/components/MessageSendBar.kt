@@ -64,7 +64,11 @@ fun MessageSendBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = onShowSuggestions, interactionSource = null),
+                    .clickable(
+                        onClick = onShowSuggestions,
+                        interactionSource = null,
+                        indication = null
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

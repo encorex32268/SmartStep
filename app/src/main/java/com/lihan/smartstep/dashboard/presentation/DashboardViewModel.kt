@@ -48,6 +48,7 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Collections.rotate
 import java.util.Locale
@@ -442,7 +443,6 @@ class DashboardViewModel(
             appSensorManager.stepsFlow,
             userDataStore.stepGoal,
         ){ dailySteps , steps , stepGoal ->
-
             dailySteps.toDailyStepUiList(
                 todaySteps = steps,
                 todayStepsGoal = stepGoal
@@ -474,8 +474,10 @@ class DashboardViewModel(
                 )
             } else {
                 val dailyStep = this.find { dailyStep ->
-                    val instant = java.time.Instant.ofEpochMilli(dailyStep.createAt)
-                    DayOfWeek.from(instant).value == dayOfWeek.value
+                    val stepDayOfWeek = java.time.Instant.ofEpochMilli(dailyStep.createAt)
+                        .atZone(ZoneId.systemDefault())
+                        .dayOfWeek
+                    stepDayOfWeek.value == dayOfWeek.value
                 }
                 if (dailyStep == null) {
                     DailyStepUi(

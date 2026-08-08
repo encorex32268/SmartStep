@@ -18,10 +18,10 @@ interface DailyStepsDao {
     """)
     suspend fun updateStepsByDate(dateTime: Long, steps: Int)
 
-    @Query("""
-        SELECT * FROM dailystepentity
-        WHERE createAt >= datetime('now', 'localtime', 'weekday 0', '-6 days', 'start of day')
-        AND createAt <  datetime('now', 'localtime', 'weekday 0', '+1 day', 'start of day');
+    @Query("""                                                                                                                                                                                                                       
+        SELECT * FROM dailystepentity                                                                                                                                                                                                
+        WHERE createAt >= (strftime('%s', datetime('now', 'localtime', 'start of day', 'weekday 0', '-6 days')) * 1000)                                                                                                              
+          AND createAt <  (strftime('%s', datetime('now', 'localtime', 'start of day', 'weekday 0', '+1 day')) * 1000)                                                                                                               
     """)
     fun getWeekDailyStepsList(): Flow<List<DailyStepEntity>>
 
