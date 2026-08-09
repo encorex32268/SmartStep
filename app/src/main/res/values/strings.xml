@@ -53,5 +53,9 @@
     <string name="ai_greeting">Hello! I\'m your AI fitness coach. I\'ve noticed your activity levels are a bit lower than usual today. I\'m here to help you get back on track and answer any questions you might have about your fitness journey.</string>
     <string name="ai_coach_network_error">📡 Connect to the internet to get AI insights.</string>
     <string name="ai_coach_try_again">Try again</string>
+    <string name="this_week">This Week</string>
+    <string name="daily_average">Daily average: %1$s %2$s</string>
+    <string name="no_data">No data</string>
+    <string name="zero">0</string>
 
 </resources>
