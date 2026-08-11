@@ -16,5 +16,8 @@ sealed interface Route {
     @Serializable
     data object AICoach: Route
 
+   @Serializable
+    data object Report: Route
+
 
 }

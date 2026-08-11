@@ -31,6 +31,7 @@ import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.service.SmartStepForegroundService
 import com.lihan.smartstep.dashboard.presentation.DashboardRoot
 import com.lihan.smartstep.dashboard.presentation.aicoach.AICoachRoot
+import com.lihan.smartstep.dashboard.presentation.report.ReportRoot
 import com.lihan.smartstep.profile_setup.presentation.ProfileSetupRoot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     navController = navController,
 //                    startDestination = Route.ProfileSetup(isFromDashboard = false)
-                    startDestination = Route.Dashboard
+                    startDestination = Route.Report
                 ){
                     composable<Route.ProfileSetup>{
                         val isFromDashboard = it.toRoute<Route.ProfileSetup>().isFromDashboard
@@ -111,6 +112,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onNavigateToAICoach = {
                                 navController.navigate(Route.AICoach)
+                            },
+                            onNavigateToReport = {
+                                navController.navigate(Route.Report)
                             }
                         )
                     }
@@ -121,6 +125,10 @@ class MainActivity : ComponentActivity() {
                                 navController.navigateUp()
                             }
                         )
+                    }
+
+                    composable<Route.Report>{
+                        ReportRoot()
                     }
                 }
             }

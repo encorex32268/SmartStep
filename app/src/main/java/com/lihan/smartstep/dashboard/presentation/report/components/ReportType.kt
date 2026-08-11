@@ -1,5 +1,9 @@
 package com.lihan.smartstep.dashboard.presentation.report.components
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.lihan.smartstep.core.presentation.AppIcons
+
 enum class ReportType {
     Steps,Calories,Minutes,Kilometers;
     companion object{
@@ -16,7 +20,7 @@ enum class ReportType {
             return ReportType.entries.map { it.toBottomItemName() }
         }
 
-        private fun ReportType.toBottomItemName(): String {
+        fun ReportType.toBottomItemName(): String {
             return when(this){
                 ReportType.Steps -> "Steps"
                 ReportType.Calories -> "Calories"
@@ -24,5 +28,17 @@ enum class ReportType {
                 ReportType.Kilometers -> "Distance"
             }
         }
+
+        val ReportType.imageVector: ImageVector
+            @Composable
+            get(){
+                return when(this){
+                    ReportType.Steps -> AppIcons.Sneakers
+                    ReportType.Calories -> AppIcons.Weight
+                    ReportType.Minutes -> AppIcons.TimeClock
+                    ReportType.Kilometers -> AppIcons.LocationDirection
+                }
+            }
+
     }
 }

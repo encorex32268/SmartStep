@@ -4,6 +4,7 @@ import com.lihan.smartstep.dashboard.data.GeminiAICoach
 import com.lihan.smartstep.dashboard.domain.AICoach
 import com.lihan.smartstep.dashboard.presentation.DashboardViewModel
 import com.lihan.smartstep.dashboard.presentation.aicoach.AICoachViewModel
+import com.lihan.smartstep.dashboard.presentation.report.ReportViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -15,4 +16,5 @@ val dashboardModule = module {
 
     viewModelOf(::DashboardViewModel)
     viewModelOf(::AICoachViewModel)
+    viewModelOf(::ReportViewModel)
 }
