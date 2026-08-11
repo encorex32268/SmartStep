@@ -20,10 +20,9 @@ interface DailyStepsDao {
 
     @Query("""                                                                                                                                                                                                                       
         SELECT * FROM dailystepentity                                                                                                                                                                                                
-        WHERE createAt >= (strftime('%s', datetime('now', 'localtime', 'start of day', 'weekday 0', '-6 days')) * 1000)                                                                                                              
-          AND createAt <  (strftime('%s', datetime('now', 'localtime', 'start of day', 'weekday 0', '+1 day')) * 1000)                                                                                                               
+        WHERE createAt >= :startTimestamp AND createAt <= :endTimestamp                                                                                                            
     """)
-    fun getWeekDailyStepsList(): Flow<List<DailyStepEntity>>
+    fun getWeekDailyStepsList(startTimestamp: Long, endTimestamp: Long): Flow<List<DailyStepEntity>>
 
 
 

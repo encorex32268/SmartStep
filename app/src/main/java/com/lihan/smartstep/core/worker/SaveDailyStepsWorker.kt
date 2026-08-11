@@ -48,7 +48,9 @@ class SaveDailyStepsWorker(
             createAt = createAt,
             steps = stepMetrics.steps,
             stepsGoal = stepMetrics.stepGoal,
-            spentTime = trackingTime
+            spentTime = trackingTime,
+            calories = stepMetrics.kcal,
+            distance = stepMetrics.distance
         )
 
         Log.d(SaveDailyStepsScheduler.WORK_NAME, "doWork: dailyStep: $dailyStep")

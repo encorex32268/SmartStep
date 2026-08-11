@@ -29,7 +29,6 @@ object SaveDailyStepsScheduler {
         )
     }
 
-
     private fun calculateMidnight(): java.time.Duration {
         val zone = ZoneId.systemDefault()
         val now = ZonedDateTime.now(zone)

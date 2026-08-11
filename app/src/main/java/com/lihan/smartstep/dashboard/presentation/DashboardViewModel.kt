@@ -14,6 +14,7 @@ import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.domain.model.DailyStep
 import com.lihan.smartstep.core.domain.model.formattedString
 import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
+import com.lihan.smartstep.core.domain.util.DateTimeHelper
 import com.lihan.smartstep.core.domain.util.TimerFlow
 import com.lihan.smartstep.dashboard.domain.AICoach
 import com.lihan.smartstep.dashboard.domain.AICoachConfig
@@ -50,6 +51,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 import java.util.Collections.rotate
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -118,9 +121,10 @@ class DashboardViewModel(
             DashboardAction.OnResetTodayResetClick -> resetTodaySteps()
             DashboardAction.OnStartTracking -> startTracking()
             DashboardAction.OnStopTracking -> stopTracking()
+            DashboardAction.OnTryAgainClick -> initAICoachTip()
             DashboardAction.OnExitOKClick -> Unit
             DashboardAction.OnMoreClick -> Unit
-            DashboardAction.OnTryAgainClick -> initAICoachTip()
+            DashboardAction.OnNavigateToReport -> Unit
         }
     }
 
@@ -438,17 +442,23 @@ class DashboardViewModel(
     }
 
     private fun initDailyStepsStatus(){
+        val startEndTimeRange = DateTimeHelper.startEndTimestampRange()
         combine(
-            dailyStepsRepository.getWeekDailyStepsList(),
+            dailyStepsRepository.getWeekDailyStepsList(
+                startTimestamp = startEndTimeRange.first,
+                endTimestamp = startEndTimeRange.last
+            ),
             appSensorManager.stepsFlow,
             userDataStore.stepGoal,
         ){ dailySteps , steps , stepGoal ->
+
             dailySteps.toDailyStepUiList(
                 todaySteps = steps,
                 todayStepsGoal = stepGoal
             )
 
         }.onEach { dailyStepUis ->
+
             _state.update {
                 it.copy(
                     dailySteps = dailyStepUis
@@ -462,7 +472,7 @@ class DashboardViewModel(
         todaySteps: Int,
         todayStepsGoal: Int
     ): List<DailyStepUi> {
-        val today = DayOfWeek.from(LocalDateTime.now()).value
+        val today = DayOfWeek.from(LocalDateTime.now().atZone(ZoneId.systemDefault())).value
         val dayOfWeeksStartFromSun = DayOfWeek.entries.toMutableList().apply { rotate(this, 1) }
         return dayOfWeeksStartFromSun.map { dayOfWeek ->
             val dayName = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
@@ -473,12 +483,15 @@ class DashboardViewModel(
                     stepsGoal = todayStepsGoal
                 )
             } else {
+
                 val dailyStep = this.find { dailyStep ->
                     val stepDayOfWeek = java.time.Instant.ofEpochMilli(dailyStep.createAt)
                         .atZone(ZoneId.systemDefault())
-                        .dayOfWeek
-                    stepDayOfWeek.value == dayOfWeek.value
+                        .dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US)
+
+                    stepDayOfWeek == dayName
                 }
+
                 if (dailyStep == null) {
                     DailyStepUi(
                         day = dayName,

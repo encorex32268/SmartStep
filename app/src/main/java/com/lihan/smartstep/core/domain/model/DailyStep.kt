@@ -1,20 +1,11 @@
 package com.lihan.smartstep.core.domain.model
 
-import com.lihan.smartstep.core.database.DailyStepEntity
-
 data class DailyStep(
     val id: Int?=null,
     val createAt: Long,
     val steps: Int,
     val stepsGoal: Int,
-    val spentTime: Long
+    val spentTime: Long,
+    val calories: Int,
+    val distance: Double
 )
-
-fun DailyStep.toDailyStepsEntity(): DailyStepEntity {
-    return DailyStepEntity(
-        createAt = createAt,
-        steps = steps,
-        stepGoal = stepsGoal,
-        spentTime = spentTime
-    )
-}

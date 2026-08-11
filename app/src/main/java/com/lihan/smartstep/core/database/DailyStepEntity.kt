@@ -14,15 +14,7 @@ data class DailyStepEntity(
     val createAt: Long,
     val steps: Int,
     val stepGoal: Int,
-    val spentTime: Long
+    val spentTime: Long,
+    val calories: Int,
+    val distance: Double
 )
-
-fun DailyStepEntity.toDomain(): DailyStep {
-    return DailyStep(
-        id = id,
-        createAt = createAt,
-        steps = steps,
-        stepsGoal = stepGoal,
-        spentTime = spentTime
-    )
-}

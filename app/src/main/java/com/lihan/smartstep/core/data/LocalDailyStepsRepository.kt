@@ -1,10 +1,10 @@
 package com.lihan.smartstep.core.data
 
+import com.lihan.smartstep.core.data.mapper.toDomain
+import com.lihan.smartstep.core.data.mapper.toEntity
 import com.lihan.smartstep.core.database.DailyStepsDao
-import com.lihan.smartstep.core.database.toDomain
 import com.lihan.smartstep.core.domain.DailyStepsRepository
 import com.lihan.smartstep.core.domain.model.DailyStep
-import com.lihan.smartstep.core.domain.model.toDailyStepsEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -13,16 +13,19 @@ class LocalDailyStepsRepository(
 ): DailyStepsRepository{
 
     override suspend fun upsert(dailyStep: DailyStep) {
-        dailyStepsDao.upsert(dailyStep.toDailyStepsEntity())
+        dailyStepsDao.upsert(dailyStep.toEntity())
     }
 
     override suspend fun updateStepsByDate(dateTime: Long, steps: Int) {
         dailyStepsDao.updateStepsByDate(dateTime, steps)
     }
 
-    override fun getWeekDailyStepsList(): Flow<List<DailyStep>> {
+    override fun getWeekDailyStepsList(startTimestamp: Long , endTimestamp: Long): Flow<List<DailyStep>> {
         return dailyStepsDao
-            .getWeekDailyStepsList()
+            .getWeekDailyStepsList(
+                startTimestamp = startTimestamp,
+                endTimestamp = endTimestamp
+            )
             .map { dailyStepsEntities ->
                 dailyStepsEntities.map {
                     it.toDomain()
