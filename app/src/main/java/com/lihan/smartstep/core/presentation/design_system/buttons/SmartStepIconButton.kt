@@ -21,7 +21,7 @@ import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 
 enum class IconButtonSize(val size: Dp){
-    ULTRA_SMALL(24.dp),EXTRA_SMALL(32.dp),SMALL(38.dp),MEDIUM(44.dp)
+    ULTRA_SMALL(24.dp),EXTRA_SMALL(32.dp),MIDDLE(36.dp),SMALL(38.dp),MEDIUM(44.dp)
 }
 
 @Composable

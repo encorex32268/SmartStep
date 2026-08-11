@@ -5,6 +5,7 @@ package com.lihan.smartstep.dashboard.presentation.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.smartstep.R
@@ -61,6 +63,7 @@ fun StepCounterCard(
     goalSteps: Int,
     onStopTracking: () -> Unit,
     onStartTracking: () -> Unit,
+    onReport: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val progressAnimate by animateFloatAsState(
@@ -118,18 +121,44 @@ fun StepCounterCard(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text(
-                modifier = Modifier
-                    .graphicsLayer{
-                        alpha = if (isTracking){
-                            1f
-                        }else 0.2f
-                    },
-                text = currentSteps.toNumberString(),
-                style = MaterialTheme.typography.titleAccent.copy(
-                    color = MaterialTheme.colorScheme.onPrimary
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier
+                        .graphicsLayer{
+                            alpha = if (isTracking){
+                                1f
+                            }else 0.2f
+                        },
+                    text = currentSteps.toNumberString(),
+                    style = MaterialTheme.typography.titleAccent.copy(
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
-            )
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clickable(
+                            onClick = onReport,
+                            interactionSource = null
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.report),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium,
+                            color =MaterialTheme.colorScheme.onPrimary
+                        ),
+                    )
+                    Icon(
+                        imageVector = AppIcons.ArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
             Text(
                 text = goalStepsText,
                 style = MaterialTheme.typography.titleMedium.copy(
@@ -244,7 +273,8 @@ private fun StepCounterCardPreview() {
             distance = "4.7",
             kcal = 1230,
             time = "42",
-            goalSteps = 2000
+            goalSteps = 2000,
+            onReport = {}
         )
     }
 }

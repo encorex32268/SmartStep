@@ -53,6 +53,7 @@ fun DashboardRoot(
     onExitApp: () -> Unit,
     onNavigateToProfileSettings: () -> Unit,
     onNavigateToAICoach: () -> Unit,
+    onNavigateToReport: () -> Unit,
     viewModel: DashboardViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,6 +70,7 @@ fun DashboardRoot(
             when(action){
                 DashboardAction.OnExitOKClick -> onExitApp()
                 DashboardAction.OnMoreClick -> onNavigateToAICoach()
+                DashboardAction.OnNavigateToReport -> onNavigateToReport()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -172,6 +174,9 @@ fun DashboardScreen(
                         },
                         onStartTracking = {
                             onAction(DashboardAction.OnStartTracking)
+                        },
+                        onReport = {
+                            onAction(DashboardAction.OnNavigateToReport)
                         }
                     )
                     DailyStepsCard(
