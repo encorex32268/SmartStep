@@ -30,6 +30,7 @@ import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
 import com.lihan.smartstep.core.presentation.ui.theme.AICoachBackIcon
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
+import com.lihan.smartstep.core.presentation.util.toNumberString
 import com.lihan.smartstep.dashboard.presentation.aicoach.AICoachAction
 import com.lihan.smartstep.dashboard.presentation.report.components.DailyInfoCard
 import com.lihan.smartstep.dashboard.presentation.report.components.DailyInfoStatus
@@ -93,16 +94,16 @@ private fun ReportScreen(
             ) {
                 InfoCard(
                     type = state.reportType,
-                    average = "999",
-                    value = "123"
+                    average = state.average,
+                    value = state.currentValue
                 )
                 WeekSelector(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onNext = {},
-                    onPrevious = {},
+                    onNext = { onAction(ReportAction.OnNextWeekClick) },
+                    onPrevious = { onAction(ReportAction.OnPreviousClick) },
                     currentWeek = state.currentWeek,
-                    canNext = true,
-                    canPrevious = true
+                    canNext = state.isNextWeekEnabled,
+                    canPrevious = state.isPreviousWeekEnabled
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +124,7 @@ private fun ReportScreen(
                                 ReportType.Calories -> dailyInfoUI.calories
                                 ReportType.Minutes -> dailyInfoUI.spentTime
                                 ReportType.Kilometers -> dailyInfoUI.distance
-                            }.toString(),
+                            },
                             description = if (reportType == ReportType.Steps){
                                 stringResource(R.string.daily_goal,dailyInfoUI.stepGoal)
                             }else ""

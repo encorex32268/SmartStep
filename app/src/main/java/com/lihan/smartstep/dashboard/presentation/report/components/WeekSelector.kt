@@ -33,7 +33,11 @@ fun WeekSelector(
             iconButtonSize = IconButtonSize.MIDDLE,
             imageVector = AppIcons.ArrowLeft,
             shape = CircleShape,
-            onClick = onPrevious,
+            onClick = {
+                if (canPrevious){
+                    onPrevious()
+                }
+            },
             tintColor = BackgroundWhite,
             containerColor = if (canPrevious){
                 MaterialTheme.colorScheme.primary
@@ -53,7 +57,11 @@ fun WeekSelector(
             iconButtonSize = IconButtonSize.MIDDLE,
             imageVector = AppIcons.ArrowRight,
             shape = CircleShape,
-            onClick = onNext,
+            onClick = {
+                if (canNext){
+                    onNext()
+                }
+            },
             tintColor = BackgroundWhite,
             containerColor = if (canNext){
                 MaterialTheme.colorScheme.primary
