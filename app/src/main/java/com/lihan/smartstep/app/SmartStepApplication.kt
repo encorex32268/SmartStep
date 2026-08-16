@@ -49,7 +49,7 @@ class SmartStepApplication: Application(), Configuration.Provider, KoinComponent
             )
         }
 
-        seedMockDailyStepsData()
+//        seedMockDailyStepsData()
 
         SaveDailyStepsScheduler.scheduleWork(this)
     }
