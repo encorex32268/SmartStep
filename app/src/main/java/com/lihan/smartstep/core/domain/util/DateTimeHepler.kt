@@ -59,21 +59,28 @@ object DateTimeHelper {
     }
 
 
-    fun getWeek(plusWeek: Long): LongRange {
+    //previous , this next , weeks
+    fun getWeeks(weeks: Long): List<LongRange> {
         val now = LocalDateTime.now()
         val today = LocalDateTime
             .of(
                 now.year,
-                now.month,
+                now.monthValue,
                 now.dayOfMonth,
                 0,0
             )
-            .plusWeeks(plusWeek)
-            .atZone(ZoneId.systemDefault())
-        val mondayDateTime = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val sundayDateTime = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-
-        return LongRange(start = mondayDateTime.toInstant().toEpochMilli() , endInclusive = sundayDateTime.toInstant().toEpochMilli())
+            .atZone(ZoneId.systemDefault()).plusWeeks(weeks)
+        val thisWeekStartTime = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val thisWeekEndTime = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+        val previousWeekStartTime = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val previousWeekEndTime = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+        val nextWeekStartTime = today.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val nextWeekEndTime = today.plusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        return listOf(
+            LongRange(start = previousWeekStartTime.toInstant().toEpochMilli(), endInclusive = previousWeekEndTime.toInstant().toEpochMilli()),
+            LongRange(start = thisWeekStartTime.toInstant().toEpochMilli() , endInclusive = thisWeekEndTime.toInstant().toEpochMilli()),
+            LongRange(start = nextWeekStartTime.toInstant().toEpochMilli() , endInclusive = nextWeekEndTime.toInstant().toEpochMilli()),
+        )
     }
 
 
