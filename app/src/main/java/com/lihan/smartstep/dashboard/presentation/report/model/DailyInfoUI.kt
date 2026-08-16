@@ -5,9 +5,9 @@ import com.lihan.smartstep.dashboard.presentation.report.components.DailyInfoSta
 data class DailyInfoUI(
     val dayOfWeek: String,
     val status: DailyInfoStatus,
-    val spentTime: Long,
-    val stepGoal: Int,
-    val calories: Int,
-    val distance: Double,
-    val steps: Int
+    val spentTime: String,
+    val stepGoal: String,
+    val calories: String,
+    val distance: String,
+    val steps: String
 )

@@ -58,6 +58,6 @@
     <string name="no_data">No data</string>
     <string name="zero">0</string>
     <string name="report">Report</string>
-    <string name="daily_goal">Goal: $1%d steps</string>
+    <string name="daily_goal">Goal: %1$s steps</string>
 
 </resources>
