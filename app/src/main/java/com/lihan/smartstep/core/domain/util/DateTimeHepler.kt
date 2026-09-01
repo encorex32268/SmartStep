@@ -71,9 +71,11 @@ object DateTimeHelper {
             )
             .atZone(ZoneId.systemDefault()).plusWeeks(weeks)
         val thisWeekStartTime = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val thisWeekEndTime = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+        val thisWeekEndTime = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
         val previousWeekStartTime = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val previousWeekEndTime = today.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+        val previousWeekEndTime = today.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
         val nextWeekStartTime = today.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val nextWeekEndTime = today.plusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
         return listOf(
