@@ -90,4 +90,8 @@ object AppIcons {
     val Refresh: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.refresh)
+
+    val CloudOff: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.cloud_off)
 }

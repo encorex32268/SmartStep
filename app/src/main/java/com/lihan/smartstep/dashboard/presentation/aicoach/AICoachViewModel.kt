@@ -2,6 +2,7 @@ package com.lihan.smartstep.dashboard.presentation.aicoach
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.smartstep.core.domain.NetworkMirror
 import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
 import com.lihan.smartstep.dashboard.domain.AICoach
 import com.lihan.smartstep.dashboard.domain.Message
@@ -9,18 +10,29 @@ import com.lihan.smartstep.dashboard.presentation.aicoach.components.Sender
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AICoachViewModel(
     private val aiCoach: AICoach,
-    private val getStepMetricsUseCase: GetStepMetricsUseCase
+    private val getStepMetricsUseCase: GetStepMetricsUseCase,
+    private val networkMirror: NetworkMirror
 ): ViewModel() {
 
+    private var hasInitialLoadedData = false
 
     private val _state = MutableStateFlow(AICoachState())
     val state = _state
+        .onStart {
+            if (!hasInitialLoadedData){
+                observeNetwork()
+                hasInitialLoadedData = true
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
@@ -90,4 +102,14 @@ class AICoachViewModel(
 
     }
 
+    private fun observeNetwork(){
+        networkMirror
+            .isConnecting
+            .onEach { isConnected ->
+                _state.update { it.copy(
+                    isEnabledSendButton = isConnected
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
 }

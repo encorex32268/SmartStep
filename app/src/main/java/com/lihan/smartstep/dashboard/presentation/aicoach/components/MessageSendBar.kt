@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,6 +51,7 @@ import com.lihan.smartstep.dashboard.presentation.aicoach.quickSuggestions
 fun MessageSendBar(
     textFieldState: TextFieldState,
     isShowSuggestions: Boolean,
+    isEnabledSend: Boolean,
     onSend: () ->Unit,
     onShowSuggestions: () ->Unit,
     onSelectedSuggestion: (String) -> Unit,
@@ -129,20 +133,40 @@ fun MessageSendBar(
         ) {
             BasicTextField(
                 state = textFieldState,
+                enabled = isEnabledSend,
                 decorator = { innerField ->
-                    Box(
-                        contentAlignment = Alignment.CenterStart
-                    ){
-                        if (textFieldState.text.isEmpty()){
-                            Text(
-                                text = stringResource(R.string.ai_ask_place_holder),
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.CenterStart
+                        ){
+                            if (textFieldState.text.isEmpty()){
+                                Text(
+                                    text = if (isEnabledSend){
+                                        stringResource(R.string.ai_ask_place_holder)
+                                    }else{
+                                        stringResource(R.string.ai_ask_place_holder_offline)
+                                    },
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 )
+                            }
+                            innerField()
+                        }
+                        if (!isEnabledSend){
+                            Icon(
+                                imageVector = AppIcons.CloudOff,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                contentDescription = null
                             )
                         }
-                        innerField()
                     }
+
                 },
                 interactionSource = interactionSource,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
@@ -163,15 +187,23 @@ fun MessageSendBar(
                     )
                     .padding(16.dp)
             )
-            SmartStepIconButton(
-                imageVector = AppIcons.SendMessage,
-                contentDescription = null,
+            IconButton(
+                modifier = Modifier.size(44.dp),
                 onClick = onSend,
-                iconButtonSize = IconButtonSize.MEDIUM,
-                containerColor = MaterialTheme.colorScheme.primary,
-                tintColor = BackgroundWhite,
-                shape = CircleShape
-            )
+                shape = CircleShape,
+                enabled = isEnabledSend,
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = BackgroundWhite,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Icon(
+                    imageVector = AppIcons.SendMessage,
+                    contentDescription = null,
+                    tint = BackgroundWhite
+                )
+            }
         }
     }
 
@@ -191,7 +223,8 @@ private fun MessageSendBarPreview() {
                 onSend = {},
                 onSelectedSuggestion = {},
                 onShowSuggestions = {},
-                isShowSuggestions = true
+                isShowSuggestions = true,
+                isEnabledSend = false
             )
         }
     }

@@ -10,6 +10,7 @@ data class AICoachState(
     val messages: List<Message> = emptyList(),
     val isThinking: Boolean = false,
     val isShowSuggestions: Boolean = false,
+    val isEnabledSendButton: Boolean = false
 )
 
 val quickSuggestions: List<Int>

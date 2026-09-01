@@ -127,6 +127,7 @@ fun AICoachScreen(
                         onAction(AICoachAction.OnSelectedSuggestion(suggestion))
                     },
                     isShowSuggestions = state.isShowSuggestions,
+                    isEnabledSend = state.isEnabledSendButton,
                     onShowSuggestions = {
                         onAction(AICoachAction.OnSuggestionClick)
                     }
@@ -173,7 +174,8 @@ private fun Preview() {
                         sender = if (it % 2 == 0) Sender.AI else Sender.User,
                         message = "Message - $it"
                     )
-                }
+                },
+                isEnabledSendButton = true
             ),
             onAction = {}
         )
