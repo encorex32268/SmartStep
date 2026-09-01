@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     navController = navController,
 //                    startDestination = Route.ProfileSetup(isFromDashboard = false)
-                    startDestination = Route.Report
+                    startDestination = Route.AICoach
                 ){
                     composable<Route.ProfileSetup>{
                         val isFromDashboard = it.toRoute<Route.ProfileSetup>().isFromDashboard
