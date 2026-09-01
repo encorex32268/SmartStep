@@ -16,6 +16,15 @@ enum class ReportType {
             }
         }
 
+        fun ReportType.toDailyInfoCardUnit(): String{
+            return when(this){
+                ReportType.Steps -> "steps"
+                ReportType.Calories -> "calories"
+                ReportType.Minutes -> "minutes"
+                ReportType.Kilometers -> "kilometers"
+            }
+        }
+
         fun getBottomItemNames(): List<String>{
             return ReportType.entries.map { it.toBottomItemName() }
         }

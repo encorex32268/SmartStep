@@ -13,7 +13,7 @@ fun DailyStep.toDailyInfoUI(): DailyInfoUI {
         dayOfWeek = createAt.getDayOfWeek(),
         status = DailyInfoStatus.Done,
         steps = steps.toNumberString(),
-        spentTime = spentTime.toDuration(DurationUnit.MINUTES).toString(),
+        spentTime = spentTime.toString(),
         stepGoal = stepsGoal.toNumberString(),
         calories = calories.toNumberString(),
         distance = distance.toString()

@@ -29,8 +29,8 @@ data class ReportState(
             return when(reportType){
                 ReportType.Steps -> (dailyInfo.sumOf { it.steps.toPureInt() } / 7) .toNumberString()
                 ReportType.Calories -> (dailyInfo.sumOf { it.calories.toPureInt() } / 7) .toNumberString()
-                ReportType.Minutes -> (dailyInfo.sumOf { it.spentTime.toLong() } /7).toDuration(DurationUnit.MINUTES) .toString()
-                ReportType.Kilometers -> (dailyInfo.sumOf { it.distance.toDouble() } / 7) .toString()
+                ReportType.Minutes -> (dailyInfo.sumOf { it.spentTime.toLongOrNull()?:0L } /7).toString()
+                ReportType.Kilometers -> (dailyInfo.sumOf { it.distance.toDoubleOrNull()?:0.0 } / 7) .toString()
             }
         }
 

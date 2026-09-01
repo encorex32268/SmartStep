@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.smartstep.core.domain.DailyStepsRepository
 import com.lihan.smartstep.core.domain.util.DateTimeHelper
-import com.lihan.smartstep.dashboard.presentation.model.toUi
+import com.lihan.smartstep.dashboard.presentation.report.components.DailyInfoStatus
 import com.lihan.smartstep.dashboard.presentation.report.components.ReportType
 import com.lihan.smartstep.dashboard.presentation.report.mapper.toDailyInfoUI
 import com.lihan.smartstep.dashboard.presentation.report.model.DailyInfoUI
@@ -22,6 +22,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Collections.rotate
+import java.util.Locale
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -48,7 +52,11 @@ class ReportViewModel(
         when (action) {
             ReportAction.OnBackClick -> Unit
             is ReportAction.OnDailyInfoItemClick -> dailyInfoItemClick(action.dailyInfoUI)
-            is ReportAction.OnReportTypeClick -> TODO()
+            is ReportAction.OnReportTypeClick -> {
+                _state.update { it.copy(
+                    reportType = action.type
+                ) }
+            }
             ReportAction.OnNextWeekClick -> {
                 _state.update { it.copy(
                     week = it.week + 1
@@ -94,11 +102,33 @@ class ReportViewModel(
                 val thisWeek = weeks[1]
                 val nextWeek = weeks[2]
                 val groupBy = dailySteps.groupBy { item ->
-                    weeks.first { range -> item.createAt in range }
+                    weeks.firstOrNull { range -> item.createAt in range }
+                }
+
+                val dailyInfo = groupBy[thisWeek]?.map { dailyStep -> dailyStep.toDailyInfoUI() }?:emptyList()
+
+                val modifierDailyInfo = dailyInfo.toMutableList()
+
+                DayOfWeek.entries.forEachIndexed { index, dayOfWeek ->
+                    if (modifierDailyInfo.getOrNull(index) == null){
+                        val dayName = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                        modifierDailyInfo.add(
+                            index = index,
+                            element = DailyInfoUI(
+                                dayOfWeek = dayName,
+                                status = DailyInfoStatus.NotYet,
+                                spentTime = "0",
+                                stepGoal = "0",
+                                calories = "0",
+                                distance = "0.0",
+                                steps = "0"
+                            )
+                        )
+                    }
                 }
 
                 _state.update { it.copy(
-                    dailyInfo = groupBy[thisWeek]?.map { dailyStep -> dailyStep.toDailyInfoUI() }?:emptyList(),
+                    dailyInfo = modifierDailyInfo,
                     isNextWeekEnabled = groupBy[nextWeek]?.isNotEmpty()?: false,
                     isPreviousWeekEnabled = groupBy[previous]?.isNotEmpty()?: false
                 ) }

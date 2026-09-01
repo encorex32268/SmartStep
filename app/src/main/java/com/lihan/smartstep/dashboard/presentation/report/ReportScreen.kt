@@ -38,6 +38,7 @@ import com.lihan.smartstep.dashboard.presentation.report.components.InfoCard
 import com.lihan.smartstep.dashboard.presentation.report.components.ReportBottomBar
 import com.lihan.smartstep.dashboard.presentation.report.components.ReportType
 import com.lihan.smartstep.dashboard.presentation.report.components.ReportType.Companion.toBottomItemName
+import com.lihan.smartstep.dashboard.presentation.report.components.ReportType.Companion.toDailyInfoCardUnit
 import com.lihan.smartstep.dashboard.presentation.report.components.WeekSelector
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -115,7 +116,7 @@ private fun ReportScreen(
                         DailyInfoCard(
                             dayOfWeek = dailyInfoUI.dayOfWeek,
                             status = dailyInfoUI.status,
-                            type = reportType.toBottomItemName(),
+                            type = reportType.toDailyInfoCardUnit(),
                             onItemClick = {
                                 onAction(ReportAction.OnDailyInfoItemClick(dailyInfoUI))
                             },
@@ -125,7 +126,8 @@ private fun ReportScreen(
                                 ReportType.Minutes -> dailyInfoUI.spentTime
                                 ReportType.Kilometers -> dailyInfoUI.distance
                             },
-                            description = if (reportType == ReportType.Steps){
+                            description = if (reportType == ReportType.Steps && ((dailyInfoUI.stepGoal.filter { it.isDigit() }
+                                    .toIntOrNull() ?: 0) > 0)) {
                                 stringResource(R.string.daily_goal,dailyInfoUI.stepGoal)
                             }else ""
                         )
