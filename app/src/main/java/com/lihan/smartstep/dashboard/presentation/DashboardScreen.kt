@@ -2,9 +2,9 @@
 
 package com.lihan.smartstep.dashboard.presentation
 
+import android.Manifest
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +20,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,11 +35,12 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.lihan.smartstep.R
 import com.lihan.smartstep.core.presentation.AppIcons
 import com.lihan.smartstep.core.presentation.design_system.bottomsheet.SmartStepModalBottomSheet
-import com.lihan.smartstep.dashboard.presentation.components.AppDrawer
 import com.lihan.smartstep.core.presentation.design_system.topbar.SmartStepTopbar
+import com.lihan.smartstep.core.presentation.permission.rememberPermissionLauncher
 import com.lihan.smartstep.core.presentation.ui.theme.SmartStepTheme
 import com.lihan.smartstep.core.presentation.util.ObserveAsEvents
 import com.lihan.smartstep.dashboard.presentation.components.AICoachCard
+import com.lihan.smartstep.dashboard.presentation.components.AppDrawer
 import com.lihan.smartstep.dashboard.presentation.components.DailyStepsCard
 import com.lihan.smartstep.dashboard.presentation.components.DatePickerDialog
 import com.lihan.smartstep.dashboard.presentation.components.EditStepsDialog
@@ -107,6 +111,20 @@ fun DashboardScreen(
         )
     }
 
+    var showNotificationDialog by remember { mutableStateOf(false) }
+    var isNotificationPermanent by remember { mutableStateOf(false) }
+
+    val requestNotificationPermission = rememberPermissionLauncher(
+        onGranted = {
+            showNotificationDialog = false
+            onAction(DashboardAction.OnStartTracking)
+        },
+        onDenied = { isPermanentlyDenied ->
+            isNotificationPermanent = isPermanentlyDenied
+            showNotificationDialog = true
+        }
+    )
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -173,7 +191,11 @@ fun DashboardScreen(
                             onAction(DashboardAction.OnStopTracking)
                         },
                         onStartTracking = {
-                            onAction(DashboardAction.OnStartTracking)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                requestNotificationPermission(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                onAction(DashboardAction.OnStartTracking)
+                            }
                         },
                         onReport = {
                             onAction(DashboardAction.OnNavigateToReport)
