@@ -61,4 +61,8 @@
     <string name="report">Report</string>
     <string name="daily_goal">Goal: %1$s steps</string>
 
+    <string name="notification_permission_title">Notification Permission Required</string>
+    <string name="notification_permission_description">Smart Step needs notification permission to display your step progress and stay running reliably in the background.</string>
+    <string name="notification_permission_permanent_description">Notification permission has been disabled. Please enable it in device settings to show ongoing step tracking.</string>
+
 </resources>
