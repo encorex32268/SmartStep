@@ -65,30 +65,32 @@ fun MessageSendBar(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = onShowSuggestions,
-                        interactionSource = null,
-                        indication = null
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.quick_suggestions),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Icon(
-                    imageVector = if (isShowSuggestions) AppIcons.ArrowUp else AppIcons.ArrowDown,
-                    contentDescription = null
-                )
+            if (isEnabledSend){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = onShowSuggestions,
+                            interactionSource = null,
+                            indication = null
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.quick_suggestions),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Icon(
+                        imageVector = if (isShowSuggestions) AppIcons.ArrowUp else AppIcons.ArrowDown,
+                        contentDescription = null
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
             }
             AnimatedVisibility(isShowSuggestions) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Spacer(Modifier.height(16.dp))
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(4.dp)

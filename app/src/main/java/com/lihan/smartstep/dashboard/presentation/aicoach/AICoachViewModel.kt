@@ -76,7 +76,7 @@ class AICoachViewModel(
     private fun sendMessageToAICoach(message: String){
         viewModelScope.launch {
             _state.update { it.copy(
-                messages = it.messages + Message(sender = Sender.User, message = message),
+                messages = it.messages + Message(sender = Sender.USER, message = message),
                 isThinking = true
             ) }
             val stepMetrics = getStepMetricsUseCase().first()

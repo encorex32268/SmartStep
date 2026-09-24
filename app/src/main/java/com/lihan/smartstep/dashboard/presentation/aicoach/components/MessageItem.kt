@@ -67,7 +67,7 @@ fun MessageItem(
                     }
                 }
             }
-            Sender.User -> {
+            Sender.USER -> {
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -128,7 +128,7 @@ private fun MessageITemPreview() {
                 message = "Hello! I'm your AI fitness coach. I've noticed your activity levels are a bit lower than usual today. I'm here to help you get back on track and answer any questions you might have about your fitness journey."
             )
             MessageItem(
-                sender = Sender.User,
+                sender = Sender.USER,
                 message = "What should I do to increase my activity today?"
             )
 

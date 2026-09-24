@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,6 +94,7 @@ fun AICoachScreen(
                             }
                         ) {
                             Icon(
+                                modifier = Modifier.size(32.dp),
                                 imageVector = AppIcons.ArrowLeft,
                                 contentDescription = null,
                                 tint = AICoachBackIcon
@@ -171,7 +172,7 @@ private fun Preview() {
             state = AICoachState(
                 messages = (0..10).map {
                     Message(
-                        sender = if (it % 2 == 0) Sender.AI else Sender.User,
+                        sender = if (it % 2 == 0) Sender.AI else Sender.USER,
                         message = "Message - $it"
                     )
                 },
