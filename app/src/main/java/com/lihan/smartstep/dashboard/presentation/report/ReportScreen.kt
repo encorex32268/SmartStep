@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -44,13 +45,19 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ReportRoot(
+    onBack: () -> Unit,
     viewModel: ReportViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ReportScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when(action){
+                ReportAction.OnBackClick -> onBack()
+                else -> Unit
+            }
+        }
     )
 }
 
@@ -73,6 +80,7 @@ private fun ReportScreen(
                         }
                     ) {
                         Icon(
+                            modifier = Modifier.size(32.dp),
                             imageVector = AppIcons.ArrowLeft,
                             contentDescription = null,
                             tint = AICoachBackIcon
