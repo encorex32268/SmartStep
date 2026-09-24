@@ -51,7 +51,7 @@ class SmartStepApplication: Application(), Configuration.Provider, KoinComponent
 
 //        seedMockDailyStepsData()
 
-        SaveDailyStepsScheduler.scheduleWork(this)
+        SaveDailyStepsScheduler.schedule(this)
     }
 
     private fun seedMockDailyStepsData() {

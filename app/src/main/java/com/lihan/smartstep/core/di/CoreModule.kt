@@ -12,6 +12,8 @@ import com.lihan.smartstep.core.domain.DailyStepsRepository
 import com.lihan.smartstep.core.domain.NetworkMirror
 import com.lihan.smartstep.core.domain.UserDataStore
 import com.lihan.smartstep.core.domain.usecase.GetStepMetricsUseCase
+import com.lihan.smartstep.core.receiver.AndroidAlarmManager
+import com.lihan.smartstep.core.receiver.AppAlarmManager
 import com.lihan.smartstep.dashboard.data.DefaultAppPowerManager
 import com.lihan.smartstep.dashboard.domain.AppPowerManager
 import kotlinx.coroutines.CoroutineScope
@@ -47,4 +49,6 @@ val coreModule = module {
     workerOf(::SaveDailyStepsWorker)
 
     singleOf(::DefaultNetworkMirror).bind<NetworkMirror>()
+
+    singleOf(::AndroidAlarmManager).bind<AppAlarmManager>()
 }

@@ -44,6 +44,16 @@ class SaveDailyStepsWorker(
         val stepMetrics = getStepMetricsUseCase().first()
         val trackingTime = userDataStore.trackingTime.first()
 
+        // 防重複覆蓋保護：
+        // 若該日期在資料庫中已有紀錄，且當前步數為 0 或已有紀錄的步數大於等於當前步數，
+        // 代表該日已經備份過且步數可能已被清空，此時跳過避免覆蓋舊有資料。
+        val existingRecord = stepsRepository.getDailyStepByDate(createAt)
+        if (existingRecord != null && (stepMetrics.steps == 0 || existingRecord.steps >= stepMetrics.steps)) {
+            Log.d(SaveDailyStepsScheduler.WORK_NAME, "doWork: Record already exists for $targetDate (${existingRecord.steps} steps), skipping to prevent overwrite.")
+            writeTimestampToFile("Execution SKIPPED: Already saved for $targetDate (${existingRecord.steps} steps)")
+            return Result.success()
+        }
+
         val dailyStep = DailyStep(
             createAt = createAt,
             steps = stepMetrics.steps,

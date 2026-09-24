@@ -11,4 +11,5 @@ interface DailyStepsRepository {
 
     fun getWeekDailyStepsList(startTimestamp: Long , endTimestamp: Long): Flow<List<DailyStep>>
 
+    suspend fun getDailyStepByDate(dateTime: Long): DailyStep?
 }

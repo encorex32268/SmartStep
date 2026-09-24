@@ -24,6 +24,13 @@ interface DailyStepsDao {
     """)
     fun getWeekDailyStepsList(startTimestamp: Long, endTimestamp: Long): Flow<List<DailyStepEntity>>
 
+    @Query("""
+        SELECT * FROM dailystepentity
+        WHERE createAt = :dateTime
+        LIMIT 1
+    """)
+    suspend fun getDailyStepByDate(dateTime: Long): DailyStepEntity?
+
 
 
 }

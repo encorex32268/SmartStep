@@ -32,4 +32,8 @@ class LocalDailyStepsRepository(
                 }
             }
     }
+
+    override suspend fun getDailyStepByDate(dateTime: Long): DailyStep? {
+        return dailyStepsDao.getDailyStepByDate(dateTime)?.toDomain()
+    }
 }
